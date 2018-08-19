@@ -1,0 +1,101 @@
+mirroraddress MHEKHhF89TkzuSzB8FdYoLtoH8LGnCTTAV
+{
+  "isvalid": true,
+  "address": "MHEKHhF89TkzuSzB8FdYoLtoH8LGnCTTAV",
+  "scriptPubKey": "76a9146658985aa82d683c67291bb2a7ddaf6613f8ffaf88ac",
+  "ismine": true,
+  "iswatchonly": false,
+  "isscript": false,
+  "pubkey": "0385b89272eeefc179cf64a20c1ca1e699b2021ae6b6b12baba6e5d3a730bac5e0",
+  "iscompressed": true,
+  "mirkey": "0385b892725cab037a3d5e6abab21b6b6ea1202b996e1ac1c02a46fc971cfeeee0",
+  "mirkeyvalid": true,
+  "ismiraddrvalid": true,
+  "miraddress": "MEs5EmPTwLje2rgFKsUcBtgThXV74f1m3P"
+}
+
+listmirrtransactions MEs5EmPTwLje2rgFKsUcBtgThXV74f1m3P
+[
+  {
+    "address": "MEs5EmPTwLje2rgFKsUcBtgThXV74f1m3P",
+    "category": "send",
+    "amount": -1.00000000,
+    "vout": 0,
+    "fee": -0.00000226,
+    "confirmations": 4,
+    "instantlock": false,
+    "blockhash": "0000000000aab1f0565c94a909e912944771483e7af3f62231bbcf2bb54e23cf",
+    "blockindex": 2,
+    "blocktime": 1530477529,
+    "txid": "1f97d4e809dcca0bdd281e7c138825842d92b4dcba5d470755a327b7c335b27d",
+    "time": 1530477393,
+    "timereceived": 1530477393,
+    "abandoned": false
+  }
+]
+
+getblock 0000000000aab1f0565c94a909e912944771483e7af3f62231bbcf2bb54e23cf
+{
+  "hash": "0000000000aab1f0565c94a909e912944771483e7af3f62231bbcf2bb54e23cf",
+  "confirmations": 5,
+  "size": 641,
+  "height": 3863,
+  "version": 536870912,
+  "merkleroot": "70feab3cdc790c11d99ccdbeb2dbda6992acb40b2521bcd5c500309c25587c9f",
+  "tx": [
+    "1424c2d9f3350e8b5e4a771589682dd59b0ec592b5f2728531541f4e79eef51e", 
+    "556ca1c3a2fb30449f97ae2552d1da3b1407f599f33b9be58d0a2cb6d09a634e", 
+    "1f97d4e809dcca0bdd281e7c138825842d92b4dcba5d470755a327b7c335b27d"
+  ],
+  "time": 1530477529,
+  "mediantime": 1530476413,
+  "nonce": 2773782785,
+  "bits": "1c062d67",
+  "difficulty": 41.44106669564938,
+  "chainwork": "0000000000000000000000000000000000000000000000000002ccb3269f5664",
+  "previousblockhash": "0000000003283427c9e7ec57bc8fe1e07e6a3a51ff9c0be9b43dec6281938128",
+  "nextblockhash": "0000000002815397b26eb84f749638c363a1d98002ad3761fb3b2bde076987b2"
+}
+
+
+mk: MEs5EmPTwLje2rgFKsUcBtgThXV74f1m3P
+mh: 324C63E12DFADA39F3E53CBD784D7ED87C980B1A65B8A17D7A
+
+bh: 3863
+bt: 1530477529
+bx: 0000000000aab1f0565c94a909e912944771483e7af3f62231bbcf2bb54e23cf
+tx: 1f97d4e809dcca0bdd281e7c138825842d92b4dcba5d470755a327b7c335b27d
+
+http://paizo.com/pathfinder/rpg
+
+name: field;  name;         range;  crea;   evol;     description;
+
+a01:  16^1;   gender;       0-1;    mod2;   no;       ...;
+a02:  16^1;   coattype;     0-3;    mod4;   ~4-7;     ...;
+a03:  16^2;   coatgenetic;  0-31;   mod32;  ~32-63;   ...;
+a04:  16^1;   ear;          0-15;   mod16;  no;       ...;
+a05:  16^1;   mouth;        0-15;   mod16;  no;       ...;
+a06:  16^1;   eyes;         0-15;   mod16;  no;       ...;
+
+c01:  16^2;   skincolor;    0-32;   mod32;  ~32-63;   ...;
+c02:  16^2;   eyecolor;     0-127;  mod128; ~128-255; ...;
+c03:  16^2;   coatcolor1;   0-255;  mod256; no;       ...;
+c04:  16^2;   coatcolor2;   0-255;  mod256; no;       ...;
+
+s01:  16^2;   strength;     0-32;   mod256; no;       A measure of how physically strong a character is. Strength often controls the maximum weight the character can carry, melee attack and/or damage, and sometimes hit points. Armor and weapons might also have a Strength requirement.;
+s02:  16^2;   constitution; 0-32;   mod256; no;       A measure of how sturdy a character is. Constitution often influences hit points, resistances for special types of damage (poisons, illness, heat etc.) and fatigue.;
+s03:  16^2;   dexterity;    0-32;   mod256; no;       A measure of how agile a character is. Dexterity controls attack and movement speed and accuracy, as well as evading an opponent's attack (see Armor Class).;
+s04:  16^2;   inteligence;  0-32;   mod256; no;       A measure of a character's problem-solving ability. Intelligence often controls a character's ability to comprehend foreign languages and their skill in magic. In some cases, intelligence controls how many skill points the character gets at "level up". In some games, it controls the rate at which experience points are earned, or the amount needed to level up. Under certain circumstances, this skill can also negate combat actions between players and NPC enemies. This is sometimes combined with wisdom and/or willpower.;
+s05:  16^2;   wisdom;       0-32;   mod256; no;       A measure of a character's common sense and/or spirituality. Wisdom often controls a character's ability to cast certain spells, communicate to mystical entities, or discern other characters' motives or feelings.;
+s06:  16^2;   charisma;     0-32;   mod256; no;       A measure of a character's social skills, and sometimes their physical appearance. Charisma generally influences prices while trading and NPC reactions. Under certain circumstances, this skill can negate combat actions between players and NPC enemies.;
+s07:  16^2;   luck;         0-32;   mod256; no;       A measure of a character's luck. Luck might influence anything, but mostly random items, encounters and outstanding successes/failures (such as critical hits).;       
+
+s08:  16^1;   allignment;   0-15;   mod16;  no;       A creature's general moral and personal attitudes are represented by its alignment: lawful good, neutral good, chaotic good, lawful neutral, neutral, chaotic neutral, lawful evil, neutral evil, or chaotic evil.;
+
+i01:
+
+
+mogwais can breed, however mogwais are special concerning there sexual live, each mogwai has a breed calendar, during that time
+he can meet any other gender and breed his following generation in the current state of the binding with the world of mogwai, after
+a breeding has taken place the link is lost for a small amount of time till the breedind has been finished and is then established
+on the new born mogwai. 
