@@ -19,6 +19,8 @@ namespace WoMInterface.Game
 
         public string Key { get; }
 
+        public string Name { get; }
+
         public enum GenderType { MALE, FEMALE }
 
         public Coat Coat { get; }
@@ -42,6 +44,7 @@ namespace WoMInterface.Game
 
             hexValue = new HexValue(creationShift);
 
+            Name = NameGen.GenerateName(hexValue);
             Body = new Body(hexValue);
             Coat = new Coat(hexValue);
             Stats = new Stats(hexValue);

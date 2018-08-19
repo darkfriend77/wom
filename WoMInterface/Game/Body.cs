@@ -5,7 +5,7 @@ namespace WoMInterface.Game
     public class Body
     {
         internal Attribute GenderAttr = AttributBuilder.Create("Gender")
-                .Salted(false).Position(1).Size(1).Creation(2).MaxRange(2).Build();
+                .Salted(false).Position(2).Size(1).Creation(2).MaxRange(2).Build();
         public int Gender => GenderAttr.GetValue();
 
         internal Attribute EarAttr = AttributBuilder.Create("Ear")

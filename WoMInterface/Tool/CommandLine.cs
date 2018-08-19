@@ -220,7 +220,7 @@ namespace WoMInterface.Tool
         private void Print(Mogwai mogwai)
         {
             string[] template = new string[] {
-            @".:-| Name: <name           > [Lvl. <lev>] |-:.".Replace("<name           >", "Iganduin").Replace("<lev>", "00001"),
+            @".:-| Name: <name           > [Lvl. <lev>] |-:.  EXP: <exp>".Replace("<name           >", string.Format("{0}", mogwai.Name)).Replace("<lev>", string.Format("{0:####0}", mogwai.Experience.CurrentLevel)).Replace("<exp>", string.Format("{0}", mogwai.Experience.Exp)),
             @"+-stats----------+-------------------+-------------------+",
             @"¦  STR:  <str  > ¦ ALLI: <alli     > ¦ GENDER: <gen    > ¦".Replace("<str  >", string.Format("{0,7}",mogwai.Stats.Strength)).Replace("<alli     >", string.Format("{0,11}",mogwai.Stats.MapAllignment())).Replace("<gen    >", string.Format("{0,9}",mogwai.Body.MapGender())),
             @"¦  CON:  <con  > ¦ LUCK: <luck     > +-------------------+".Replace("<con  >", string.Format("{0,7}",mogwai.Stats.Constitution)).Replace("<con  >", string.Format("{0,11}",mogwai.Stats.Luck)),

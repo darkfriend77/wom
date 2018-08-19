@@ -35,7 +35,7 @@ namespace WoMInterface.Tool
                 return null;
         }
 
-        private const string Digits = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+        public const string Digits = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
         public static string Encode(byte[] data)
         {

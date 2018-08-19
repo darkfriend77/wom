@@ -50,8 +50,10 @@
   <ItemGroup>
     <Compile Include="Game\MogwaiTest.cs" />
     <Compile Include="Game\ExperienceTest.cs" />
+    <Compile Include="Game\AttributeTest.cs" />
     <Compile Include="Node\BlockchainTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tool\NameGenTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
