@@ -30,11 +30,11 @@ namespace WoMInterface.Node
 
         IMogwaicoinService mogwaiService;
 
-        private static Blockchain _instance;
+        private static Blockchain instance;
 
-        public static Blockchain Instance => _instance == null ? _instance = new Blockchain() : _instance;
+        public static Blockchain Instance => instance == null ? instance = new Blockchain() : instance;
 
-        private CachingService _cachingService = new CachingService(); 
+        private CachingService cachingService = new CachingService(); 
 
         public Blockchain(string daemonUrl, string rpcUsername, string rpcPassword, string walletPassword)
         {
@@ -57,7 +57,7 @@ namespace WoMInterface.Node
         internal void Exit()
         {
             Console.WriteLine("Persisting current cached informations.");
-            _cachingService.Persist();
+            cachingService.Persist();
             Console.WriteLine("Stoping rpc service.");
             mogwaiService.Stop();
         }
@@ -71,7 +71,7 @@ namespace WoMInterface.Node
 
             uint blockcount = mogwaiService.GetBlockCount();
 
-            int maxBlockCached = clear ? 0 : _cachingService.Cache.MaxBlockHash;
+            int maxBlockCached = clear ? 0 : cachingService.Cache.MaxBlockHash;
 
             for (int i = maxBlockCached + 1; i < blockcount; i++)
             {
@@ -81,13 +81,13 @@ namespace WoMInterface.Node
                 }
 
                 string blockHash = mogwaiService.GetBlockHash(i);
-                _cachingService.Cache.BlockHashDict.Add(i, blockHash);
+                cachingService.Cache.BlockHashDict.Add(i, blockHash);
             }
 
             if (initial)
             {
                 progress.Update(100);
-                _cachingService.Persist();
+                cachingService.Persist();
                 Console.WriteLine();
             }
         }
@@ -97,8 +97,8 @@ namespace WoMInterface.Node
         /// </summary>
         internal void CacheStats()
         {
-            Console.WriteLine($"Blockhashes: {_cachingService.Cache.BlockHashDict.Count()}");
-            Console.WriteLine($"BlockHeight: {_cachingService.Cache.MaxBlockHash} [curr:{mogwaiService.GetBlockCount()}]");
+            Console.WriteLine($"Blockhashes: {cachingService.Cache.BlockHashDict.Count()}");
+            Console.WriteLine($"BlockHeight: {cachingService.Cache.MaxBlockHash} [curr:{mogwaiService.GetBlockCount()}]");
         }
         /// <summary>
         /// 
@@ -147,7 +147,7 @@ namespace WoMInterface.Node
 
             uint blockcount = mogwaiService.GetBlockCount();
 
-            if (_cachingService.Cache.MaxBlockHash < blockcount)
+            if (cachingService.Cache.MaxBlockHash < blockcount)
             {
                 Cache(false, false);
             }
@@ -155,7 +155,7 @@ namespace WoMInterface.Node
             string blockHash;
             for (int i = fromBlockHeight; i < toBlockHeight; i++)
             {
-                if (!_cachingService.Cache.BlockHashDict.TryGetValue(i, out blockHash))
+                if (!cachingService.Cache.BlockHashDict.TryGetValue(i, out blockHash))
                 {
                     return false;
                 }
@@ -193,7 +193,7 @@ namespace WoMInterface.Node
             var validTx = incUnconfTx.Where(p => p.Confirmations > 0);
             openShifts = incUnconfTx.Count() > validTx.Count();
 
-            var pubMogAddressHex = HexUtil.ByteArrayToString(Base58Encoding.Decode(mogwaiAddress));
+            var pubMogAddressHex = HexHashUtil.ByteArrayToString(Base58Encoding.Decode(mogwaiAddress));
 
             bool creation = false;
             int lastBlockHeight = 0;
@@ -468,7 +468,7 @@ namespace WoMInterface.Node
 
                 if (mirrorAddress.IsMirAddrValid)
                 {
-                    Console.WriteLine($"MirrorAddress (Decode): {HexUtil.ByteArrayToString(Base58Encoding.Decode(mirrorAddress.MirAddress))}");
+                    Console.WriteLine($"MirrorAddress (Decode): {HexHashUtil.ByteArrayToString(Base58Encoding.Decode(mirrorAddress.MirAddress))}");
                 }
 
 

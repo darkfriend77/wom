@@ -21,11 +21,11 @@ namespace WoMInterface.Tool
             string[] vowels = { "a", "e", "i", "o", "u", "ae", "y" };
             string name = "";
             double seedValues;
-            if (HexUtil.TryHexPosConversion(4, 2, hexValue.UnSalted,out seedValues))
+            if (HexHashUtil.TryHexPosConversion(4, 2, hexValue.UnSalted,out seedValues))
             {
                 name += consonants[(int)seedValues % consonants.Length].ToUpper();
             }
-            if (HexUtil.TryHexPosConversion(6, 2, hexValue.UnSalted, out seedValues))
+            if (HexHashUtil.TryHexPosConversion(6, 2, hexValue.UnSalted, out seedValues))
             {
                 name += vowels[(int)seedValues % vowels.Length];
             }
@@ -33,11 +33,11 @@ namespace WoMInterface.Tool
             bool consonanNow = true;
             while (name.Length < minLength)
             {
-                if (consonanNow && HexUtil.TryHexPosConversion(ind, 2, hexValue.UnSalted, out seedValues))
+                if (consonanNow && HexHashUtil.TryHexPosConversion(ind, 2, hexValue.UnSalted, out seedValues))
                 {
                     name += consonants[(int)seedValues % consonants.Length];
                 }
-                else if (HexUtil.TryHexPosConversion(ind, 2, hexValue.UnSalted, out seedValues))
+                else if (HexHashUtil.TryHexPosConversion(ind, 2, hexValue.UnSalted, out seedValues))
                 {
                     name += vowels[(int)seedValues % vowels.Length];
                 }
@@ -57,7 +57,7 @@ namespace WoMInterface.Tool
             int result = 0;
             for(int i = 1; i < 10; i ++)
             {
-                if (HexUtil.TryHexPosConversion(i, 1, unSalted, out double value))
+                if (HexHashUtil.TryHexPosConversion(i, 1, unSalted, out double value))
                 {
                     result += (int)value;
                 }

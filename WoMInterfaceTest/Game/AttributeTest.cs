@@ -20,7 +20,7 @@ namespace WoMInterface.Game.Tests
                 foreach (char b2 in Base58Encoding.Digits.ToCharArray())
                 {
                     string addr = "M" + b1 + b2 + "KtKS3AeNuRFWE5Qj9tFiNAahWvQMTiz";
-                    var pubMogAddressHex = HexUtil.ByteArrayToString(Base58Encoding.Decode(addr));
+                    var pubMogAddressHex = HexHashUtil.ByteArrayToString(Base58Encoding.Decode(addr));
                     HexValue hexValue = new HexValue(
                                         new Shift()
                                         {
@@ -36,7 +36,7 @@ namespace WoMInterface.Game.Tests
                     GenderAttr.CreateValue(hexValue);
 
                     int value = GenderAttr.GetValue();
-                    int orgValue = HexUtil.GetHexVal(pubMogAddressHex[1]);
+                    int orgValue = HexHashUtil.GetHexVal(pubMogAddressHex[1]);
                     if (dict.TryGetValue(value, out int count))
                     {
                         dict[value] = count + 1;

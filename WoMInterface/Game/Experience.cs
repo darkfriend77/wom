@@ -72,7 +72,7 @@ namespace WoMInterface.Game
                 {
                     var charMultiplierA = shift.BkHex[(hexSize + indExp - 1)% hexSize];
                     var charMultiplierB = shift.BkHex[(indExp + exPat.Length) % hexSize];
-                    var exp = HexUtil.GetHexVal(charMultiplierA) * HexUtil.GetHexVal(charMultiplierB);
+                    var exp = HexHashUtil.GetHexVal(charMultiplierA) * HexHashUtil.GetHexVal(charMultiplierB);
                     Add(exp);
                 }
             }

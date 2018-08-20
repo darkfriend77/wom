@@ -20,7 +20,7 @@ namespace WoMInterface.Game
 
         public HexValue(Shift shift)
         {
-            string saltgrain = HexUtil.ByteArrayToString(BitConverter.GetBytes(shift.Time * Math.Pow(shift.Height, 2)));
+            string saltgrain = HexHashUtil.ByteArrayToString(BitConverter.GetBytes(shift.Time * Math.Pow(shift.Height, 2)));
             salt = String.Concat(Enumerable.Repeat(saltgrain, (int)(64 / saltgrain.Length) + 1)).ToCharArray();
 
             adHexChar = shift.AdHex.ToCharArray();

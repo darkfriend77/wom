@@ -138,7 +138,7 @@ namespace WoMInterface.Game
                 return false;
             }
 
-            if (!HexUtil.TryHexPosConversion(Position, Size, Salted? hexValue.Salted : hexValue.UnSalted, out double result))
+            if (!HexHashUtil.TryHexPosConversion(Position, Size, Salted? hexValue.Salted : hexValue.UnSalted, out double result))
             {
                 Console.WriteLine($"CreateValue, failed trying to convert hex position.{Position}, {Size}, {Salted}");
                 return false;

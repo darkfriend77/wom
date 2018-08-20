@@ -30,7 +30,7 @@ namespace WoMInterface.Game.Tests
                 }
             };
             var mogwai = new Mogwai("addr1", shifts);
-            Assert.IsTrue(HexUtil.TryHexPosConversion(1, 2, new List<char[]>() { shifts[0].BkHex.ToCharArray(), shifts[0].TxHex.ToCharArray() }, out double coat));
+            Assert.IsTrue(HexHashUtil.TryHexPosConversion(1, 2, new List<char[]>() { shifts[0].BkHex.ToCharArray(), shifts[0].TxHex.ToCharArray() }, out double coat));
             Assert.AreEqual(99, coat);
         }
 

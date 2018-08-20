@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace WoMInterface.Tool
 {
-    public class HexUtil
+    public class HexHashUtil
     {
         public static int GetHexVal(char hex)
         {
@@ -48,11 +49,20 @@ namespace WoMInterface.Tool
                 for (int i = 0; i < length; i++)
                 {
                     //Console.Write($"[{i}] x:{hexStr[position + i]}, 16^{length - 1 - i} * {HexUtil.GetHexVal(hexStr[position + i])} ");
-                    value += Math.Pow(16, length - 1 - i) * HexUtil.GetHexVal(hexStr[position + i]);
+                    value += Math.Pow(16, length - 1 - i) * HexHashUtil.GetHexVal(hexStr[position + i]);
                 }
                 //Console.WriteLine();
             }
             return true;
+        }
+
+        public static byte[] HashSHA256(byte[] rawBytes)
+        {
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                return sha256Hash.ComputeHash(rawBytes);
+            }
         }
     }
 }

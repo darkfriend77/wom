@@ -90,6 +90,7 @@
     <Compile Include="Game\Coat.cs" />
     <Compile Include="Game\HexValue.cs" />
     <Compile Include="Game\Experience.cs" />
+    <Compile Include="Game\Roll.cs" />
     <Compile Include="Game\Shift.cs" />
     <Compile Include="Game\Stats.cs" />
     <Compile Include="Tool\CachingService.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tool\CommandLine.cs" />
-    <Compile Include="Tool\HexUtil.cs" />
+    <Compile Include="Tool\HexHashUtil.cs" />
     <Compile Include="Tool\NameGen.cs" />
     <Compile Include="Tool\ProgressBar.cs" />
     <Compile Include="Tool\StringHelpers.cs" />
@@ -108,7 +109,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Doc\mogwai.conf" />
+    <None Include="mogwai.conf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="WoMInterface_TemporaryKey.pfx" />
   </ItemGroup>
