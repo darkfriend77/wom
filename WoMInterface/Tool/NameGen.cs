@@ -62,7 +62,7 @@ namespace WoMInterface.Tool
                     result += (int)value;
                 }
 
-                if (result > minLength - 1)
+                if (result > minLength - 1 & i > 3)
                 {
                     if (result < maxLength)
                     {

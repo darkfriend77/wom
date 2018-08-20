@@ -65,7 +65,7 @@ namespace WoMInterface.Node
         /// <summary>
         /// 
         /// </summary>
-        internal void Cache(bool clear, bool show)
+        internal void Cache(bool clear, bool initial)
         {
             var progress = new ProgressBar(60);
 
@@ -75,7 +75,7 @@ namespace WoMInterface.Node
 
             for (int i = maxBlockCached + 1; i < blockcount; i++)
             {
-                if (show)
+                if (initial)
                 {
                     progress.Update(i * 100 / blockcount);
                 }
@@ -84,9 +84,10 @@ namespace WoMInterface.Node
                 _cachingService.Cache.BlockHashDict.Add(i, blockHash);
             }
 
-            if (show)
+            if (initial)
             {
                 progress.Update(100);
+                _cachingService.Persist();
                 Console.WriteLine();
             }
         }

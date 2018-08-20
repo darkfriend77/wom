@@ -1,5 +1,6 @@
 ﻿using BitcoinLib.Responses;
 using log4net;
+using log4net.Config;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -55,6 +56,7 @@ namespace WoMInterface.Tool
 
         public void Start()
         {
+            XmlConfigurator.Configure();
 
             try
             {
@@ -220,17 +222,19 @@ namespace WoMInterface.Tool
         private void Print(Mogwai mogwai)
         {
             string[] template = new string[] {
-            @".:-| Name: <name           > [Lvl. <lev>] |-:.  EXP: <exp>".Replace("<name           >", string.Format("{0}", mogwai.Name)).Replace("<lev>", string.Format("{0:####0}", mogwai.Experience.CurrentLevel)).Replace("<exp>", string.Format("{0}", mogwai.Experience.Exp)),
-            @"+-stats----------+-------------------+-------------------+",
-            @"¦  STR:  <str  > ¦ ALLI: <alli     > ¦ GENDER: <gen    > ¦".Replace("<str  >", string.Format("{0,7}",mogwai.Stats.Strength)).Replace("<alli     >", string.Format("{0,11}",mogwai.Stats.MapAllignment())).Replace("<gen    >", string.Format("{0,9}",mogwai.Body.MapGender())),
-            @"¦  CON:  <con  > ¦ LUCK: <luck     > +-------------------+".Replace("<con  >", string.Format("{0,7}",mogwai.Stats.Constitution)).Replace("<con  >", string.Format("{0,11}",mogwai.Stats.Luck)),
-            @"¦  DEX:  <dex  > +-------------------+ COATTYPE: <ctype> ¦".Replace("<dex  >", string.Format("{0,7}",mogwai.Stats.Dexterity)).Replace("<ctype>", string.Format("{0,7}",mogwai.Coat.CoatType)),
-            @"¦  INT:  <int  > ¦ HP:   <hp       > ¦ COATGEN:  <cgen > ¦".Replace("<int  >", string.Format("{0,7}",mogwai.Stats.Inteligence)).Replace("<cgen >", string.Format("{0,7}",mogwai.Coat.CoatGenetic)),
-            @"¦  WIS:  <wis  > ¦ MANA: <mana     > ¦ COLOR1:   <col1 > ¦".Replace("<wis  >", string.Format("{0,7}",mogwai.Stats.Wisdom)).Replace("<col1 >", string.Format("{0,7}",mogwai.Coat.CoatColor1)),
-            @"¦  CHA:  <cha  > ¦ END:  <end      > ¦ COLOR2:   <col2 > ¦".Replace("<cha  >", string.Format("{0,7}",mogwai.Stats.Charisma)).Replace("<col2 >", string.Format("{0,7}",mogwai.Coat.CoatColor2)),
-            @"+----------------+-------------------+-------------------+",
-            @"¦  BOUND: <address                         >             ¦".Replace("<address                         >", string.Format("{0,34}",mogwai.Key)),
-            @"+--------------------------------------------------------+" };
+            @"  .+------------------------------+.",
+            @".:-| Name: <name   > [Lvl. <lev>] |-:. EXP: <       exp>".Replace("<name   >", string.Format("{0}", mogwai.Name).PadLeft(9)).Replace("<lev>", string.Format("{0:####0}", mogwai.Experience.CurrentLevel).PadLeft(5)).Replace("<       exp>", string.Format("{0}", mogwai.Experience.Exp).PadLeft(12)),
+            @"+-stats----------+-------------------+-body--------------+",
+            @"¦ STR:   <str  > ¦ GENDER: <gen    > ¦ SKINCOL:  <skinc> ¦".Replace("<str  >", string.Format("{0,7}",mogwai.Stats.Strength)).Replace("<gen    >", string.Format("{0,9}",mogwai.Body.MapGender())).Replace("<skinc>", string.Format("{0,7}",mogwai.Body.SkinColor)),
+            @"¦ CON:   <con  > +-state-------------+ EYECOL:   <eyec > |".Replace("<con  >", string.Format("{0,7}",mogwai.Stats.Constitution)).Replace("<eyec >", string.Format("{0,7}",mogwai.Body.EyeColor)),
+            @"¦ DEX:   <dex  > ¦ HP:   <hp       > ¦ EAR:      <ear  > ¦".Replace("<dex  >", string.Format("{0,7}",mogwai.Stats.Dexterity)).Replace("<ear  >", string.Format("{0,7}",mogwai.Body.Ear)),
+            @"¦ INT:   <int  > ¦ MANA: <mana     > ¦ MOUTH:    <mouth> ¦".Replace("<int  >", string.Format("{0,7}",mogwai.Stats.Inteligence)).Replace("<mouth>", string.Format("{0,7}",mogwai.Body.Mouth)),
+            @"¦ WIS:   <wis  > ¦ END:  <end      > +-coat--------------+".Replace("<wis  >", string.Format("{0,7}",mogwai.Stats.Wisdom)),
+            @"¦ CHA:   <cha  > +-------------------+ COATTYPE: <ctype> ¦".Replace("<cha  >", string.Format("{0,7}",mogwai.Stats.Charisma)).Replace("<ctype>", string.Format("{0,7}",mogwai.Coat.CoatType)),
+            @"¦ LUC:   <luc  > ¦ ALLI: <alli     > ¦ COATGEN:  <cgen > ¦".Replace("<luc  >", string.Format("{0,7}",mogwai.Stats.Luck)).Replace("<alli     >", string.Format("{0,11}",mogwai.Stats.MapAllignment())).Replace("<cgen >", string.Format("{0,7}",mogwai.Coat.CoatGenetic)),
+            @"+----------------+-------------------+ COLOR1:   <col1 > ¦".Replace("<col1 >", string.Format("{0,7}",mogwai.Coat.CoatColor1)),
+            @"¦ <address                         > | COLOR2:   <col2 > ¦".Replace("<address                         >", string.Format("{0,34}",mogwai.Key)).Replace("<col2 >", string.Format("{0,7}",mogwai.Coat.CoatColor2)),
+            @"+------------------------------------+-------------------+" };
 
             foreach (string str in template)
             {
