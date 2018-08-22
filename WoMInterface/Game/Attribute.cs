@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WoMInterface.Tool;
+using static WoMInterface.Game.AttributBuilder;
 using static WoMInterface.Game.Attribute;
 
 namespace WoMInterface.Game
@@ -27,7 +28,6 @@ namespace WoMInterface.Game
         private EvolutionPattern evoPat = Attribute.EvolutionPattern.NONE;
         private HexValue hexValue;
         private string description;
-        private RandomPattern randomPattern = RandomPattern.STRAIGHT;
 
         private AttributBuilder(string name) { this.name = name; }
 
@@ -90,12 +90,6 @@ namespace WoMInterface.Game
             return this;
         }
 
-        public AttributBuilder Roll(int dices, int diceSides, int bestOf = 0)
-        {
-            this.description = description;
-            return this;
-        }
-
         public Attribute Build()
         {
             return new Attribute(name, salted, position, size, creation, minRange, maxRange, evoPat);
@@ -139,22 +133,7 @@ namespace WoMInterface.Game
         {
             return (int)value;
         }
-
-        public bool RollValue(Dice dice)
-        {
-            List<int> rolls = new List<int>
-            {
-                dice.Roll(6),
-                dice.Roll(6),
-                dice.Roll(6),
-                dice.Roll(6)
-            };
-
-            rolls.Remove(rolls.Min());
-            value = rolls.Sum();
-            return true;
-        }
-
+        
         public bool CreateValue(HexValue hexValue)
         {
             this.hexValue = hexValue;

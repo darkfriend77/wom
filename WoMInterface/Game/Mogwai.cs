@@ -29,6 +29,8 @@ namespace WoMInterface.Game
 
         public Stats Stats { get; }
 
+        public Abilities Abilities { get; }
+
         public Experience Experience { get; }
 
         public Mogwai(string key, List<Shift> shifts)
@@ -47,7 +49,9 @@ namespace WoMInterface.Game
             Name = NameGen.GenerateName(hexValue);
             Body = new Body(hexValue);
             Coat = new Coat(hexValue);
-            Stats = new Stats(hexValue, creationShift);
+            Stats = new Stats(hexValue);
+
+            Abilities = new Abilities(creationShift);
 
             Evolve(shifts);
         }

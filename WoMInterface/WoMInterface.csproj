@@ -85,6 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game\Abilities.cs" />
     <Compile Include="Game\Attribute.cs" />
     <Compile Include="Game\Body.cs" />
     <Compile Include="Game\Coat.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Game\Experience.cs" />
     <Compile Include="Game\Dice.cs" />
     <Compile Include="Game\Shift.cs" />
+    <Compile Include="Game\Stat.cs" />
     <Compile Include="Game\Stats.cs" />
     <Compile Include="Tool\CachingService.cs" />
     <Compile Include="Tool\ArrayHelpers.cs" />
