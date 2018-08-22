@@ -47,7 +47,7 @@ namespace WoMInterface.Game
             Name = NameGen.GenerateName(hexValue);
             Body = new Body(hexValue);
             Coat = new Coat(hexValue);
-            Stats = new Stats(hexValue);
+            Stats = new Stats(hexValue, creationShift);
 
             Evolve(shifts);
         }
