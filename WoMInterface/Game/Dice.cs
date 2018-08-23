@@ -38,6 +38,11 @@ namespace WoMInterface.Game
             this.seed3 = Tool.HexHashUtil.HashSHA256(height + shift.BkHex);
         }
 
+        public int Roll(int diceSides, int modifier)
+        {
+            return (GetNext() % diceSides) + 1 + modifier;
+        }
+
         public int Roll(int diceSides)
         {
             return (GetNext() % diceSides) + 1;

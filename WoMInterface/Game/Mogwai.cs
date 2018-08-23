@@ -7,21 +7,15 @@ using WoMInterface.Tool;
 
 namespace WoMInterface.Game
 {
-    public class Mogwai
+    public class Mogwai : Entity
     {
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private List<Shift> shifts;
-
         private readonly int blockHeight;
 
-        private HexValue hexValue;
+        private List<Shift> Shifts { get; }
 
         public string Key { get; }
-
-        public string Name { get; }
-
-        public enum GenderType { MALE, FEMALE }
 
         public Coat Coat { get; }
 
@@ -29,30 +23,37 @@ namespace WoMInterface.Game
 
         public Stats Stats { get; }
 
-        public Abilities Abilities { get; }
-
-        public Experience Experience { get; }
-
         public Mogwai(string key, List<Shift> shifts)
         {
             Key = key;
-            this.shifts = shifts;
+            Shifts = shifts;
 
             var creationShift = shifts[0];
 
             blockHeight = creationShift.Height;
-           
-            Experience = new Experience(creationShift);
 
-            hexValue = new HexValue(creationShift);
-
+            // create appearance           
+            var hexValue = new HexValue(creationShift);
             Name = NameGen.GenerateName(hexValue);
             Body = new Body(hexValue);
             Coat = new Coat(hexValue);
             Stats = new Stats(hexValue);
 
-            Abilities = new Abilities(creationShift);
+            // create abilities
+            Dice dice = new Dice(creationShift);
+            int[] rollEvent = new int[] {4,6,3};
+            Gender = dice.Roll(2, -1);
+            Strength = dice.Roll(rollEvent);
+            Dexterity = dice.Roll(rollEvent);
+            Constitution = dice.Roll(rollEvent);
+            Inteligence = dice.Roll(rollEvent);
+            Wisdom = dice.Roll(rollEvent);
+            Charisma = dice.Roll(rollEvent);
 
+            // create experience
+            Experience = new Experience(creationShift);
+
+            // evolve
             Evolve(shifts);
         }
 
@@ -68,7 +69,7 @@ namespace WoMInterface.Game
 
         public void Print()
         {
-            Shift shift = shifts[0];
+            Shift shift = Shifts[0];
 
             Console.WriteLine("*** Mogwai Nascency Transaction ***");
             Console.WriteLine($"- Time: {shift.Time}");

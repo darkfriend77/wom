@@ -85,13 +85,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game\Abilities.cs" />
     <Compile Include="Game\Attribute.cs" />
     <Compile Include="Game\Body.cs" />
     <Compile Include="Game\Coat.cs" />
+    <Compile Include="Game\Combat.cs" />
+    <Compile Include="Game\Entity.cs" />
     <Compile Include="Game\HexValue.cs" />
     <Compile Include="Game\Experience.cs" />
     <Compile Include="Game\Dice.cs" />
+    <Compile Include="Game\Monster.cs" />
     <Compile Include="Game\Shift.cs" />
     <Compile Include="Game\Stat.cs" />
     <Compile Include="Game\Stats.cs" />
