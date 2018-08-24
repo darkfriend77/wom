@@ -90,6 +90,7 @@
     <Compile Include="Game\Coat.cs" />
     <Compile Include="Game\Combat.cs" />
     <Compile Include="Game\Entity.cs" />
+    <Compile Include="Game\Equipment.cs" />
     <Compile Include="Game\HexValue.cs" />
     <Compile Include="Game\Experience.cs" />
     <Compile Include="Game\Dice.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Game\Shift.cs" />
     <Compile Include="Game\Stat.cs" />
     <Compile Include="Game\Stats.cs" />
+    <Compile Include="Game\Weapon.cs" />
     <Compile Include="Tool\CachingService.cs" />
     <Compile Include="Tool\ArrayHelpers.cs" />
     <Compile Include="Tool\Base58Encoding.cs" />

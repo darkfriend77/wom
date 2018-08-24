@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static WoMInterface.Game.Dice;
 
 namespace WoMInterface.Game
 {
@@ -40,7 +41,10 @@ namespace WoMInterface.Game
         // armorclass = 10 + armor bonus + shield bonus + dex modifier + size modifier + natural armor + deflection + misc modifier
         public int ArmorClass => 10 + DexterityMod;
 
-        public int HitPointa => 8 + 0;
+        // hitpoints
+        public int HitPointDice { get; set; } = 0;
+        public int HitPointLevelRolls { get; set; } = 0;
+        public int HitPoints => HitPointDice + HitPointLevelRolls;
 
         // initiative = dex modifier + misc modifier
         public int Initiative => DexterityMod;
@@ -51,8 +55,12 @@ namespace WoMInterface.Game
         // attackbonus = base attack bonus + strength modifier + size modifier
         public int AttackBonus => BaseAttackBonus + StrengthMod;
 
-        public Experience Experience { get; set; }
-        
+        // damage
+        public int Damage(Dice dice) => dice.Roll(Equipment.PrimaryWeapon.DamageRoll) + StrengthMod;
+
+        // equipment
+        public Equipment Equipment { get; set; } = new Equipment();
+
         public Entity()
         {
             
@@ -61,6 +69,11 @@ namespace WoMInterface.Game
         private int Modifier(int ability)
         {
             return (int)Math.Floor(ability / 10D) - 5;
+        }
+
+        public int InitiativeRoll(Dice dice)
+        {
+            return dice.Roll(DiceType.D20) + Initiative;
         }
         
     }

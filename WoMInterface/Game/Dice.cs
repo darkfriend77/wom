@@ -38,6 +38,18 @@ namespace WoMInterface.Game
             this.seed3 = Tool.HexHashUtil.HashSHA256(height + shift.BkHex);
         }
 
+        public Dice(Shift shift, int modifier)
+        {
+            string height = shift.Height.ToString();
+            height = height.PadLeft(height.Length + height.Length % 2, '0');
+            string modifierStr = modifier.ToString();
+            modifierStr = modifierStr.PadLeft(modifierStr.Length + modifierStr.Length % 2, '0');
+
+            this.seed1 = Tool.HexHashUtil.HashSHA256(modifierStr + height);
+            this.seed2 = Tool.HexHashUtil.HashSHA256(modifierStr + shift.BkHex);
+            this.seed3 = Tool.HexHashUtil.HashSHA256(height + shift.BkHex);
+        }
+
         public int Roll(int diceSides, int modifier)
         {
             return (GetNext() % diceSides) + 1 + modifier;
@@ -46,6 +58,11 @@ namespace WoMInterface.Game
         public int Roll(int diceSides)
         {
             return (GetNext() % diceSides) + 1;
+        }
+
+        public int Roll(DiceType diceType)
+        {
+            return (GetNext() % GetSides(diceType)) + 1;
         }
 
         public int Roll(int[] rollEvent) {

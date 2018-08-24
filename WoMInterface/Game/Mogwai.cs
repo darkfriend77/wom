@@ -23,6 +23,8 @@ namespace WoMInterface.Game
 
         public Stats Stats { get; }
 
+        public Experience Experience { get; set; }
+
         public Mogwai(string key, List<Shift> shifts)
         {
             Key = key;
@@ -52,6 +54,9 @@ namespace WoMInterface.Game
 
             // create experience
             Experience = new Experience(creationShift);
+
+            // add simple hand as weapon
+            Equipment.PrimaryWeapon = new Fist();
 
             // evolve
             Evolve(shifts);
