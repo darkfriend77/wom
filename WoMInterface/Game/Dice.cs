@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMInterface.Tool;
 
 namespace WoMInterface.Game
 {
@@ -13,11 +14,11 @@ namespace WoMInterface.Game
             D2, D4, D6, D8, D12, D20, D100
         } 
 
-        private int i1 = 0;
+        private int i1 = 2;
 
-        private int i2 = 0;
+        private int i2 = 4;
 
-        private int i3 = 0;
+        private int i3 = 6;
 
         private string seed1;
 
@@ -33,21 +34,22 @@ namespace WoMInterface.Game
         {
             string height = shift.Height.ToString();
             height = height.PadLeft(height.Length + height.Length % 2, '0');
-            this.seed1 = Tool.HexHashUtil.HashSHA256(shift.AdHex + height);
-            this.seed2 = Tool.HexHashUtil.HashSHA256(shift.AdHex + shift.BkHex);
-            this.seed3 = Tool.HexHashUtil.HashSHA256(height + shift.BkHex);
+            this.seed1 = HexHashUtil.HashSHA256(shift.AdHex + height);
+            this.seed2 = HexHashUtil.HashSHA256(shift.AdHex + shift.BkHex);
+            this.seed3 = HexHashUtil.HashSHA256(height + shift.BkHex);
         }
 
         public Dice(Shift shift, int modifier)
         {
             string height = shift.Height.ToString();
             height = height.PadLeft(height.Length + height.Length % 2, '0');
+
             string modifierStr = modifier.ToString();
             modifierStr = modifierStr.PadLeft(modifierStr.Length + modifierStr.Length % 2, '0');
 
-            this.seed1 = Tool.HexHashUtil.HashSHA256(modifierStr + height);
-            this.seed2 = Tool.HexHashUtil.HashSHA256(modifierStr + shift.BkHex);
-            this.seed3 = Tool.HexHashUtil.HashSHA256(height + shift.BkHex);
+            this.seed1 = HexHashUtil.HashSHA256(shift.BkHex + modifierStr + height);
+            this.seed2 = HexHashUtil.HashSHA256(shift.BkHex + modifierStr + shift.BkHex);
+            this.seed3 = HexHashUtil.HashSHA256(modifierStr + height + shift.BkHex + height);
         }
 
         public int Roll(int diceSides, int modifier)

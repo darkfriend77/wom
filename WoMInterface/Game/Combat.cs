@@ -53,7 +53,6 @@ namespace WoMInterface.Game
             var hero = InititiveOrder.Where(p => p.IsHero).First();
             var sheep = InititiveOrder.Where(p => !p.IsHero).First();
             CommandLine.ColorWriteLine($"Shave combat: {hero.Entity.Name}[{hero.InititativeValue},{hero.Entity.Dexterity}] vs. {sheep.Entity.Name}[{sheep.InititativeValue},{sheep.Entity.Dexterity}]", ConsoleColor.Cyan);
-            Console.WriteLine("\u001b[31mHello World!\u001b[0m");
             // let's start the rounds ...
             Combatant winner = null;
             for (currentRound = 1; currentRound < maxRounds && winner == null; currentRound++)

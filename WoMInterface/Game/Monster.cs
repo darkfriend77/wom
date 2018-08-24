@@ -27,10 +27,10 @@ namespace WoMInterface.Game
             Charisma = dice.Roll(rollEvent);
 
             HitPointDice = 8;
-            HitPointLevelRolls = dice.Roll(new int[] { level+1, HitPointDice, level});
+            HitPointLevelRolls = dice.Roll(new int[] { level-1, HitPointDice, level-1});
             Equipment.PrimaryWeapon = new Weapon()
             {
-                DamageRoll = new int[] { 1, 6, 1 }
+                DamageRoll = new int[] { 1, 2, 1 }
             };
 
             // set moving stats now ....
