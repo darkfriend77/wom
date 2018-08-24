@@ -14,11 +14,11 @@ namespace WoMInterface.Game
             D2, D4, D6, D8, D12, D20, D100
         } 
 
-        private int i1 = 2;
+        private int i1 = 0;
 
-        private int i2 = 4;
+        private int i2 = 0;
 
-        private int i3 = 6;
+        private int i3 = 0;
 
         private string seed1;
 
@@ -34,22 +34,22 @@ namespace WoMInterface.Game
         {
             string height = shift.Height.ToString();
             height = height.PadLeft(height.Length + height.Length % 2, '0');
-            this.seed1 = HexHashUtil.HashSHA256(shift.AdHex + height);
-            this.seed2 = HexHashUtil.HashSHA256(shift.AdHex + shift.BkHex);
-            this.seed3 = HexHashUtil.HashSHA256(height + shift.BkHex);
+            seed1 = HexHashUtil.HashSHA256(shift.AdHex + height);
+            seed2 = HexHashUtil.HashSHA256(shift.AdHex + shift.BkHex).Substring(1);
+            seed3 = HexHashUtil.HashSHA256(height + shift.BkHex).Substring(3);
         }
 
         public Dice(Shift shift, int modifier)
         {
             string height = shift.Height.ToString();
-            height = height.PadLeft(height.Length + height.Length % 2, '0');
+            height = height.PadLeft(height.Length + height.Length % 2, 'a');
 
             string modifierStr = modifier.ToString();
-            modifierStr = modifierStr.PadLeft(modifierStr.Length + modifierStr.Length % 2, '0');
+            modifierStr = modifierStr.PadLeft(modifierStr.Length + modifierStr.Length % 2, 'a');
 
-            this.seed1 = HexHashUtil.HashSHA256(shift.BkHex + modifierStr + height);
-            this.seed2 = HexHashUtil.HashSHA256(shift.BkHex + modifierStr + shift.BkHex);
-            this.seed3 = HexHashUtil.HashSHA256(modifierStr + height + shift.BkHex + height);
+            seed1 = HexHashUtil.HashSHA256(HexHashUtil.HashSHA256(modifierStr) + height);
+            seed2 = HexHashUtil.HashSHA256(modifierStr + height).Substring(1);
+            seed3 = HexHashUtil.HashSHA256(height + modifierStr + shift.BkHex).Substring(3);
         }
 
         public int Roll(int diceSides, int modifier)
@@ -90,9 +90,9 @@ namespace WoMInterface.Game
 
         private int GetNext()
         {
-            int s1val = Tool.HexHashUtil.GetHexVal(seed1[i1]);
-            int s2val = Tool.HexHashUtil.GetHexVal(seed2[i2]);
-            int s3val = Tool.HexHashUtil.GetHexVal(seed3[i3]);
+            int s1val = HexHashUtil.GetHexVal(seed1[i1]);
+            int s2val = HexHashUtil.GetHexVal(seed2[i2]);
+            int s3val = HexHashUtil.GetHexVal(seed3[i3]);
             int value = s1val + s2val + s3val;
             i1 = (i1 + 1) % seed1.Length;
             i2 = i1 == 0 ? (i2 + 1) % seed2.Length : i2;

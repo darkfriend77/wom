@@ -42,7 +42,7 @@ namespace WoMInterface.Game.Tests
 
             foreach(var keyValue in ProbabilityDict)
             {
-                Assert.IsTrue(keyValue.Value > 0.8 * n && keyValue.Value < 1.2 * n);
+                Assert.IsTrue(keyValue.Value > 0.9 * n && keyValue.Value < 1.1 * n);
             }
 
         }
@@ -81,7 +81,7 @@ namespace WoMInterface.Game.Tests
 
             foreach(var keyValue in ProbabilityDict)
             {
-                Assert.IsTrue(keyValue.Value > 0.8 * n && keyValue.Value < 1.2 * n);
+                Assert.IsTrue(keyValue.Value > 0.9 * n && keyValue.Value < 1.1 * n);
             }
 
         }

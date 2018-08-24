@@ -18,7 +18,7 @@ namespace WoMInterface.Game
 
             // create abilities
             Gender = dice.Roll(2, -1);
-            int[] rollEvent = new int[] {5, 4, 4 };
+            int[] rollEvent = new int[] {4, 6, 3 };
             Strength = dice.Roll(rollEvent);
             Dexterity = dice.Roll(rollEvent);
             Constitution = dice.Roll(rollEvent);

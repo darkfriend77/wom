@@ -58,8 +58,8 @@ namespace WoMInterface.Tool
 
         public static string HashSHA256(string hexString)
         {
-            byte[] rawBytes = Tool.HexHashUtil.StringToByteArray(hexString);
-            return ByteArrayToString(rawBytes);
+            byte[] rawBytes = StringToByteArray(hexString);
+            return ByteArrayToString(HashSHA256(rawBytes));
         }
 
         public static byte[] HashSHA256(byte[] rawBytes)
