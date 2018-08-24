@@ -13,6 +13,15 @@ namespace WoMInterface.Game
         FEMALE
     }
 
+    public enum HealthState
+    {
+        HEALTHY = 1,
+        INJURED = 0,
+        DISABLED = -1,
+        DYING = -2,
+        DEAD = -3
+    }
+
     public abstract class Entity
     {
         public string Name { get; set; }
@@ -42,9 +51,14 @@ namespace WoMInterface.Game
         public int ArmorClass => 10 + DexterityMod;
 
         // hitpoints
-        public int HitPointDice { get; set; } = 0;
-        public int HitPointLevelRolls { get; set; } = 0;
+        public int HitPointDice { get; set; }
+        public int HitPointLevelRolls { get; set; }
         public int HitPoints => HitPointDice + HitPointLevelRolls;
+        private int currentHitPoints;
+        public int CurrentHitPoints {
+            get => currentHitPoints;
+            set => currentHitPoints = value;
+        }
 
         // initiative = dex modifier + misc modifier
         public int Initiative => DexterityMod;
@@ -55,26 +69,56 @@ namespace WoMInterface.Game
         // attackbonus = base attack bonus + strength modifier + size modifier
         public int AttackBonus => BaseAttackBonus + StrengthMod;
 
+        // attack roll
+        public int AttackRoll(Dice dice) => dice.Roll(DiceType.D20) + AttackBonus;
+
+        // initiative roll
+        public int InitiativeRoll(Dice dice) => dice.Roll(DiceType.D20) + Initiative;
+
         // damage
-        public int Damage(Dice dice) => dice.Roll(Equipment.PrimaryWeapon.DamageRoll) + StrengthMod;
+        public int DamageRoll(Dice dice) => dice.Roll(Equipment.PrimaryWeapon.DamageRoll) + StrengthMod;
+
+        // injury and death
+        public HealthState HealthState
+        {
+            get
+            {
+                if (CurrentHitPoints == HitPoints)
+                {
+                    return HealthState.HEALTHY;
+                }
+                else if (CurrentHitPoints > 0)
+                {
+                    return HealthState.INJURED;
+                }
+                else if (CurrentHitPoints == 0)
+                {
+                    return HealthState.DISABLED;
+                }
+                else if (CurrentHitPoints > -10)
+                {
+                    return HealthState.DYING;
+                }
+                else
+                {
+                    return HealthState.DEAD;
+                }
+            }
+        }
+
+        public void Initialize()
+        {
+            HitPointLevelRolls = 0;
+            CurrentHitPoints = HitPoints;
+        }
 
         // equipment
         public Equipment Equipment { get; set; } = new Equipment();
 
-        public Entity()
-        {
-            
-        }
-
         private int Modifier(int ability)
         {
-            return (int)Math.Floor(ability / 10D) - 5;
+            return (int) Math.Floor((ability - 10) / 2.0);
         }
 
-        public int InitiativeRoll(Dice dice)
-        {
-            return dice.Roll(DiceType.D20) + Initiative;
-        }
-        
     }
 }

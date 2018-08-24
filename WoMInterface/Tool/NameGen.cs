@@ -23,7 +23,7 @@ namespace WoMInterface.Tool
             double seedValues;
             if (HexHashUtil.TryHexPosConversion(4, 2, hexValue.UnSalted,out seedValues))
             {
-                name += consonants[(int)seedValues % consonants.Length].ToUpper();
+                name += consonants[(int)seedValues % consonants.Length];
             }
             if (HexHashUtil.TryHexPosConversion(6, 2, hexValue.UnSalted, out seedValues))
             {
@@ -49,7 +49,7 @@ namespace WoMInterface.Tool
                 ind += 2;
             }
 
-            return name;
+            return name.First().ToString().ToUpper() + name.Substring(1);
         }
 
         private static int GetMinLength(List<char[]> unSalted, int minLength, int maxLength)

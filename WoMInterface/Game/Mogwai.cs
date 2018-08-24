@@ -58,6 +58,11 @@ namespace WoMInterface.Game
             // add simple hand as weapon
             Equipment.PrimaryWeapon = new Fist();
 
+            HitPointDice = 10;
+
+
+            Initialize();
+
             // evolve
             Evolve(shifts);
         }
@@ -68,7 +73,6 @@ namespace WoMInterface.Game
             {
                 // first we always calculated current lazy experience
                 Experience.LazyExperience(shift);
-                
             }
         }
 

@@ -54,6 +54,8 @@ namespace WoMInterface.Tool
 
         private CommandLine() { }
 
+        public Mogwai currentMogwai;
+
         public void Start()
         {
             XmlConfigurator.Configure();
@@ -75,11 +77,11 @@ namespace WoMInterface.Tool
         {
             foreach (string str in logo_ascii)
             {
-                ColorWrite(str, ConsoleColor.Cyan);
+                ColorWriteLine(str, ConsoleColor.Cyan);
             }
             foreach (string str in help_info)
             {
-                ColorWrite(str, ConsoleColor.DarkCyan);
+                ColorWriteLine(str, ConsoleColor.DarkCyan);
             }
 
             // initial caching of the blockchain stuff
@@ -90,14 +92,14 @@ namespace WoMInterface.Tool
             while (true)
             {
                 // get the user input for every iteration, allowing to exit at will
-                Console.Write(bash);
-                String line = Console.ReadLine();
+                Console.Write((currentMogwai != null ? currentMogwai.Name : "") + bash);
+                String line = Console.ReadLine().Trim();
 
                 if (line.Equals("help"))
                 {
                     foreach (string str in help_info)
                     {
-                        ColorWrite(str, ConsoleColor.DarkCyan);
+                        ColorWriteLine(str, ConsoleColor.DarkCyan);
                     }
                 }
                 else if (line.Equals("version"))
@@ -113,19 +115,7 @@ namespace WoMInterface.Tool
                 }
                 else if (line.Equals("mogwais"))
                 {
-                    var mogwaiAddressesDict = Blockchain.Instance.ValidMogwaiAddresses();
-                    string defaultStr = "+------------------------------------+-------+-------+------------+";
-                    ConsoleResponse(defaultStr);
-                    ConsoleResponse($"+ Address                            + Bound + Level + Funds      |");
-                    ConsoleResponse(defaultStr);
-                    foreach (var keyValue in mogwaiAddressesDict)
-                    {
-                        var key = keyValue.Key;
-                        var unspent = Blockchain.Instance.UnspendFunds(key, out List<ListUnspentResponse> listUnspent);
-                        var created = Blockchain.Instance.TryGetMogwai(key, out Mogwai mogwai);
-                        ConsoleResponse($"| {string.Format("{0,34}", key)} | {string.Format("{0,5}", created)} | {string.Format("{0,5}", mogwai == null ? 0 : mogwai.Experience.CurrentLevel)} | {string.Format("{0:###0.0000}", unspent).PadLeft(10).Substring(0,10)} |");
-                        ConsoleResponse(defaultStr);
-                    }
+                    Mogwais();
                 }
                 else if (line.Equals("create"))
                 {
@@ -159,7 +149,7 @@ namespace WoMInterface.Tool
                     }
 
                 }
-                else if (line.StartsWith("show"))
+                else if (line.StartsWith("show "))
                 {
                     string[] strArray = line.Split(' ');
                     if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
@@ -179,6 +169,14 @@ namespace WoMInterface.Tool
                     }
 
                 }
+                else if (line.StartsWith("choose"))
+                {
+                    Choose(line);
+                }
+                else if (currentMogwai != null && line.StartsWith("shave sheep"))
+                {
+                    ShaveSheep();
+                }
                 else if (line.StartsWith("cache"))
                 {
                     string[] strArray = line.Split(' ');
@@ -188,7 +186,7 @@ namespace WoMInterface.Tool
                     }
                     else if (strArray.Count() == 2)
                     {
-                        switch(strArray[1])
+                        switch (strArray[1])
                         {
                             case "clear":
                                 Blockchain.Instance.Cache(true, true);
@@ -204,6 +202,11 @@ namespace WoMInterface.Tool
                     }
 
                 }
+                else if (line.Equals("dismiss"))
+                {
+                    ConsoleResponse($"You've dismissed {currentMogwai.Name}!");
+                    currentMogwai = null;
+                }
                 else if (line.Equals("exit"))
                 {
                     Blockchain.Instance.Exit();
@@ -217,6 +220,64 @@ namespace WoMInterface.Tool
                 // put whatever note stuff you want to execute again and again in here
             }
 
+        }
+
+        private void Mogwais()
+        {
+            var mogwaiAddressesDict = Blockchain.Instance.ValidMogwaiAddresses();
+            string defaultStr = "+------------------------------------+-------+-------+------------+";
+            ConsoleResponse(defaultStr);
+            ConsoleResponse($"+ Address                            + Bound + Level + Funds      |");
+            ConsoleResponse(defaultStr);
+            foreach (var keyValue in mogwaiAddressesDict)
+            {
+                var key = keyValue.Key;
+                var unspent = Blockchain.Instance.UnspendFunds(key, out List<ListUnspentResponse> listUnspent);
+                var created = Blockchain.Instance.TryGetMogwai(key, out Mogwai mogwai);
+                ConsoleResponse($"| {string.Format("{0,34}", key)} | {string.Format("{0,5}", created)} | {string.Format("{0,5}", mogwai == null ? 0 : mogwai.Experience.CurrentLevel)} | {string.Format("{0:###0.0000}", unspent).PadLeft(10).Substring(0, 10)} |");
+                ConsoleResponse(defaultStr);
+            }
+        }
+
+        private void ShaveSheep()
+        {
+            ConsoleResponse("Let's start and shave a sheep!");
+            Shift shift = new Shift()
+            {
+                Time = 1531171420,
+                AdHex = "32f13027e869de56de3c2d5af13f572b67b5e75a18594013ec",
+                Height = 9196,
+                BkHex = "000000001f2ade78b094fce0fbfacc55da3a23ec82489171eb2687a1b6582d12",
+                BkIndex = 11,
+                TxHex = "9679a3d39efdf8faa019410250fa91647a76cbb1bd2fd1c5d7ba80551b4edd7b",
+                Amount = 1
+            };
+            Dice mogwaiDice = new Dice(shift);
+            Dice sheepDice = new Dice(shift, 1);
+            Monster sheep = new Monster("Sheep", sheepDice, 1, Monster.MonsterType.ANIMALS);
+            Combat combat = new Combat(currentMogwai,mogwaiDice, sheep, sheepDice);
+            combat.Start();
+        }
+
+        private void Choose(string line)
+        {
+            string[] strArray = line.Split(' ');
+            if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
+            {
+                if (Blockchain.Instance.TryGetMogwai(strArray[1], out Mogwai mogwai) == Blockchain.BoundState.BOUND)
+                {
+                    ConsoleResponse($"You've choosen {mogwai.Name} [{mogwai.Experience.CurrentLevel}]!");
+                    currentMogwai = mogwai;
+                }
+                else
+                {
+                    ConsoleWarn($"Couldn't choose mogwai!");
+                }
+            }
+            else
+            {
+                ConsoleWarn($"Wrong number of arguments or invalid mogwaiaddress, check help for detailed informations!");
+            }
         }
 
         private void Print(Mogwai mogwai)
@@ -247,20 +308,20 @@ namespace WoMInterface.Tool
 
         public void ConsoleWarn(string value)
         {
-            ColorWrite(value, ConsoleColor.Yellow);
+            ColorWriteLine(value, ConsoleColor.Yellow);
         }
 
         public void ConsoleResponse(string value)
         {
-            ColorWrite(value, ConsoleColor.Green);
+            ColorWriteLine(value, ConsoleColor.Green);
         }
 
         public void ConsoleError(string value)
         {
-            ColorWrite(value, ConsoleColor.Red);
+            ColorWriteLine(value, ConsoleColor.Red);
         }
 
-        public void ColorWrite(string value, ConsoleColor foreground = ConsoleColor.White, ConsoleColor background = ConsoleColor.Black)
+        public static void ColorWriteLine(string value, ConsoleColor foreground = ConsoleColor.White, ConsoleColor background = ConsoleColor.Black)
         {
             //
             // This method writes an entire line to the console with the string.
@@ -273,5 +334,20 @@ namespace WoMInterface.Tool
             //
             Console.ResetColor();
         }
+
+        public static void ColorWrite(string value, ConsoleColor foreground = ConsoleColor.White, ConsoleColor background = ConsoleColor.Black)
+        {
+            //
+            // This method writes an entire line to the console with the string.
+            //
+            Console.BackgroundColor = background;
+            Console.ForegroundColor = foreground;
+            Console.Write(value.PadRight(value.Length - 1)); // <-- see note
+            //
+            // Reset the color.
+            //
+            Console.ResetColor();
+        }
+
     }
 }
