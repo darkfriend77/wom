@@ -110,6 +110,7 @@
     <Compile Include="Game\Enums\MogwaiState.cs" />
     <Compile Include="Game\Enums\InteractionType.cs" />
     <Compile Include="Game\Interaction\Adventure.cs" />
+    <Compile Include="Game\Enums\Difficulty.cs" />
     <Compile Include="Game\Interaction\Interaction.cs" />
     <Compile Include="Game\Interaction\Translate.cs" />
     <Compile Include="Game\Model\Attribute.cs" />
@@ -123,8 +124,11 @@
     <Compile Include="Game\Model\LazyExperience.cs" />
     <Compile Include="Game\Enums\GenderType.cs" />
     <Compile Include="Game\Enums\HealthState.cs" />
+    <Compile Include="Game\Model\Monster\Animal.cs" />
     <Compile Include="Game\Model\Monster\Monster.cs" />
     <Compile Include="Game\Enums\DiceType.cs" />
+    <Compile Include="Game\Enums\MonsterType.cs" />
+    <Compile Include="Game\Model\Monster\Treasure.cs" />
     <Compile Include="Game\Random\Dice.cs" />
     <Compile Include="Game\Interaction\Shift.cs" />
     <Compile Include="Game\Model\Stats.cs" />

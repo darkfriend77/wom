@@ -67,7 +67,9 @@ namespace WoMInterface.Game
             return (GetNext() % GetSides(diceType)) + 1;
         }
 
-        public int Roll(int[] rollEvent) {
+        public int Roll(int[] rollEvent)
+        {
+            int result = 0;
 
             var rolls = new List<int>();
             for (int i = 0; i < rollEvent[0]; i++)
@@ -85,7 +87,16 @@ namespace WoMInterface.Game
                 }
             }
 
-            return rolls.Sum();
+            // sum up the rolls
+            result = rolls.Sum();
+
+            // modifier
+            if (rollEvent.Length > 3 && rollEvent[3] > 0)
+            {
+                result += rollEvent[3];
+            }
+
+            return result;
         }
 
         private int GetNext()

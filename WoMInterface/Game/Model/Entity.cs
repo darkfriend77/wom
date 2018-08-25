@@ -34,12 +34,13 @@ namespace WoMInterface.Game.Model
         public int CharismaMod => Modifier(Charisma);
 
         // armorclass = 10 + armor bonus + shield bonus + dex modifier + size modifier + natural armor + deflection + misc modifier
-        public int ArmorClass => 10 + DexterityMod;
+        public int ArmorClass => 10 + Equipment.ArmorBonus + Equipment.ShieldBonus + DexterityMod + NaturalArmor;
+        public int NaturalArmor { get; set; }
 
         // hitpoints
         public int HitPointDice { get; set; }
         public List<int> HitPointLevelRolls { get; }
-        public int HitPoints => HitPointDice + HitPointLevelRolls.Sum();
+        public int MaxHitPoints => HitPointDice + HitPointLevelRolls.Sum();
         private int currentHitPoints = 0;
         public int CurrentHitPoints { get { return currentHitPoints; } set { currentHitPoints = value; } }
 
@@ -47,7 +48,7 @@ namespace WoMInterface.Game.Model
         public int Initiative => DexterityMod;
 
         // base attack bonus = class dependent value
-        public int BaseAttackBonus => 1;
+        public int BaseAttackBonus { get; set; }
 
         // attackbonus = base attack bonus + strength modifier + size modifier
         public int AttackBonus => BaseAttackBonus + StrengthMod;
@@ -66,7 +67,7 @@ namespace WoMInterface.Game.Model
         {
             get
             {
-                if (CurrentHitPoints == HitPoints)
+                if (CurrentHitPoints == MaxHitPoints)
                 {
                     return HealthState.HEALTHY;
                 }
@@ -89,6 +90,9 @@ namespace WoMInterface.Game.Model
             }
         }
 
+        // equipment
+        public Equipment Equipment { get; set; } = new Equipment();
+
         /// <summary>
         /// 
         /// </summary>
@@ -99,11 +103,8 @@ namespace WoMInterface.Game.Model
         }
         public void Initialize()
         {
-            CurrentHitPoints = HitPoints;
+            CurrentHitPoints = MaxHitPoints;
         }
-
-        // equipment
-        public Equipment Equipment { get; set; } = new Equipment();
 
         private int Modifier(int ability)
         {

@@ -257,9 +257,9 @@ namespace WoMInterface.Tool
                 Amount = 1
             };
             Dice mogwaiDice = new Dice(shift);
-            Dice sheepDice = new Dice(shift, 2);
-            Monster sheep = new Monster("Sheep", sheepDice, 1, Monster.MonsterType.ANIMALS);
-            Combat combat = new Combat(currentMogwai,mogwaiDice, sheep, sheepDice);
+            Dice wolfDice = new Dice(shift, 2);
+            Monster wolf = new Wolf(wolfDice);
+            Combat combat = new Combat(currentMogwai, mogwaiDice, wolf, wolfDice);
             combat.Start();
         }
 

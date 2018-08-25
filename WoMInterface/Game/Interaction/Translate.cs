@@ -25,10 +25,7 @@ namespace WoMInterface.Game.Interaction
             InteractionType interactionType = InteractionType.NONE;
 
 
-            return new Interaction()
-            {
-                InteractionType = interactionType
-            };
+            return null;
         }
     }
 }

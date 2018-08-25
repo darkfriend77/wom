@@ -64,11 +64,15 @@ namespace WoMInterface.Game.Model
             Wisdom = creationShift.Dice.Roll(rollEvent);
             Charisma = creationShift.Dice.Roll(rollEvent);
 
+            NaturalArmor = 0;
+
+            BaseAttackBonus = 1;
+
             // create experience
             Experience = new Experience(creationShift);
 
             // add simple hand as weapon
-            Equipment.PrimaryWeapon = new Fist();
+            Equipment.BaseWeapon = new Fist();
 
             HitPointDice = 8;
 
@@ -89,7 +93,11 @@ namespace WoMInterface.Game.Model
                 if (MogwaiState == MogwaiState.NONE)
                 {
                     int naturalHealing = shift.IsSmallShift ? 2 * CurrentLevel : CurrentLevel;
-                    CurrentHitPoints = (CurrentHitPoints + naturalHealing) % (HitPoints + 1);
+                    CurrentHitPoints += naturalHealing;
+                    if (CurrentHitPoints > MaxHitPoints)
+                    {
+                        CurrentHitPoints = MaxHitPoints;
+                    }
                 }
             }
         }
@@ -116,7 +124,7 @@ namespace WoMInterface.Game.Model
             HitPointLevelRolls.Add(shift.Dice.Roll(HitPointDice));
             
             // leveling up will heal you to max hitpoints
-            CurrentHitPoints = HitPoints;
+            CurrentHitPoints = MaxHitPoints;
         }
 
         public void Print()

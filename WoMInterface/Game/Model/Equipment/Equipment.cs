@@ -2,8 +2,15 @@
 {
     public class Equipment
     {
-        public Weapon PrimaryWeapon;
+        public Weapon BaseWeapon { get; set; }
 
-        public Weapon SecondaryWeapon;
+        private Weapon primaryWeapon;
+        public Weapon PrimaryWeapon { get { return primaryWeapon ?? BaseWeapon; } set { primaryWeapon = value; } }
+
+        public Weapon SecondaryWeapon { get; set; }
+
+        public int ArmorBonus => 0;
+
+        public int ShieldBonus => 0;
     }
 }

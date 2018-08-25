@@ -61,7 +61,9 @@ namespace WoMInterface.Game.Combat
                     CommandLine.ColorWrite($"]");
                     Console.WriteLine();
                     int attack = combatant.Entity.AttackRoll(combatant.Dice);
-                    CommandLine.ColorWrite($"   attacking target[{target.Name}, AC:");
+                    CommandLine.ColorWrite($"   attacking with [");
+                    CommandLine.ColorWrite($"{combatant.Entity.Equipment.PrimaryWeapon.Name}", ConsoleColor.Gray);
+                    CommandLine.ColorWrite($"] target[{target.Name}, AC:");
                     CommandLine.ColorWrite($"{target.ArmorClass}", ConsoleColor.Yellow);
                     CommandLine.ColorWrite($"] with ");
                     CommandLine.ColorWrite($"{attack}", ConsoleColor.Yellow);

@@ -7,10 +7,20 @@ using WoMInterface.Game.Enums;
 
 namespace WoMInterface.Game.Interaction
 {
+
     public class Adventure : Interaction
     {
-        public Adventure() : base(InteractionType.ADVENTURE)
+        public DifficultyType Difficulty { get; }
+
+        public int AveragePartyLevel { get; }
+
+        public int ChallengeRating => AveragePartyLevel + (int) Difficulty;
+
+        public Adventure(DifficultyType difficulty, int averagePartyLevel) : base(InteractionType.ADVENTURE)
         {
+            Difficulty = difficulty;
+            AveragePartyLevel = averagePartyLevel;
+
         }
     }
 }

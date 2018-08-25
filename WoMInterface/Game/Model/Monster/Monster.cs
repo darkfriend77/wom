@@ -3,40 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMInterface.Game.Enums;
 using WoMInterface.Game.Random;
 
 namespace WoMInterface.Game.Model
 {
-    public class Monster : Entity
+    public abstract class Monster : Entity
     {
-        public enum MonsterType {
-            ABERRATIONS, ANIMALS, CONSTRUCTS, DRAGONS, FEY, HUMANOIDS, MAGICALBEASTS, OOZES, OUTSIDERS, PLANTS, UNDEAD, VERMIN
-        }
+        public int ChallengeRating { get; }
 
-        public Monster(string name, Dice dice, int level, MonsterType monsterType)
+        public MonsterType MonsterType { get; }
+        
+        public int Experience { get; }
+
+        public Treasure Treasure { get; }
+
+        public string Description { get; set; }
+
+        public Monster(string name, int challengeRating, MonsterType monsterType, int experience, Treasure treasure)
         {
             Name = name;
+            ChallengeRating = challengeRating;
+            MonsterType = monsterType;
+            Experience = experience;
+            Treasure = treasure;
 
-            // create abilities
-            Gender = dice.Roll(2, -1);
-            int[] rollEvent = new int[] {4, 6, 3 };
-            Strength = dice.Roll(rollEvent);
-            Dexterity = dice.Roll(rollEvent);
-            Constitution = dice.Roll(rollEvent);
-            Inteligence = dice.Roll(rollEvent);
-            Wisdom = dice.Roll(rollEvent);
-            Charisma = dice.Roll(rollEvent);
-
-            HitPointDice = 8;
-            HitPointLevelRolls.Add(dice.Roll(new int[] { level-1, HitPointDice, level-1}));
-
-            Equipment.PrimaryWeapon = new Weapon()
-            {
-                DamageRoll = new int[] { 1, 2, 1 }
-            };
-
-            // set moving stats now ....
-            Initialize();
         }
     }
 }
