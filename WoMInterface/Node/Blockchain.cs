@@ -216,6 +216,7 @@ namespace WoMInterface.Node
                         {
                             result.Add(new SmallShift()
                             {
+                                AdHex = pubMogAddressHex,
                                 BkHex = blockHash.Value,
                                 Height = blockHash.Key
                             });

@@ -52,13 +52,10 @@ namespace WoMInterface.Game
 
         // hitpoints
         public int HitPointDice { get; set; }
-        public int HitPointLevelRolls { get; set; }
-        public int HitPoints => HitPointDice + HitPointLevelRolls;
-        private int currentHitPoints;
-        public int CurrentHitPoints {
-            get => currentHitPoints;
-            set => currentHitPoints = value;
-        }
+        public List<int> HitPointLevelRolls { get; }
+        public int HitPoints => HitPointDice + HitPointLevelRolls.Sum();
+        private int currentHitPoints = 0;
+        public int CurrentHitPoints { get { return currentHitPoints; } set { currentHitPoints = value; } }
 
         // initiative = dex modifier + misc modifier
         public int Initiative => DexterityMod;
@@ -106,9 +103,16 @@ namespace WoMInterface.Game
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public Entity()
+        {
+            // initialize
+            HitPointLevelRolls = new List<int>();
+        }
         public void Initialize()
         {
-            HitPointLevelRolls = 0;
             CurrentHitPoints = HitPoints;
         }
 

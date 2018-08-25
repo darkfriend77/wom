@@ -17,7 +17,7 @@ namespace WoMInterface
     class Program
     {
         static void Main(string[] args)
-        {           
+        {
             CommandLine.Instance.Start();
         }
     }

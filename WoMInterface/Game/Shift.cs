@@ -16,8 +16,11 @@ namespace WoMInterface.Game
         public string TxHex { get; set; }
         public decimal Amount { get; set; }
 
-        override
-        public string ToString()
+        private Dice dice;
+        public Dice Dice => dice ?? (dice = new Dice(this));
+
+
+        public override string ToString()
         {
             return $"{Time};{AdHex};{Height};{BkHex};{BkIndex};{TxHex};{Amount}";
         }

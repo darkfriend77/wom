@@ -11,26 +11,15 @@ namespace WoMInterface.Game
     {
         private string[] expPats;
 
-        public double Exp { get; private set; } = 0;
-
-        public double GetLevel(double exp) => Math.Floor(0.05 + Math.Pow(exp, 0.05) * Math.Pow(exp, 0.27));
-
-        public double CurrentLevel => GetLevel(Exp);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shift"></param>
         public Experience(Shift shift)
         {
             expPats = GetExpPatterns(shift.TxHex);
         }
-
-        public Experience()
-        {
-        }
-
-        public void Add(double exp)
-        {
-            Exp += exp;
-        }
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -54,15 +43,18 @@ namespace WoMInterface.Game
             }
             return expPats.ToArray();
         }
-
+        
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="cuurentLevel"></param>
         /// <param name="shift"></param>
-        internal void LazyExperience(Shift shift)
+        /// <returns></returns>
+        internal double LazyExperience(int cuurentLevel, Shift shift)
         {
             int hexSize = shift.BkHex.Length;
-            int lazyExpLevel = (int)CurrentLevel / 10;
+            int lazyExpLevel = (int)cuurentLevel / 10;
+            int lazyExp = 0;
 
             for (int i = 0; i <= lazyExpLevel; i++)
             {
@@ -73,9 +65,10 @@ namespace WoMInterface.Game
                     var charMultiplierA = shift.BkHex[(hexSize + indExp - 1)% hexSize];
                     var charMultiplierB = shift.BkHex[(indExp + exPat.Length) % hexSize];
                     var exp = HexHashUtil.GetHexVal(charMultiplierA) * HexHashUtil.GetHexVal(charMultiplierB);
-                    Add(exp);
+                    lazyExp += exp;
                 }
             }
+            return lazyExp;
         }
 
         internal void Print()

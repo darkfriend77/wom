@@ -27,7 +27,8 @@ namespace WoMInterface.Game
             Charisma = dice.Roll(rollEvent);
 
             HitPointDice = 8;
-            HitPointLevelRolls = dice.Roll(new int[] { level-1, HitPointDice, level-1});
+            HitPointLevelRolls.Add(dice.Roll(new int[] { level-1, HitPointDice, level-1}));
+
             Equipment.PrimaryWeapon = new Weapon()
             {
                 DamageRoll = new int[] { 1, 2, 1 }

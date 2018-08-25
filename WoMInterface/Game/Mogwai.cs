@@ -15,6 +15,8 @@ namespace WoMInterface.Game
 
         private List<Shift> Shifts { get; }
 
+        public Dictionary<int, Shift> LevelShifts { get; }
+
         public string Key { get; }
 
         public Coat Coat { get; }
@@ -25,10 +27,17 @@ namespace WoMInterface.Game
 
         public Experience Experience { get; set; }
 
+        public double Exp { get; private set; } = 0;
+
+        public int CurrentLevel { get; private set; } = 1;
+
+        public double XpToLevelUp => CurrentLevel * 1000;
+
         public Mogwai(string key, List<Shift> shifts)
         {
             Key = key;
             Shifts = shifts;
+            LevelShifts = new Dictionary<int, Shift>();
 
             var creationShift = shifts[0];
 
@@ -42,15 +51,14 @@ namespace WoMInterface.Game
             Stats = new Stats(hexValue);
 
             // create abilities
-            Dice dice = new Dice(creationShift);
             int[] rollEvent = new int[] {4,6,3};
-            Gender = dice.Roll(2, -1);
-            Strength = dice.Roll(rollEvent);
-            Dexterity = dice.Roll(rollEvent);
-            Constitution = dice.Roll(rollEvent);
-            Inteligence = dice.Roll(rollEvent);
-            Wisdom = dice.Roll(rollEvent);
-            Charisma = dice.Roll(rollEvent);
+            Gender = creationShift.Dice.Roll(2, -1);
+            Strength = creationShift.Dice.Roll(rollEvent);
+            Dexterity = creationShift.Dice.Roll(rollEvent);
+            Constitution = creationShift.Dice.Roll(rollEvent);
+            Inteligence = creationShift.Dice.Roll(rollEvent);
+            Wisdom = creationShift.Dice.Roll(rollEvent);
+            Charisma = creationShift.Dice.Roll(rollEvent);
 
             // create experience
             Experience = new Experience(creationShift);
@@ -58,8 +66,7 @@ namespace WoMInterface.Game
             // add simple hand as weapon
             Equipment.PrimaryWeapon = new Fist();
 
-            HitPointDice = 10;
-
+            HitPointDice = 8;
 
             Initialize();
 
@@ -72,8 +79,35 @@ namespace WoMInterface.Game
             foreach(var shift in shifts.Skip(1))
             {
                 // first we always calculated current lazy experience
-                Experience.LazyExperience(shift);
+                AddExp(Experience.LazyExperience(CurrentLevel, shift), shift);
+
+
             }
+        }
+
+        public void AddExp(double exp, Shift shift)
+        {
+            Exp += exp;
+
+            if (Exp >= XpToLevelUp)
+            {
+                CurrentLevel += 1;
+                LevelShifts.Add(CurrentLevel, shift);
+                LevelUp(shift);
+            }
+        }
+
+        /// <summary>
+        /// Passive level up, includes for example hit point roles.
+        /// </summary>
+        /// <param name="shift"></param>
+        private void LevelUp(Shift shift)
+        {
+            // hit points roll
+            HitPointLevelRolls.Add(shift.Dice.Roll(HitPointDice));
+            
+            // leveling up will heal you to max hitpoints
+            CurrentHitPoints = HitPoints;
         }
 
         public void Print()

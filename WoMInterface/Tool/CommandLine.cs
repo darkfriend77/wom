@@ -234,7 +234,7 @@ namespace WoMInterface.Tool
                 var key = keyValue.Key;
                 var unspent = Blockchain.Instance.UnspendFunds(key, out List<ListUnspentResponse> listUnspent);
                 var created = Blockchain.Instance.TryGetMogwai(key, out Mogwai mogwai);
-                ConsoleResponse($"| {string.Format("{0,34}", key)} | {string.Format("{0,5}", created)} | {string.Format("{0,5}", mogwai == null ? 0 : mogwai.Experience.CurrentLevel)} | {string.Format("{0:###0.0000}", unspent).PadLeft(10).Substring(0, 10)} |");
+                ConsoleResponse($"| {string.Format("{0,34}", key)} | {string.Format("{0,5}", created)} | {string.Format("{0,5}", mogwai == null ? 0 : mogwai.CurrentLevel)} | {string.Format("{0:###0.0000}", unspent).PadLeft(10).Substring(0, 10)} |");
                 ConsoleResponse(defaultStr);
             }
         }
@@ -266,7 +266,7 @@ namespace WoMInterface.Tool
             {
                 if (Blockchain.Instance.TryGetMogwai(strArray[1], out Mogwai mogwai) == Blockchain.BoundState.BOUND)
                 {
-                    ConsoleResponse($"You've choosen {mogwai.Name} [{mogwai.Experience.CurrentLevel}]!");
+                    ConsoleResponse($"You've choosen {mogwai.Name} [{mogwai.CurrentLevel}]!");
                     currentMogwai = mogwai;
                 }
                 else
@@ -284,11 +284,11 @@ namespace WoMInterface.Tool
         {
             string[] template = new string[] {
             @"  .+------------------------------+.",
-            @".:-| Name: <name   > [Lvl. <lev>] |-:. EXP: <       exp>".Replace("<name   >", string.Format("{0}", mogwai.Name).PadLeft(9)).Replace("<lev>", string.Format("{0:####0}", mogwai.Experience.CurrentLevel).PadLeft(5)).Replace("<       exp>", string.Format("{0}", mogwai.Experience.Exp).PadLeft(12)),
+            @".:-| Name: <name   > [Lvl. <lev>] |-:. EXP: <       exp>".Replace("<name   >", string.Format("{0}", mogwai.Name).PadLeft(9)).Replace("<lev>", string.Format("{0:####0}", mogwai.CurrentLevel).PadLeft(5)).Replace("<       exp>", string.Format("{0}", mogwai.Exp).PadLeft(12)),
             @"+-stats----------+-------------------+-body--------------+",
             @"¦ STR:   <str  > ¦ GENDER: <gen    > ¦ SKINCOL:  <skinc> ¦".Replace("<str  >", string.Format("{0,7}",mogwai.Strength)).Replace("<gen    >", string.Format("{0,9}",mogwai.MapGender)).Replace("<skinc>", string.Format("{0,7}",mogwai.Body.SkinColor)),
             @"¦ CON:   <con  > +-state-------------+ EYECOL:   <eyec > |".Replace("<con  >", string.Format("{0,7}",mogwai.Constitution)).Replace("<eyec >", string.Format("{0,7}",mogwai.Body.EyeColor)),
-            @"¦ DEX:   <dex  > ¦ HP:   <hp       > ¦ EAR:      <ear  > ¦".Replace("<dex  >", string.Format("{0,7}",mogwai.Dexterity)).Replace("<ear  >", string.Format("{0,7}",mogwai.Body.Ear)),
+            @"¦ DEX:   <dex  > ¦ HP:   <hp       > ¦ EAR:      <ear  > ¦".Replace("<dex  >", string.Format("{0,7}",mogwai.Dexterity)).Replace("<hp       >", string.Format("{0,11}",mogwai.CurrentHitPoints)).Replace("<ear  >", string.Format("{0,7}",mogwai.Body.Ear)),
             @"¦ INT:   <int  > ¦ MANA: <mana     > ¦ MOUTH:    <mouth> ¦".Replace("<int  >", string.Format("{0,7}",mogwai.Inteligence)).Replace("<mouth>", string.Format("{0,7}",mogwai.Body.Mouth)),
             @"¦ WIS:   <wis  > ¦ END:  <end      > +-coat--------------+".Replace("<wis  >", string.Format("{0,7}",mogwai.Wisdom)),
             @"¦ CHA:   <cha  > +-------------------+ COATTYPE: <ctype> ¦".Replace("<cha  >", string.Format("{0,7}",mogwai.Charisma)).Replace("<ctype>", string.Format("{0,7}",mogwai.Coat.CoatType)),
