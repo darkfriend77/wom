@@ -10,7 +10,7 @@ namespace WoMInterface.Game.Model
 {
     public abstract class Monster : Entity
     {
-        public int ChallengeRating { get; }
+        public double ChallengeRating { get; }
 
         public MonsterType MonsterType { get; }
         
@@ -20,9 +20,10 @@ namespace WoMInterface.Game.Model
 
         public string Description { get; set; }
 
-        public Monster(string name, int challengeRating, MonsterType monsterType, int experience, Treasure treasure)
+        public Monster(string name, double challengeRating, SizeType sizeType, MonsterType monsterType, int experience, Treasure treasure)
         {
             Name = name;
+            SizeType = sizeType;
             ChallengeRating = challengeRating;
             MonsterType = monsterType;
             Experience = experience;

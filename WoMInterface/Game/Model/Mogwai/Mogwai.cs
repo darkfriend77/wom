@@ -65,6 +65,7 @@ namespace WoMInterface.Game.Model
             Charisma = creationShift.Dice.Roll(rollEvent);
 
             NaturalArmor = 0;
+            SizeType = SizeType.MEDIUM;
 
             BaseAttackBonus = 1;
 
@@ -75,8 +76,7 @@ namespace WoMInterface.Game.Model
             Equipment.BaseWeapon = new Fist();
 
             HitPointDice = 8;
-
-            Initialize();
+            CurrentHitPoints = MaxHitPoints;
 
             // evolve
             Evolve(shifts);

@@ -15,6 +15,8 @@ namespace WoMInterface.Game.Model
         public int Gender { get; set; }
         public string MapGender => ((GenderType)Gender).ToString();
 
+        public SizeType SizeType { get; set; }
+
         public int Strength { get; set; }
         public int StrengthMod => Modifier(Strength);
 
@@ -34,7 +36,7 @@ namespace WoMInterface.Game.Model
         public int CharismaMod => Modifier(Charisma);
 
         // armorclass = 10 + armor bonus + shield bonus + dex modifier + size modifier + natural armor + deflection + misc modifier
-        public int ArmorClass => 10 + Equipment.ArmorBonus + Equipment.ShieldBonus + DexterityMod + NaturalArmor;
+        public int ArmorClass => 10 + Equipment.ArmorBonus + Equipment.ShieldBonus + DexterityMod + (int) SizeType + NaturalArmor;
         public int NaturalArmor { get; set; }
 
         // hitpoints
@@ -60,7 +62,11 @@ namespace WoMInterface.Game.Model
         public int InitiativeRoll(Dice dice) => dice.Roll(DiceType.D20) + Initiative;
 
         // damage
-        public int DamageRoll(Dice dice) => dice.Roll(Equipment.PrimaryWeapon.DamageRoll) + StrengthMod;
+        public int DamageRoll(Dice dice)
+        {
+            int damage = dice.Roll(Equipment.PrimaryWeapon.DamageRoll) + StrengthMod;
+            return damage < 1 ? 1 : damage;
+        }
 
         // injury and death
         public HealthState HealthState
@@ -100,10 +106,6 @@ namespace WoMInterface.Game.Model
         {
             // initialize
             HitPointLevelRolls = new List<int>();
-        }
-        public void Initialize()
-        {
-            CurrentHitPoints = MaxHitPoints;
         }
 
         private int Modifier(int ability)

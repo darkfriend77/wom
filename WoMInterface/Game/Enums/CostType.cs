@@ -8,6 +8,6 @@ namespace WoMInterface.Game.Enums
 {
     public enum CostType
     {
-        STANDARD
+        STANDARD = 1
     }
 }

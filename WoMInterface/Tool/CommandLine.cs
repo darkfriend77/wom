@@ -257,9 +257,9 @@ namespace WoMInterface.Tool
                 Amount = 1
             };
             Dice mogwaiDice = new Dice(shift);
-            Dice wolfDice = new Dice(shift, 2);
-            Monster wolf = new Wolf(wolfDice);
-            Combat combat = new Combat(currentMogwai, mogwaiDice, wolf, wolfDice);
+            Dice monsterDice = new Dice(shift, 2);
+            Monster monster = new Rat(monsterDice);
+            Combat combat = new Combat(currentMogwai, mogwaiDice, monster, monsterDice);
             combat.Start();
         }
 

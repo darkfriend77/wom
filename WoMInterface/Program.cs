@@ -9,6 +9,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WoMInterface.Game;
+using WoMInterface.Game.Enums;
+using WoMInterface.Game.Interaction;
 using WoMInterface.Node;
 using WoMInterface.Tool;
 
@@ -18,9 +20,9 @@ namespace WoMInterface
     {
         static void Main(string[] args)
         {
-            CommandLine.Instance.Start();
+            //CommandLine.Instance.Start();
 
-            //Test();
+            Test();
         }
 
         static void Test()
@@ -39,6 +41,11 @@ namespace WoMInterface
             Console.WriteLine($"- actionType: {actionType}");
             Console.WriteLine($"- addParm:    {addParm}");
             Console.WriteLine($"- saveParm:   {saveParm}");
+
+            Adventure adventure = new Adventure(AdventureType.CHAMBER, DifficultyType.CHALLENGING, 2);
+            Console.WriteLine($"Value1: {adventure.GetValue1()}");
+            Console.WriteLine($"Value2: {adventure.GetValue2()}");
+
             Console.ReadKey();
         }
     }

@@ -106,9 +106,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game\Combat\Combatant.cs" />
+    <Compile Include="Game\Enums\AdventureType.cs" />
     <Compile Include="Game\Enums\CostType.cs" />
     <Compile Include="Game\Enums\MogwaiState.cs" />
     <Compile Include="Game\Enums\InteractionType.cs" />
+    <Compile Include="Game\Enums\SizeType.cs" />
     <Compile Include="Game\Interaction\Adventure.cs" />
     <Compile Include="Game\Enums\Difficulty.cs" />
     <Compile Include="Game\Interaction\Interaction.cs" />
