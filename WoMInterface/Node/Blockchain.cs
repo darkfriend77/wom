@@ -214,7 +214,7 @@ namespace WoMInterface.Node
                     {
                         foreach(var blockHash in blockHashes)
                         {
-                            result.Add(new SmallShift()
+                            result.Add(new Shift()
                             {
                                 AdHex = pubMogAddressHex,
                                 BkHex = blockHash.Value,
@@ -233,7 +233,8 @@ namespace WoMInterface.Node
                     BkHex = tx.BlockHash,
                     BkIndex = tx.BlockIndex,
                     TxHex = tx.TxId,
-                    Amount = amount
+                    Amount = amount,
+                    Fee = tx.Fee
                 });
             }
 
@@ -242,8 +243,9 @@ namespace WoMInterface.Node
             {
                 foreach (var blockHash in finalBlockHashes)
                 {
-                    result.Add(new SmallShift()
+                    result.Add(new Shift()
                     {
+                        AdHex = pubMogAddressHex,
                         BkHex = blockHash.Value,
                         Height = blockHash.Key
                     });
