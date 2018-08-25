@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMInterface.Game.Model;
+using WoMInterface.Game.Interaction;
 
 namespace WoMInterface.Game.Tests
 {
@@ -18,7 +20,7 @@ namespace WoMInterface.Game.Tests
         {
             List<Shift> shifts = new List<Shift>()
             {
-                new Shift()
+                new Shift(0D)
                 {
                        Time = 1530914381,
                        BkIndex = 2,
@@ -39,7 +41,7 @@ namespace WoMInterface.Game.Tests
         {
             List<Shift> shifts = new List<Shift>()
             {
-                new Shift()
+                new Shift(0D)
                 {
                        Time = 1530914381,
                        BkIndex = 2,

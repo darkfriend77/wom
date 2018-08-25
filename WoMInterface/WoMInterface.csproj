@@ -105,25 +105,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game\Attribute.cs" />
-    <Compile Include="Game\Body.cs" />
-    <Compile Include="Game\Coat.cs" />
-    <Compile Include="Game\Combat.cs" />
-    <Compile Include="Game\Entity.cs" />
-    <Compile Include="Game\Equipment.cs" />
-    <Compile Include="Game\HexValue.cs" />
-    <Compile Include="Game\Experience.cs" />
-    <Compile Include="Game\Dice.cs" />
-    <Compile Include="Game\Monster.cs" />
-    <Compile Include="Game\Shift.cs" />
-    <Compile Include="Game\Stat.cs" />
-    <Compile Include="Game\Stats.cs" />
-    <Compile Include="Game\Weapon.cs" />
+    <Compile Include="Game\Combat\Combatant.cs" />
+    <Compile Include="Game\Enums\CostType.cs" />
+    <Compile Include="Game\Enums\MogwaiState.cs" />
+    <Compile Include="Game\Enums\InteractionType.cs" />
+    <Compile Include="Game\Interaction\Adventure.cs" />
+    <Compile Include="Game\Interaction\Interaction.cs" />
+    <Compile Include="Game\Interaction\Translate.cs" />
+    <Compile Include="Game\Model\Attribute.cs" />
+    <Compile Include="Game\Model\Mogwai\Body.cs" />
+    <Compile Include="Game\Model\Mogwai\Coat.cs" />
+    <Compile Include="Game\Combat\Combat.cs" />
+    <Compile Include="Game\Model\Entity.cs" />
+    <Compile Include="Game\Model\Equipment\Equipment.cs" />
+    <Compile Include="Game\Model\Mogwai\HexValue.cs" />
+    <Compile Include="Game\Enums\EvolutionPattern.cs" />
+    <Compile Include="Game\Model\LazyExperience.cs" />
+    <Compile Include="Game\Enums\GenderType.cs" />
+    <Compile Include="Game\Enums\HealthState.cs" />
+    <Compile Include="Game\Model\Monster\Monster.cs" />
+    <Compile Include="Game\Enums\DiceType.cs" />
+    <Compile Include="Game\Random\Dice.cs" />
+    <Compile Include="Game\Interaction\Shift.cs" />
+    <Compile Include="Game\Model\Stats.cs" />
+    <Compile Include="Game\Model\Equipment\Weapon.cs" />
     <Compile Include="Tool\CachingService.cs" />
     <Compile Include="Tool\ArrayHelpers.cs" />
     <Compile Include="Tool\Base58Encoding.cs" />
     <Compile Include="Node\Blockchain.cs" />
-    <Compile Include="Game\Mogwai.cs" />
+    <Compile Include="Game\Model\Mogwai\Mogwai.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tool\CommandLine.cs" />
@@ -157,5 +167,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

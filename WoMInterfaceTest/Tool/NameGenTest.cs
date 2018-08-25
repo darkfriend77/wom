@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WoMInterface.Game;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WoMInterface.Game.Interaction;
+using WoMInterface.Game.Model;
 
 namespace WoMInterface.Tool.Tests
 {
@@ -11,7 +11,7 @@ namespace WoMInterface.Tool.Tests
         public void GenerateNameTest()
         {
             HexValue hexValue = new HexValue(
-            new Shift()
+            new Shift(0D)
             {
                 Time = 1530914381,
                 BkIndex = 2,

@@ -8,8 +8,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using WoMInterface.Game;
+using WoMInterface.Game.Model;
+using WoMInterface.Game.Combat;
 using WoMInterface.Node;
+using WoMInterface.Game;
+using WoMInterface.Game.Random;
+using WoMInterface.Game.Interaction;
 
 namespace WoMInterface.Tool
 {
@@ -242,7 +246,7 @@ namespace WoMInterface.Tool
         private void ShaveSheep()
         {
             ConsoleResponse("Let's start and shave a sheep!");
-            Shift shift = new Shift()
+            Shift shift = new Shift(0D)
             {
                 Time = 1531171420,
                 AdHex = "32f13027e869de56de3c2d5af13f572b67b5e75a18594013ec",

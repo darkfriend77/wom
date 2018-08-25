@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using WoMInterface.Game.Enums;
+using WoMInterface.Game.Interaction;
 using WoMInterface.Tool;
 
-namespace WoMInterface.Game
+namespace WoMInterface.Game.Model
 {
     public class Mogwai : Entity
     {
@@ -14,6 +16,8 @@ namespace WoMInterface.Game
         private readonly int blockHeight;
 
         private List<Shift> Shifts { get; }
+
+        public MogwaiState MogwaiState { get; set; }
 
         public Dictionary<int, Shift> LevelShifts { get; }
 
@@ -79,9 +83,14 @@ namespace WoMInterface.Game
             foreach(var shift in shifts.Skip(1))
             {
                 // first we always calculated current lazy experience
-                AddExp(Experience.LazyExperience(CurrentLevel, shift), shift);
+                AddExp(Experience.GetExp(CurrentLevel, shift), shift);
 
-
+                // lazy health regeneration
+                if (MogwaiState == MogwaiState.NONE)
+                {
+                    int naturalHealing = shift.IsSmallShift ? 2 * CurrentLevel : CurrentLevel;
+                    CurrentHitPoints = (CurrentHitPoints + naturalHealing) % (HitPoints + 1);
+                }
             }
         }
 

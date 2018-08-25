@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using WoMInterface.Game.Interaction;
 using WoMInterface.Tool;
 
-namespace WoMInterface.Game
+namespace WoMInterface.Game.Model
 {
     public class HexValue
     {

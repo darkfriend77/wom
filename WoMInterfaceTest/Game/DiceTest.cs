@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WoMInterface.Game;
+using WoMInterface.Game.Interaction;
+using WoMInterface.Game.Random;
 
 namespace WoMInterface.Game.Tests
 {
@@ -11,7 +13,7 @@ namespace WoMInterface.Game.Tests
         [TestMethod]
         public void RollDiceSimple()
         {
-            Shift shift = new Shift()
+            Shift shift = new Shift(0D)
             {
                 Time = 1530914381,
                 BkIndex = 2,
@@ -50,7 +52,7 @@ namespace WoMInterface.Game.Tests
         [TestMethod]
         public void RollDiceModifierSimple()
         {
-            Shift shift = new Shift()
+            Shift shift = new Shift(0D)
             {
                 Time = 1531171420,
                 BkIndex = 11,
@@ -89,7 +91,7 @@ namespace WoMInterface.Game.Tests
         [TestMethod]
         public void RollDiceEvent()
         {
-            Shift shift = new Shift()
+            Shift shift = new Shift(0D)
             {
                 Time = 1530914381,
                 BkIndex = 2,

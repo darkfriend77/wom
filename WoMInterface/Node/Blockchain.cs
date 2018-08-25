@@ -11,6 +11,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WoMInterface.Game;
+using WoMInterface.Game.Interaction;
+using WoMInterface.Game.Model;
 using WoMInterface.Tool;
 
 namespace WoMInterface.Node
@@ -214,7 +216,7 @@ namespace WoMInterface.Node
                     {
                         foreach(var blockHash in blockHashes)
                         {
-                            result.Add(new Shift()
+                            result.Add(new Shift(result.Count())
                             {
                                 AdHex = pubMogAddressHex,
                                 BkHex = blockHash.Value,
@@ -226,7 +228,7 @@ namespace WoMInterface.Node
 
                 lastBlockHeight = block.Height;
 
-                result.Add(new Shift() {
+                result.Add(new Shift(result.Count()) {
                     Time = tx.Time,
                     AdHex = pubMogAddressHex,
                     Height = block.Height,
@@ -243,7 +245,7 @@ namespace WoMInterface.Node
             {
                 foreach (var blockHash in finalBlockHashes)
                 {
-                    result.Add(new Shift()
+                    result.Add(new Shift(result.Count())
                     {
                         AdHex = pubMogAddressHex,
                         BkHex = blockHash.Value,

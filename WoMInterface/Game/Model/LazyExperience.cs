@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMInterface.Game.Interaction;
 using WoMInterface.Tool;
 
-namespace WoMInterface.Game
+namespace WoMInterface.Game.Model
 {
     public class Experience
     {
@@ -50,7 +51,7 @@ namespace WoMInterface.Game
         /// <param name="cuurentLevel"></param>
         /// <param name="shift"></param>
         /// <returns></returns>
-        internal double LazyExperience(int cuurentLevel, Shift shift)
+        internal double GetExp(int cuurentLevel, Shift shift)
         {
             int hexSize = shift.BkHex.Length;
             int lazyExpLevel = (int)cuurentLevel / 10;

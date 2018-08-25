@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMInterface.Game.Random;
 
-namespace WoMInterface.Game
+namespace WoMInterface.Game.Model
 {
-    class Monster : Entity
+    public class Monster : Entity
     {
         public enum MonsterType {
             ABERRATIONS, ANIMALS, CONSTRUCTS, DRAGONS, FEY, HUMANOIDS, MAGICALBEASTS, OOZES, OUTSIDERS, PLANTS, UNDEAD, VERMIN

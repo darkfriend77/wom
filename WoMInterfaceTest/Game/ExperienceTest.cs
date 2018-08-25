@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WoMInterface.Game.Interaction;
+using WoMInterface.Game.Model;
 
 namespace WoMInterface.Game.Tests
 {
@@ -12,7 +14,7 @@ namespace WoMInterface.Game.Tests
         {
             List<Shift> shifts = new List<Shift>()
             {
-                new Shift()
+                new Shift(0D)
                 {
                        Time = 1530914381,
                        BkIndex = 2,
@@ -26,15 +28,15 @@ namespace WoMInterface.Game.Tests
             var mogwai = new Mogwai("addr1", shifts);
 
             Assert.AreEqual(1, mogwai.CurrentLevel);
-            mogwai.AddExp(300, new Shift());
+            mogwai.AddExp(300, new Shift(0D));
             Assert.AreEqual(1, mogwai.CurrentLevel);
-            mogwai.AddExp(700, new Shift());
+            mogwai.AddExp(700, new Shift(0D));
             Assert.AreEqual(2, mogwai.CurrentLevel);
-            mogwai.AddExp(1000, new Shift());
+            mogwai.AddExp(1000, new Shift(0D));
             Assert.AreEqual(3, mogwai.CurrentLevel);
-            mogwai.AddExp(1000, new Shift());
+            mogwai.AddExp(1000, new Shift(0D));
             Assert.AreEqual(4, mogwai.CurrentLevel);
-            mogwai.AddExp(1000, new Shift());
+            mogwai.AddExp(1000, new Shift(0D));
             Assert.AreEqual(5, mogwai.CurrentLevel);
         }
     }

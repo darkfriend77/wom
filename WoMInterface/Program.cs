@@ -19,6 +19,27 @@ namespace WoMInterface
         static void Main(string[] args)
         {
             CommandLine.Instance.Start();
+
+            //Test();
+        }
+
+        static void Test()
+        {
+            decimal amount = 0.12345678m;
+            decimal fee = 0.00011234m;
+            string parm1 = (amount - fee).ToString("0.00000000").Split('.')[1];
+            string saveParm = fee.ToString("0.00000000").Split('.')[1].Substring(4);
+            string costType = parm1.Substring(0, 2);
+            string actionType = parm1.Substring(2, 2);
+            string addParm = parm1.Substring(4, 4);
+            Console.WriteLine($"org. amount:  {amount}");
+            Console.WriteLine($"org. fee:     {fee}");
+            Console.WriteLine($"# data #############");
+            Console.WriteLine($"- costType:   {costType}");
+            Console.WriteLine($"- actionType: {actionType}");
+            Console.WriteLine($"- addParm:    {addParm}");
+            Console.WriteLine($"- saveParm:   {saveParm}");
+            Console.ReadKey();
         }
     }
 }

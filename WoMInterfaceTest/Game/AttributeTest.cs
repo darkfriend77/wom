@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WoMInterface.Game.Interaction;
 using WoMInterface.Tool;
 
-namespace WoMInterface.Game.Tests
+namespace WoMInterface.Game.Model.Tests
 {
     [TestClass]
     public class AttributeTest
@@ -22,7 +23,7 @@ namespace WoMInterface.Game.Tests
                     string addr = "M" + b1 + b2 + "KtKS3AeNuRFWE5Qj9tFiNAahWvQMTiz";
                     var pubMogAddressHex = HexHashUtil.ByteArrayToString(Base58Encoding.Decode(addr));
                     HexValue hexValue = new HexValue(
-                                        new Shift()
+                                        new Shift(0D)
                                         {
                                             Time = 1530914381,
                                             BkIndex = 2,

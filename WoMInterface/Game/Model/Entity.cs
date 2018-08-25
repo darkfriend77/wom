@@ -3,25 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static WoMInterface.Game.Dice;
+using WoMInterface.Game.Enums;
+using WoMInterface.Game.Random;
 
-namespace WoMInterface.Game
+namespace WoMInterface.Game.Model
 {
-    public enum GenderType
-    {
-        MALE,
-        FEMALE
-    }
-
-    public enum HealthState
-    {
-        HEALTHY = 1,
-        INJURED = 0,
-        DISABLED = -1,
-        DYING = -2,
-        DEAD = -3
-    }
-
     public abstract class Entity
     {
         public string Name { get; set; }

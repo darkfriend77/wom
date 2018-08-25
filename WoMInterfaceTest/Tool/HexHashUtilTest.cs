@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WoMInterface.Game;
+using WoMInterface.Game.Interaction;
 
 namespace WoMInterface.Tool.Tests
 {
@@ -10,7 +11,7 @@ namespace WoMInterface.Tool.Tests
         [TestMethod]
         public void HashSHA256Test()
         {
-            Shift shift = new Shift()
+            Shift shift = new Shift(0D)
             {
                 Time = 1530914381,
                 BkIndex = 2,

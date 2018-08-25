@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WoMInterface.Game
+namespace WoMInterface.Game.Model
 {
     public class Body
     {

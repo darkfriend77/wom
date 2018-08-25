@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WoMInterface.Game.Interaction;
 
 namespace WoMInterface.Game.Tests
 {
@@ -9,7 +10,7 @@ namespace WoMInterface.Game.Tests
         [TestMethod]
         public void TestMethod1()
         {
-            Shift shift = new Shift()
+            Shift shift = new Shift(0D)
             {
                 Time = 1531171420,
                 AdHex = "32f13027e869de56de3c2d5af13f572b67b5e75a18594013ec",

@@ -3,26 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMInterface.Game.Model;
+using WoMInterface.Game.Random;
 using WoMInterface.Tool;
 
-namespace WoMInterface.Game
+namespace WoMInterface.Game.Combat
 {
-    class Combatant
-    {
-        public bool IsHero { get; set; } = false;
-        public Entity Entity { get; }
-        public int InititativeValue { get; set; }
-        public Dice Dice { get; set; }
-        public List<Entity> Enemies { get; set; }
-
-        public Combatant(Entity entity)
-        {
-            Entity = entity;
-        }
-
-    }
-
-    class Combat
+    public class Combat
     {
         private int maxRounds;
         private List<Combatant> InititiveOrder;

@@ -1,23 +1,13 @@
 ﻿using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using WoMInterface.Game.Enums;
 using WoMInterface.Tool;
-using static WoMInterface.Game.AttributBuilder;
-using static WoMInterface.Game.Attribute;
 
-namespace WoMInterface.Game
+namespace WoMInterface.Game.Model
 {
     public sealed class AttributBuilder
     {
-        public enum RandomPattern
-        {
-            ROLL, STRAIGHT
-        }
-
         private string name;
         private bool salted = true;
         private int position = -1;
@@ -25,9 +15,10 @@ namespace WoMInterface.Game
         private int creation = 16;
         private int minRange = 0;
         private int maxRange = 32;
-        private EvolutionPattern evoPat = Attribute.EvolutionPattern.NONE;
-        private HexValue hexValue;
-        private string description;
+        private EvolutionPattern evoPat = Enums.EvolutionPattern.NONE;
+
+        public HexValue hexValue;
+        public string description;
 
         private AttributBuilder(string name) { this.name = name; }
 
@@ -99,8 +90,6 @@ namespace WoMInterface.Game
     public class Attribute
     {
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        public enum EvolutionPattern { NONE }
 
         private HexValue hexValue;
 
