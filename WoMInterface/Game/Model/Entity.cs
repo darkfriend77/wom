@@ -41,6 +41,7 @@ namespace WoMInterface.Game.Model
 
         // hitpoints
         public int HitPointDice { get; set; }
+        public int[] HitPointDiceRollEvent { get; set; }
         public List<int> HitPointLevelRolls { get; }
         public int MaxHitPoints => HitPointDice + HitPointLevelRolls.Sum();
         private int currentHitPoints = 0;

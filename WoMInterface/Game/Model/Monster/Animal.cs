@@ -24,7 +24,7 @@ namespace WoMInterface.Game.Model
         // - ECOLOGY
         // Environment: any temperate
         // Organization: solitary, pair, nest(3–12), or plague(13–100)
-        public Rat(Dice dice) : base("Rat", 0.25, SizeType.TINY, MonsterType.ANIMALS, 100, null)
+        public Rat() : base("Rat", 0.25, SizeType.TINY, MonsterType.ANIMALS, 100, null)
         {
             Strength = 2;
             Dexterity = 15;
@@ -35,8 +35,8 @@ namespace WoMInterface.Game.Model
 
             NaturalArmor = 2;
 
-            HitPointDice = dice.Roll(new int[] { 1, 8, 0 });
-            CurrentHitPoints = MaxHitPoints;
+            HitPointDiceRollEvent = new int[] { 1, 8, 0 };
+            HitPointDice = 8;
 
             BaseAttackBonus = 0;
 
@@ -62,7 +62,7 @@ namespace WoMInterface.Game.Model
         // - ECOLOGY
         // Environment: cold or temperate forests
         // Organization: solitary, pair, or pack(3–12)
-        public Wolf(Dice dice) : base("Wolf", 1, SizeType.MEDIUM, MonsterType.ANIMALS, 400, null)
+        public Wolf() : base("Wolf", 1, SizeType.MEDIUM, MonsterType.ANIMALS, 400, null)
         {
             Strength = 13;
             Dexterity = 15;
@@ -73,9 +73,9 @@ namespace WoMInterface.Game.Model
 
             NaturalArmor = 2;
 
-            HitPointDice = dice.Roll(new int[] { 2, 8, 0, 4});
-            CurrentHitPoints = MaxHitPoints;
-
+            HitPointDiceRollEvent = new int[] { 2, 8, 0, 4 };
+            HitPointDice = 20;
+            
             BaseAttackBonus = 1;
 
             Equipment.BaseWeapon = new Weapon("Bite", new int[] { 1, 6, 0});

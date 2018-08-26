@@ -3,26 +3,26 @@ using WoMInterface.Game.Interaction;
 using WoMInterface.Game.Model;
 using WoMInterface.Game.Random;
 using WoMInterface.Game.Combat;
+using System.Collections.Generic;
 
 namespace WoMInterface.Game.Generator
 {
     public class AdventureGenerator
     {
-        public static Adventure Create(Shift generatorShift, AdventureAction adventureAction, Mogwai mogwai)
+        public static Adventure Create(Shift generatorShift, AdventureAction adventureAction)
         {
             switch (adventureAction.AdventureType)
             {
                 case Enums.AdventureType.TEST_ROOM:
-                    return CreateTestRoom(adventureAction.ChallengeRating, mogwai, generatorShift);
+                    return CreateTestRoom(adventureAction.ChallengeRating);
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private static TestRoom CreateTestRoom(int challengeRating, Mogwai mogwai, Shift shift)
+        private static TestRoom CreateTestRoom(int challengeRatingt)
         {
-            Dice monsterDice = new Dice(shift, 1);
-            SimpleFight simpleFight = new SimpleFight(mogwai, shift.MogwaiDice, new Rat(monsterDice), monsterDice);
+            SimpleFight simpleFight = new SimpleFight(new List<Monster> {new Rat()});
             TestRoom testRoom = new TestRoom(simpleFight);
             return testRoom;
         }

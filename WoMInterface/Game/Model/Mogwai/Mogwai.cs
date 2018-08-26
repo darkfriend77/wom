@@ -118,12 +118,22 @@ namespace WoMInterface.Game.Model
                     AddExp(Experience.GetExp(CurrentLevel, shift));
                 }
 
+                // we go for the adventure if there is one up
+                if (Adventure != null && Adventure.IsActive)
+                {
+                    Adventure.NextStep(this, shift);
+                    continue;
+                }
+
+                Adventure = null;
+
+
                 if (!shift.IsSmallShift)
                 {
                     switch (shift.Interaction.InteractionType)
                     {
                         case InteractionType.ADVENTURE:
-                            Adventure = AdventureGenerator.Create(shift, (AdventureAction) shift.Interaction, this);
+                            Adventure = AdventureGenerator.Create(shift, (AdventureAction) shift.Interaction);
                             break;
                         default:
                             break;

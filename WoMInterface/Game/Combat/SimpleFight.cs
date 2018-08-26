@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMInterface.Game.Interaction;
 using WoMInterface.Game.Model;
 using WoMInterface.Game.Random;
 using WoMInterface.Tool;
@@ -13,30 +14,65 @@ namespace WoMInterface.Game.Combat
     {
         private int maxRounds;
 
-        private List<Fighter> InititiveOrder;
+        private List<Fighter> inititiveOrder;
+
+        private List<Monster> monsters;
 
         private int currentRound;
 
-        public SimpleFight(Mogwai mogwai, Dice mogwaiDice, Monster monster, Dice monsterDice, int maxRounds = 50)
+        public SimpleFight(List<Monster> monsters, int maxRounds = 50)
         {
+            this.monsters = monsters;
             this.maxRounds = maxRounds;
 
-            InititiveOrder = new List<Fighter>() {
+            inititiveOrder = new List<Fighter>();
 
-                new Fighter(mogwai) {
-                    IsHero = true,
-                    InititativeValue = mogwai.InitiativeRoll(mogwaiDice),
-                    Dice = mogwaiDice,
-                    Enemies = new List<Entity> { monster } },
+            //    new Fighter(mogwai) {
+            //        IsHero = true,
+            //        InititativeValue = mogwai.InitiativeRoll(mogwaiDice),
+            //        Dice = mogwaiDice,
+            //        Enemies = new List<Entity> { monster } },
 
-                new Fighter(monster) {
-                    InititativeValue = monster.InitiativeRoll(monsterDice),
-                    Dice = monsterDice,
-                    Enemies = new List<Entity> { mogwai }
-                }
+            //    new Fighter(monster) {
+            //        InititativeValue = monster.InitiativeRoll(monsterDice),
+            //        Dice = monsterDice,
+            //        Enemies = new List<Entity> { mogwai }
+            //    }
+            //};
+
+            //inititiveOrder.OrderBy(s => s.InititativeValue).ThenBy(s => s.Entity.Dexterity);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public void Create(Mogwai mogwai, Shift shift)
+        {
+            int m = 1;
+            foreach (var monster in monsters)
+            {
+                Dice dice = new Dice(shift, m);
+                monster.Create(dice);
+                inititiveOrder.Add(
+                    new Fighter(monster)
+                    {
+                        InititativeValue = monster.InitiativeRoll(dice),
+                        Dice = dice,
+                        Enemies = new List<Entity> { mogwai }
+                    });
             };
 
-            InititiveOrder.OrderBy(s => s.InititativeValue).ThenBy(s => s.Entity.Dexterity);
+            inititiveOrder.Add(
+                new Fighter(mogwai)
+                {
+                    IsHero = true,
+                    InititativeValue = mogwai.InitiativeRoll(shift.MogwaiDice),
+                    Dice = shift.MogwaiDice,
+                    Enemies = monsters.Select(p => p as Entity).ToList()
+                });
+
+            inititiveOrder.OrderBy(s => s.InititativeValue).ThenBy(s => s.Entity.Dexterity);
         }
 
         /// <summary>
@@ -45,8 +81,8 @@ namespace WoMInterface.Game.Combat
         /// <returns></returns>
         public bool Run()
         {
-            var hero = InititiveOrder.Where(p => p.IsHero).First();
-            var sheep = InititiveOrder.Where(p => !p.IsHero).First();
+            var hero = inititiveOrder.Where(p => p.IsHero).First();
+            var sheep = inititiveOrder.Where(p => !p.IsHero).First();
             CommandLine.InGameMessage($"SimpleFight: {hero.Entity.Name}[{hero.InititativeValue},{hero.Entity.Dexterity}] vs. {sheep.Entity.Name}[{sheep.InititativeValue},{sheep.Entity.Dexterity}]", ConsoleColor.Cyan, true);
             // let's start the rounds ...
             Fighter winner = null;
@@ -54,7 +90,7 @@ namespace WoMInterface.Game.Combat
             {
                 CommandLine.InGameMessage($"ROUND [{currentRound}] --------", ConsoleColor.Green, true);
 
-                foreach (var combatant in InititiveOrder)
+                foreach (var combatant in inititiveOrder)
                 {
                     if (combatant.Entity.CurrentHitPoints < 1)
                     {
@@ -135,7 +171,8 @@ namespace WoMInterface.Game.Combat
             CommandLine.InGameMessage($" for the victory.", ConsoleColor.Cyan, true);
 
             // award experience for each killed enemy
-            enemies.ForEach(p => {
+            enemies.ForEach(p =>
+            {
                 if (p is Monster)
                 {
                     int expReward = ((Monster)p).Experience;
@@ -143,7 +180,7 @@ namespace WoMInterface.Game.Combat
                     CommandLine.InGameMessage($"{p.Name}", ConsoleColor.DarkGray);
                     CommandLine.InGameMessage($" gave you ");
                     CommandLine.InGameMessage($"+{expReward}", ConsoleColor.Green);
-                    CommandLine.InGameMessage($" winner, no loser, this fight was a draw!", ConsoleColor.Cyan, true);
+                    CommandLine.InGameMessage($"!", ConsoleColor.Cyan, true);
                     mogwai.AddExp(expReward);
                 }
             });
@@ -157,11 +194,12 @@ namespace WoMInterface.Game.Combat
         internal void Loot(Mogwai mogwai, List<Entity> enemies)
         {
             // award experience for each killed enemy
-            enemies.ForEach(p => {
+            enemies.ForEach(p =>
+            {
                 if (p is Monster)
                 {
                     Treasure treasure = ((Monster)p).Treasure;
-                    CommandLine.InGameMessage($"Lootting the ");
+                    CommandLine.InGameMessage($"Looting the ");
                     CommandLine.InGameMessage($"{p.Name}", ConsoleColor.DarkGray);
                     CommandLine.InGameMessage($" he has ");
                     if (treasure != null)
@@ -172,7 +210,7 @@ namespace WoMInterface.Game.Combat
                     {
                         CommandLine.InGameMessage($"no Treasure", ConsoleColor.Red);
                     }
-                    
+
                     CommandLine.InGameMessage($"!", true);
                 }
             });

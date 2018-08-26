@@ -1,5 +1,6 @@
 ﻿using WoMInterface.Game.Combat;
 using WoMInterface.Game.Interaction;
+using WoMInterface.Game.Model;
 
 namespace WoMInterface.Game.Generator
 {
@@ -7,12 +8,14 @@ namespace WoMInterface.Game.Generator
     {
         public AdventureState AdventureState { get; set; }
 
+        public bool IsActive => AdventureState == AdventureState.CREATION || AdventureState == AdventureState.RUNNING;
+
         public Adventure()
         {
             AdventureState = AdventureState.CREATION;
         }
 
-        public abstract void NextStep(Shift shift);
+        public abstract void NextStep(Mogwai mogwai, Shift shift);
     }
 
     public class TestRoom : Adventure
@@ -24,10 +27,14 @@ namespace WoMInterface.Game.Generator
             this.simpleFight = simpleFight;
         }
 
-        public override void NextStep(Shift shift)
+        public override void NextStep(Mogwai mogwai, Shift shift)
         {
-            AdventureState = AdventureState.RUNNING;
-
+            if (AdventureState == AdventureState.CREATION)
+            {
+                simpleFight.Create(mogwai, shift);
+                AdventureState = AdventureState.RUNNING;
+            }
+            
             if (!simpleFight.Run())
             {
                 AdventureState = AdventureState.FAILED;

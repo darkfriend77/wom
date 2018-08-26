@@ -361,7 +361,7 @@ namespace WoMInterface.Tool
             {
                 var key = keyValue.Key;
                 var unspent = Blockchain.Instance.UnspendFunds(key, out List<ListUnspentResponse> listUnspent);
-                var created = Blockchain.Instance.TryGetMogwai(key, true, out Mogwai mogwai);
+                var created = Blockchain.Instance.TryGetMogwai(key, false, out Mogwai mogwai);
                 ConsoleResponse($"| {string.Format("{0,34}", key)} | {string.Format("{0,5}", created)} | {string.Format("{0,5}", mogwai == null ? 0 : mogwai.CurrentLevel)} | {string.Format("{0:###0.0000}", unspent).PadLeft(10).Substring(0, 10)} |");
                 ConsoleResponse(defaultStr);
             }
@@ -382,10 +382,8 @@ namespace WoMInterface.Tool
                 "9679a3d39efdf8faa019410250fa91647a76cbb1bd2fd1c5d7ba80551b4edd7b",
                 1.00m,
                 0.0001m);
-            Dice mogwaiDice = new Dice(shift);
-            Dice monsterDice = new Dice(shift, 2);
-            Monster monster = new Rat(monsterDice);
-            SimpleFight combat = new SimpleFight(currentMogwai, mogwaiDice, monster, monsterDice);
+            SimpleFight combat = new SimpleFight(new List<Monster>() { new Rat() });
+            combat.Create(currentMogwai, shift);
             combat.Run();
         }
 

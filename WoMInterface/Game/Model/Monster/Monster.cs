@@ -30,5 +30,11 @@ namespace WoMInterface.Game.Model
             Treasure = treasure;
 
         }
+
+        public void Create(Dice dice)
+        {
+            HitPointDice = dice.Roll(HitPointDiceRollEvent);
+            CurrentHitPoints = MaxHitPoints;
+        }
     }
 }
