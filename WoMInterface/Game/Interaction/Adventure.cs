@@ -12,20 +12,35 @@ namespace WoMInterface.Game.Interaction
     {
         public AdventureType AdventureType { get; }
 
-        public DifficultyType Difficulty { get; }
+        public int ChallengeRating { get; }
+
+        public DifficultyType DifficultyType { get; }
 
         public int AveragePartyLevel { get; }
 
-        public int ChallengeRating => AveragePartyLevel + (int) Difficulty;
-
-        public Adventure(AdventureType adventureType, DifficultyType difficulty, int averagePartyLevel) : base(InteractionType.ADVENTURE)
+        public Adventure(AdventureType adventureType, DifficultyType difficultyType, int averagePartyLevel) : base(InteractionType.ADVENTURE)
         {
             AdventureType = adventureType;
-            Difficulty = difficulty;
+            ChallengeRating = averagePartyLevel + (int)difficultyType;
+            DifficultyType = difficultyType;
             AveragePartyLevel = averagePartyLevel;
-            ParamAdd1 = ((int)AdventureType * 1000) + ChallengeRating;
-            ParamAdd2 = 1234;
+            ParamAdd1 = ((int)adventureType * 1000) + ChallengeRating;
+            // not really used, but can be freed later ...
+            ParamAdd2 = ((int)difficultyType * 1000) + averagePartyLevel;
         }
 
+        public Adventure(int paramAdd1, int paramAdd2) : base(InteractionType.ADVENTURE)
+        {
+            string param1 = paramAdd1.ToString("0000");
+            AdventureType = (AdventureType ) int.Parse(param1.Substring(0, 1));
+            ChallengeRating = int.Parse(param1.Substring(1));
+
+            string param2 = paramAdd2.ToString("0000");
+            DifficultyType = (DifficultyType ) int.Parse(param2.Substring(0, 1));
+            AveragePartyLevel = int.Parse(param2.Substring(1));
+
+            ParamAdd1 = paramAdd1;
+            ParamAdd2 = paramAdd2;
+        }
     }
 }

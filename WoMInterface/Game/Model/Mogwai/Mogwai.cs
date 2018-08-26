@@ -84,7 +84,7 @@ namespace WoMInterface.Game.Model
 
         }
 
-        public void Evolve(int blockHeight = 0, bool verbose = false)
+        public void Evolve(int blockHeight = 0)
         {
             int oldPointer = Pointer;
 
@@ -135,8 +135,7 @@ namespace WoMInterface.Game.Model
         {
             CommandLine.InGameMessage($"You just earned ");
             CommandLine.InGameMessage($"+{exp}", ConsoleColor.Green);
-            CommandLine.InGameMessage($" experience!");
-            Console.WriteLine();
+            CommandLine.InGameMessage($" experience!", true);
 
             Exp += exp;
 
@@ -157,8 +156,7 @@ namespace WoMInterface.Game.Model
             CommandLine.InGameMessage($"You're mogwai suddenly feels an ancient power around him.", ConsoleColor.Yellow, true);
             CommandLine.InGameMessage($"Congratulations he just made the ", ConsoleColor.Yellow);
             CommandLine.InGameMessage($"{CurrentLevel}", ConsoleColor.Green);
-            CommandLine.InGameMessage($" th level!", ConsoleColor.Yellow);
-            Console.WriteLine();
+            CommandLine.InGameMessage($" th level!", ConsoleColor.Yellow, true);
 
             // hit points roll
             HitPointLevelRolls.Add(shift.Dice.Roll(HitPointDice));

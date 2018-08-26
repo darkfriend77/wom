@@ -67,7 +67,9 @@ namespace WoMInterface.Tool
 
         private static readonly Lazy<CommandLine> _lazyInstance = new Lazy<CommandLine>(() => new CommandLine());
 
-        private MogwaisDB MogwaisCache => Blockchain.Instance.CachingService.MogwaisCache;
+        private CachingService CachingService => Blockchain.Instance.CachingService;
+
+        private static bool InGameMessageVerbose = true;
 
         public Mogwai currentMogwai;
 
@@ -203,8 +205,10 @@ namespace WoMInterface.Tool
             string[] strArray = line.Split(' ');
             if (strArray[0].Equals("update"))
             {
+                int oldPointer = currentMogwai.Pointer;
                 currentMogwai.Evolve();
-                MogwaisCache.Update(currentMogwai);
+                CachingService.MogwaisCache.Update(currentMogwai);
+                CachingService.Persist(false, true);
             }
             else if (strArray.Count() == 2 && strArray[1].Equals("restart"))
             {
@@ -381,9 +385,11 @@ namespace WoMInterface.Tool
                     {
                         ColorWriteLine(str, ConsoleColor.DarkCyan);
                     }
-                    ConsoleResponse($"You've choosen {mogwai.Name} [{mogwai.CurrentLevel}]!");
                     currentMogwai = mogwai;
-                    mogwai.Evolve(MogwaisCache.Pointer(currentMogwai), false);
+                    InGameMessageVerbose = false;
+                    mogwai.Evolve(CachingService.MogwaisCache.Pointer(currentMogwai));
+                    InGameMessageVerbose = true;
+                    ConsoleResponse($"You've choosen {mogwai.Name} [{mogwai.CurrentLevel}]! pointer: {mogwai.Pointer}");
                 }
                 else
                 {
@@ -461,6 +467,11 @@ namespace WoMInterface.Tool
         }
         public static void InGameMessage(string value, ConsoleColor foreground, ConsoleColor background, bool line)
         {
+            if (!InGameMessageVerbose)
+            {
+                return;
+            }
+
             //
             // This method writes an entire line to the console with the string.
             //

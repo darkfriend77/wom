@@ -20,9 +20,9 @@ namespace WoMInterface
     {
         static void Main(string[] args)
         {
-            CommandLine.Instance.Start();
+            //CommandLine.Instance.Start();
 
-            //Test();
+            Test();
         }
 
         static void Test()

@@ -58,8 +58,8 @@ namespace WoMInterface.Game.Combat
                     CommandLine.InGameMessage($"-> TURN");
                     CommandLine.InGameMessage($" - [{combatant.Entity.Name}, HP:");
                     CommandLine.InGameMessage($"{combatant.Entity.CurrentHitPoints}", combatant.Entity.CurrentHitPoints > 0 ? ConsoleColor.Green : ConsoleColor.Red);
-                    CommandLine.InGameMessage($"]");
-                    Console.WriteLine();
+                    CommandLine.InGameMessage($"]", true);
+
                     int attack = combatant.Entity.AttackRoll(combatant.Dice);
                     CommandLine.InGameMessage($"   attacking with [");
                     CommandLine.InGameMessage($"{combatant.Entity.Equipment.PrimaryWeapon.Name}", ConsoleColor.Gray);
@@ -67,8 +67,8 @@ namespace WoMInterface.Game.Combat
                     CommandLine.InGameMessage($"{target.ArmorClass}", ConsoleColor.Yellow);
                     CommandLine.InGameMessage($"] with ");
                     CommandLine.InGameMessage($"{attack}", ConsoleColor.Yellow);
-                    CommandLine.InGameMessage($" roll!");
-                    Console.WriteLine();
+                    CommandLine.InGameMessage($" roll!", true);
+
                     if (attack > target.ArmorClass)
                     {
                         int damage = combatant.Entity.DamageRoll(combatant.Dice);
@@ -77,15 +77,13 @@ namespace WoMInterface.Game.Combat
                         CommandLine.InGameMessage($"{target.CurrentHitPoints}", target.CurrentHitPoints > 0 ? ConsoleColor.Green : ConsoleColor.Red);
                         CommandLine.InGameMessage($"] for ");
                         CommandLine.InGameMessage($"-{damage}", ConsoleColor.Red);
-                        CommandLine.InGameMessage($" damage!");
-                        Console.WriteLine();
+                        CommandLine.InGameMessage($" damage!", true);
                         target.CurrentHitPoints -= damage;
                     }
                     else
                     {
                         CommandLine.InGameMessage($"   failed ", ConsoleColor.Red);
-                        CommandLine.InGameMessage($"to attack target[{target.Name}]!");
-                        Console.WriteLine();
+                        CommandLine.InGameMessage($"to attack target[{target.Name}]!", true);
                     }
 
                     if (!combatant.Enemies.Exists(p => p.CurrentHitPoints > 0))

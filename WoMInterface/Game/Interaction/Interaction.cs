@@ -33,5 +33,46 @@ namespace WoMInterface.Game.Interaction
         {
             return decimal.Parse("0." + ParamAdd2.ToString().PadLeft(8, '0'));
         }
+
+        public static Interaction GetInteraction(decimal amount, decimal fee)
+        {
+            string parm1 = (amount - fee).ToString("0.00000000").Split('.')[1];
+            CostType costType = (CostType) int.Parse(parm1.Substring(0, 2));
+            InteractionType interactionType = (InteractionType) int.Parse(parm1.Substring(2, 2));
+            int addParam1 = int.Parse(parm1.Substring(4, 4));
+            int addParam2 = int.Parse(fee.ToString("0.00000000").Split('.')[1].Substring(4, 4));
+            switch (interactionType)
+            {
+                case InteractionType.NONE:
+                    throw new NotImplementedException();
+
+                case InteractionType.CREATION:
+                    throw new NotImplementedException();
+
+                case InteractionType.MODIFICATION:
+                    throw new NotImplementedException();
+
+                case InteractionType.LEVELING:
+                    throw new NotImplementedException();
+
+                case InteractionType.ADVENTURE:
+                    return new Adventure(addParam1, addParam2);
+
+                case InteractionType.DUELL:
+                    throw new NotImplementedException();
+
+                case InteractionType.BREEDING:
+                    throw new NotImplementedException();
+
+                case InteractionType.LOOTING:
+                    throw new NotImplementedException();
+
+                case InteractionType.UNDEFINED:
+                    throw new NotImplementedException();
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
     }
 }
