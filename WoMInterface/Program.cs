@@ -42,7 +42,7 @@ namespace WoMInterface
             Console.WriteLine($"- addParm:    {addParm}");
             Console.WriteLine($"- saveParm:   {saveParm}");
 
-            Adventure adventure = new Adventure(AdventureType.CHAMBER, DifficultyType.CHALLENGING, 2);
+            AdventureAction adventure = new AdventureAction(AdventureType.CHAMBER, DifficultyType.CHALLENGING, 2);
             Console.WriteLine($"Value1: {adventure.GetValue1()}");
             Console.WriteLine($"Value2: {adventure.GetValue2()}");
 

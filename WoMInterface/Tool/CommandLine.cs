@@ -6,16 +6,12 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using WoMInterface.Game.Model;
-using WoMInterface.Game.Combat;
 using WoMInterface.Node;
-using WoMInterface.Game;
 using WoMInterface.Game.Random;
 using WoMInterface.Game.Interaction;
-using static WoMInterface.Tool.CachingService;
 using WoMInterface.Game.Enums;
+using WoMInterface.Game.Combat;
 
 namespace WoMInterface.Tool
 {
@@ -211,7 +207,7 @@ namespace WoMInterface.Tool
             if (strArray.Count() == 3 && Enum.TryParse<AdventureType>(strArray[1], out AdventureType adventureType) 
                 && Enum.TryParse<DifficultyType>(strArray[2], out DifficultyType difficultyType))
             {
-                Blockchain.Instance.SendInteraction(currentMogwai.Key, new Adventure(adventureType, difficultyType, currentMogwai.CurrentLevel));
+                Blockchain.Instance.SendInteraction(currentMogwai.Key, new AdventureAction(adventureType, difficultyType, currentMogwai.CurrentLevel));
 
             }
             else
@@ -389,8 +385,8 @@ namespace WoMInterface.Tool
             Dice mogwaiDice = new Dice(shift);
             Dice monsterDice = new Dice(shift, 2);
             Monster monster = new Rat(monsterDice);
-            Combat combat = new Combat(currentMogwai, mogwaiDice, monster, monsterDice);
-            combat.Start();
+            SimpleFight combat = new SimpleFight(currentMogwai, mogwaiDice, monster, monsterDice);
+            combat.Run();
         }
 
         /// <summary>

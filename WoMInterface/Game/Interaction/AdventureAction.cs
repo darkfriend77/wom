@@ -8,7 +8,7 @@ using WoMInterface.Game.Enums;
 namespace WoMInterface.Game.Interaction
 {
 
-    public class Adventure : Interaction
+    public class AdventureAction : Interaction
     {
         public AdventureType AdventureType { get; }
 
@@ -18,7 +18,7 @@ namespace WoMInterface.Game.Interaction
 
         public int AveragePartyLevel { get; }
 
-        public Adventure(AdventureType adventureType, DifficultyType difficultyType, int averagePartyLevel) : base(InteractionType.ADVENTURE)
+        public AdventureAction(AdventureType adventureType, DifficultyType difficultyType, int averagePartyLevel) : base(InteractionType.ADVENTURE)
         {
             AdventureType = adventureType;
             ChallengeRating = averagePartyLevel + (int)difficultyType;
@@ -29,12 +29,12 @@ namespace WoMInterface.Game.Interaction
             ParamAdd2 = ((int)difficultyType * 1000) + averagePartyLevel;
         }
 
-        public static bool TryGetAdventure(int paramAdd1, int paramAdd2, out Adventure adventure)
+        public static bool TryGetAdventure(int paramAdd1, int paramAdd2, out AdventureAction adventure)
         {
             if (Enum.IsDefined(typeof(AdventureType), int.Parse(paramAdd1.ToString("0000").Substring(0, 1)))
              && Enum.IsDefined(typeof(DifficultyType), int.Parse(paramAdd2.ToString("0000").Substring(0, 1))))
             {
-                adventure = new Adventure(paramAdd1, paramAdd2);
+                adventure = new AdventureAction(paramAdd1, paramAdd2);
                 return true;
             }
 
@@ -42,7 +42,7 @@ namespace WoMInterface.Game.Interaction
             return false;
         }
 
-        private Adventure(int paramAdd1, int paramAdd2) : base(InteractionType.ADVENTURE)
+        private AdventureAction(int paramAdd1, int paramAdd2) : base(InteractionType.ADVENTURE)
         {
             string param1 = paramAdd1.ToString("0000");
             AdventureType = (AdventureType)int.Parse(param1.Substring(0, 1));

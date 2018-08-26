@@ -17,16 +17,15 @@ namespace WoMInterface.Game.Interaction.Tests
             //string costType = parm1.Substring(0, 2);
             //string actionType = parm1.Substring(2, 2);
             //string addParm = parm1.Substring(4, 4);
-            decimal txFee = 0.0001m;
 
-            Adventure adventure1 = new Adventure(AdventureType.TEST_ROOM, DifficultyType.CHALLENGING, 2);
+            AdventureAction adventure1 = new AdventureAction(AdventureType.TEST_ROOM, DifficultyType.CHALLENGING, 2);
             Assert.AreEqual(0.01040003m, adventure1.GetValue1());
             Assert.AreEqual(0.00001002m, adventure1.GetValue2());
 
             decimal amount = adventure1.GetValue1();
             decimal fee = adventure1.GetValue2();
 
-            Adventure adventure2 = (Adventure) Interaction.GetInteraction(amount, fee);
+            AdventureAction adventure2 = (AdventureAction) Interaction.GetInteraction(amount, fee);
             Assert.AreEqual(0.01040003m, adventure2.GetValue1());
             Assert.AreEqual(0.00001002m, adventure2.GetValue2());
 
@@ -41,7 +40,7 @@ namespace WoMInterface.Game.Interaction.Tests
         }
 
         [TestMethod]
-        public void AdventureInteraction()
+        public void AdventureActionInteraction()
         {
             // Adventure adventure1 = new Adventure(AdventureType.TEST_ROOM, DifficultyType.CHALLENGING, 2);
 
@@ -57,9 +56,9 @@ namespace WoMInterface.Game.Interaction.Tests
 
 
             Assert.AreEqual(shift.Interaction.InteractionType, InteractionType.ADVENTURE);
-            Assert.AreEqual(((Adventure)shift.Interaction).AdventureType, AdventureType.TEST_ROOM);
-            Assert.AreEqual(((Adventure)shift.Interaction).DifficultyType, DifficultyType.CHALLENGING);
-            Assert.AreEqual(((Adventure)shift.Interaction).AveragePartyLevel, 2);
+            Assert.AreEqual(((AdventureAction)shift.Interaction).AdventureType, AdventureType.TEST_ROOM);
+            Assert.AreEqual(((AdventureAction)shift.Interaction).DifficultyType, DifficultyType.CHALLENGING);
+            Assert.AreEqual(((AdventureAction)shift.Interaction).AveragePartyLevel, 2);
         }
     }
 }

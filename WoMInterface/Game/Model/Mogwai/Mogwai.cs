@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using WoMInterface.Game.Generator;
 using WoMInterface.Game.Enums;
 using WoMInterface.Game.Interaction;
 using WoMInterface.Tool;
@@ -15,7 +16,7 @@ namespace WoMInterface.Game.Model
 
         private readonly int blockHeight;
 
-
+        private Shift currentShift;
         private List<Shift> Shifts { get; }
 
         public MogwaiState MogwaiState { get; set; }
@@ -40,6 +41,8 @@ namespace WoMInterface.Game.Model
 
         public double XpToLevelUp => CurrentLevel * 1000;
 
+        public Adventure Adventure { get; set; }
+
         public Mogwai(string key, List<Shift> shifts)
         {
             Key = key;
@@ -60,13 +63,13 @@ namespace WoMInterface.Game.Model
 
             // create abilities
             int[] rollEvent = new int[] {4,6,3};
-            Gender = creationShift.Dice.Roll(2, -1);
-            Strength = creationShift.Dice.Roll(rollEvent);
-            Dexterity = creationShift.Dice.Roll(rollEvent);
-            Constitution = creationShift.Dice.Roll(rollEvent);
-            Inteligence = creationShift.Dice.Roll(rollEvent);
-            Wisdom = creationShift.Dice.Roll(rollEvent);
-            Charisma = creationShift.Dice.Roll(rollEvent);
+            Gender = creationShift.MogwaiDice.Roll(2, -1);
+            Strength = creationShift.MogwaiDice.Roll(rollEvent);
+            Dexterity = creationShift.MogwaiDice.Roll(rollEvent);
+            Constitution = creationShift.MogwaiDice.Roll(rollEvent);
+            Inteligence = creationShift.MogwaiDice.Roll(rollEvent);
+            Wisdom = creationShift.MogwaiDice.Roll(rollEvent);
+            Charisma = creationShift.MogwaiDice.Roll(rollEvent);
 
             NaturalArmor = 0;
             SizeType = SizeType.MEDIUM;
@@ -90,6 +93,9 @@ namespace WoMInterface.Game.Model
 
             foreach(var shift in Shifts)
             {
+                // set current shift to the actual shift we process
+                currentShift = shift;
+
                 // only evolve to the target block height
                 if (blockHeight != 0 && shift.Height > blockHeight)
                 {
@@ -109,12 +115,19 @@ namespace WoMInterface.Game.Model
                 double lazyExp = Experience.GetExp(CurrentLevel, shift);
                 if (lazyExp > 0)
                 {
-                    AddExp(Experience.GetExp(CurrentLevel, shift), shift);
+                    AddExp(Experience.GetExp(CurrentLevel, shift));
                 }
 
                 if (!shift.IsSmallShift)
                 {
-                    //Console.WriteLine(shift.ToString());
+                    switch (shift.Interaction.InteractionType)
+                    {
+                        case InteractionType.ADVENTURE:
+                            Adventure = AdventureGenerator.Create(shift, (AdventureAction) shift.Interaction, this);
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
                 // lazy health regeneration
@@ -129,6 +142,9 @@ namespace WoMInterface.Game.Model
                 }
             }
 
+            // no more shifts to proccess
+            currentShift = null;
+
             CommandLine.InGameMessage($"Evolved {Name} from ");
             CommandLine.InGameMessage($"{oldPointer}", ConsoleColor.Green);
             CommandLine.InGameMessage($" to ");
@@ -136,7 +152,7 @@ namespace WoMInterface.Game.Model
             CommandLine.InGameMessage($"!", true);
         }
 
-        public void AddExp(double exp, Shift shift)
+        public void AddExp(double exp)
         {
             CommandLine.InGameMessage($"You just earned ");
             CommandLine.InGameMessage($"+{exp}", ConsoleColor.Green);
@@ -147,8 +163,8 @@ namespace WoMInterface.Game.Model
             if (Exp >= XpToLevelUp)
             {
                 CurrentLevel += 1;
-                LevelShifts.Add(CurrentLevel, shift);
-                LevelUp(shift);
+                LevelShifts.Add(CurrentLevel, currentShift);
+                LevelUp(currentShift);
             }
         }
 
@@ -164,7 +180,7 @@ namespace WoMInterface.Game.Model
             CommandLine.InGameMessage($" th level!", ConsoleColor.Yellow, true);
 
             // hit points roll
-            HitPointLevelRolls.Add(shift.Dice.Roll(HitPointDice));
+            HitPointLevelRolls.Add(shift.MogwaiDice.Roll(HitPointDice));
             
             // leveling up will heal you to max hitpoints
             CurrentHitPoints = MaxHitPoints;

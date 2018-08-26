@@ -105,21 +105,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game\Combat\Combatant.cs" />
+    <Compile Include="Game\Generator\Adventure.cs" />
+    <Compile Include="Game\Generator\AdventureGenerator.cs" />
+    <Compile Include="Game\Combat\Fighter.cs" />
     <Compile Include="Game\Enums\AdventureType.cs" />
     <Compile Include="Game\Enums\CostType.cs" />
     <Compile Include="Game\Enums\MogwaiState.cs" />
     <Compile Include="Game\Enums\InteractionType.cs" />
     <Compile Include="Game\Enums\SizeType.cs" />
-    <Compile Include="Game\Interaction\Adventure.cs" />
+    <Compile Include="Game\Generator\AdventureState.cs" />
+    <Compile Include="Game\Interaction\AdventureAction.cs" />
     <Compile Include="Game\Enums\Difficulty.cs" />
     <Compile Include="Game\Interaction\Interaction.cs" />
-    <Compile Include="Game\Interaction\Translate.cs" />
     <Compile Include="Game\Interaction\Unknown.cs" />
     <Compile Include="Game\Model\Attribute.cs" />
     <Compile Include="Game\Model\Mogwai\Body.cs" />
     <Compile Include="Game\Model\Mogwai\Coat.cs" />
-    <Compile Include="Game\Combat\Combat.cs" />
+    <Compile Include="Game\Combat\SimpleFight.cs" />
     <Compile Include="Game\Model\Entity.cs" />
     <Compile Include="Game\Model\Equipment\Equipment.cs" />
     <Compile Include="Game\Model\Mogwai\HexValue.cs" />

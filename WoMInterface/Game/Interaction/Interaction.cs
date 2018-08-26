@@ -51,7 +51,7 @@ namespace WoMInterface.Game.Interaction
                 switch (interactionType)
                 {
                     case InteractionType.ADVENTURE:
-                        if (Adventure.TryGetAdventure(addParam1, addParam2, out Adventure adventure))
+                        if (AdventureAction.TryGetAdventure(addParam1, addParam2, out AdventureAction adventure))
                         {
                             return adventure;
                         }
@@ -61,5 +61,6 @@ namespace WoMInterface.Game.Interaction
 
             return new Unknown();
         }
+
     }
 }

@@ -22,10 +22,10 @@ namespace WoMInterface.Game.Interaction
         public decimal Amount { get; }
         public decimal Fee { get; }
 
-        public bool IsSmallShift => TxHex == null;
+        public bool IsSmallShift => Interaction == null;
 
-        private Dice dice;
-        public Dice Dice => dice ?? (dice = new Dice(this));
+        private Dice mogwaiDice;
+        public Dice MogwaiDice => mogwaiDice ?? (mogwaiDice = new Dice(this));
 
         public Interaction Interaction { get; }
 
