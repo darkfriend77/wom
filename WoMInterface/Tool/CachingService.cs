@@ -5,12 +5,35 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using WoMInterface.Game.Model;
 
 namespace WoMInterface.Tool
 {
-    internal class CachingService
+    public class CachingService
     {
-        public class CacheDB
+        public class MogwaisDB
+        {
+            public Dictionary<string, int> MogwaiPointers = new Dictionary<string, int>();
+
+            internal void Update(Mogwai mogwai)
+            {
+                MogwaiPointers[mogwai.Key] = mogwai.Pointer;
+            }
+
+            internal int Pointer(Mogwai mogwai)
+            {
+                if (MogwaiPointers.ContainsKey(mogwai.Key))
+                {
+                    return MogwaiPointers[mogwai.Key];
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public class BlockHashDB
         {
             public Dictionary<int, string> BlockHashDict = new Dictionary<int, string>();
 
@@ -24,49 +47,91 @@ namespace WoMInterface.Tool
 
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const string pathCacheDBFile = "cache.db";
+        private const string pathBlockHashDBFile = "blockhash.db";
 
-        private CacheDB _cacheDB;
-        public CacheDB Cache { get { return _cacheDB; } set { _cacheDB = value; } }
+        private const string pathMogwaisDBFile = "mogwais.db";
+
+        private BlockHashDB _blockHashDB;
+        public BlockHashDB BlockHashCache { get { return _blockHashDB; } set { _blockHashDB = value; } }
+
+        private MogwaisDB _mogwaisDB;
+        public MogwaisDB MogwaisCache { get { return _mogwaisDB; } set { _mogwaisDB = value; } }
 
         public CachingService()
         {
-            if (!TryReadCacheDBFile(out _cacheDB))
+            if (!TryReadDBFile<BlockHashDB>(pathBlockHashDBFile, out _blockHashDB))
             {
-                _cacheDB = new CacheDB();
+                _blockHashDB = new BlockHashDB();
             }
+
+            if (!TryReadDBFile<MogwaisDB>(pathMogwaisDBFile, out _mogwaisDB))
+            {
+                _mogwaisDB = new MogwaisDB();
+            }
+
         }
         public void EmptyCache()
         {
 
         }
 
-        public bool TryReadCacheDBFile(out CacheDB cacheDBObj)
+        public bool TryReadDBFile<T>(string pathDBFile, out T dBObj)
         {
-            if (!File.Exists(pathCacheDBFile))
+            dBObj = default(T);
+
+            if (!File.Exists(pathDBFile))
             {
-                cacheDBObj = null;
                 return false;
             }
 
             try
             {
-                var cacheDBstr = File.ReadAllText(pathCacheDBFile);
-                cacheDBObj = JsonConvert.DeserializeObject<CacheDB>(cacheDBstr);
+                var dBstr = File.ReadAllText(pathDBFile);
+                dBObj = JsonConvert.DeserializeObject<T>(dBstr);
                 return true;
             }
             catch (Exception e)
             {
-                _log.Error($"TryReadCacheDBFile: {e}");
-                cacheDBObj = null;
+                _log.Error($"TryDBFile[{dBObj.GetType()}]: {e}");
                 return false;
             }
         }
 
-        public void Persist()
+        //public bool TryReadBlockHashDBFile(out BlockHashDB blockHashDBObj)
+        //{
+        //    if (!File.Exists(pathBlockHashDBFile))
+        //    {
+        //        blockHashDBObj = null;
+        //        return false;
+        //    }
+
+        //    try
+        //    {
+        //        var blockHashDBstr = File.ReadAllText(pathBlockHashDBFile);
+        //        blockHashDBObj = JsonConvert.DeserializeObject<BlockHashDB>(blockHashDBstr);
+        //        return true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _log.Error($"TryReadBlockHashDBFile: {e}");
+        //        blockHashDBObj = null;
+        //        return false;
+        //    }
+        //}
+
+        public void Persist(bool blockhashdb, bool mogwaisdb)
         {
-            string cacheDBstr = JsonConvert.SerializeObject(_cacheDB);
-            File.WriteAllText(pathCacheDBFile, cacheDBstr);
+            if (blockhashdb)
+            {
+                string blockHashDBstr = JsonConvert.SerializeObject(_blockHashDB);
+                File.WriteAllText(pathBlockHashDBFile, blockHashDBstr);
+            }
+
+            if (mogwaisdb)
+            {
+                string mogwaisDBstr = JsonConvert.SerializeObject(_mogwaisDB);
+                File.WriteAllText(pathMogwaisDBFile, mogwaisDBstr);
+            }
         }
     }
 }

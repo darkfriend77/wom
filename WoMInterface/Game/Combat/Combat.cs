@@ -39,12 +39,12 @@ namespace WoMInterface.Game.Combat
         {
             var hero = InititiveOrder.Where(p => p.IsHero).First();
             var sheep = InititiveOrder.Where(p => !p.IsHero).First();
-            CommandLine.ColorWriteLine($"Shave combat: {hero.Entity.Name}[{hero.InititativeValue},{hero.Entity.Dexterity}] vs. {sheep.Entity.Name}[{sheep.InititativeValue},{sheep.Entity.Dexterity}]", ConsoleColor.Cyan);
+            CommandLine.InGameMessage($"Shave combat: {hero.Entity.Name}[{hero.InititativeValue},{hero.Entity.Dexterity}] vs. {sheep.Entity.Name}[{sheep.InititativeValue},{sheep.Entity.Dexterity}]", ConsoleColor.Cyan, true);
             // let's start the rounds ...
             Combatant winner = null;
             for (currentRound = 1; currentRound < maxRounds && winner == null; currentRound++)
             {
-                CommandLine.ColorWriteLine($"ROUND [{currentRound}] --------", ConsoleColor.Green);
+                CommandLine.InGameMessage($"ROUND [{currentRound}] --------", ConsoleColor.Green, true);
 
                 foreach (var combatant in InititiveOrder)
                 {
@@ -55,36 +55,36 @@ namespace WoMInterface.Game.Combat
 
                     Entity target = combatant.Enemies.Where(p => p.CurrentHitPoints > 0).FirstOrDefault();
 
-                    CommandLine.ColorWrite($"-> TURN");
-                    CommandLine.ColorWrite($" - [{combatant.Entity.Name}, HP:");
-                    CommandLine.ColorWrite($"{combatant.Entity.CurrentHitPoints}", combatant.Entity.CurrentHitPoints > 0 ? ConsoleColor.Green : ConsoleColor.Red);
-                    CommandLine.ColorWrite($"]");
+                    CommandLine.InGameMessage($"-> TURN");
+                    CommandLine.InGameMessage($" - [{combatant.Entity.Name}, HP:");
+                    CommandLine.InGameMessage($"{combatant.Entity.CurrentHitPoints}", combatant.Entity.CurrentHitPoints > 0 ? ConsoleColor.Green : ConsoleColor.Red);
+                    CommandLine.InGameMessage($"]");
                     Console.WriteLine();
                     int attack = combatant.Entity.AttackRoll(combatant.Dice);
-                    CommandLine.ColorWrite($"   attacking with [");
-                    CommandLine.ColorWrite($"{combatant.Entity.Equipment.PrimaryWeapon.Name}", ConsoleColor.Gray);
-                    CommandLine.ColorWrite($"] target[{target.Name}, AC:");
-                    CommandLine.ColorWrite($"{target.ArmorClass}", ConsoleColor.Yellow);
-                    CommandLine.ColorWrite($"] with ");
-                    CommandLine.ColorWrite($"{attack}", ConsoleColor.Yellow);
-                    CommandLine.ColorWrite($" roll!");
+                    CommandLine.InGameMessage($"   attacking with [");
+                    CommandLine.InGameMessage($"{combatant.Entity.Equipment.PrimaryWeapon.Name}", ConsoleColor.Gray);
+                    CommandLine.InGameMessage($"] target[{target.Name}, AC:");
+                    CommandLine.InGameMessage($"{target.ArmorClass}", ConsoleColor.Yellow);
+                    CommandLine.InGameMessage($"] with ");
+                    CommandLine.InGameMessage($"{attack}", ConsoleColor.Yellow);
+                    CommandLine.InGameMessage($" roll!");
                     Console.WriteLine();
                     if (attack > target.ArmorClass)
                     {
                         int damage = combatant.Entity.DamageRoll(combatant.Dice);
-                        CommandLine.ColorWrite($"   successful ", ConsoleColor.Yellow);
-                        CommandLine.ColorWrite($"hitting target[{target.Name}, HP:");
-                        CommandLine.ColorWrite($"{target.CurrentHitPoints}", target.CurrentHitPoints > 0 ? ConsoleColor.Green : ConsoleColor.Red);
-                        CommandLine.ColorWrite($"] for ");
-                        CommandLine.ColorWrite($"-{damage}", ConsoleColor.Red);
-                        CommandLine.ColorWrite($" damage!");
+                        CommandLine.InGameMessage($"   successful ", ConsoleColor.Yellow);
+                        CommandLine.InGameMessage($"hitting target[{target.Name}, HP:");
+                        CommandLine.InGameMessage($"{target.CurrentHitPoints}", target.CurrentHitPoints > 0 ? ConsoleColor.Green : ConsoleColor.Red);
+                        CommandLine.InGameMessage($"] for ");
+                        CommandLine.InGameMessage($"-{damage}", ConsoleColor.Red);
+                        CommandLine.InGameMessage($" damage!");
                         Console.WriteLine();
                         target.CurrentHitPoints -= damage;
                     }
                     else
                     {
-                        CommandLine.ColorWrite($"   failed ", ConsoleColor.Red);
-                        CommandLine.ColorWrite($"to attack target[{target.Name}]!");
+                        CommandLine.InGameMessage($"   failed ", ConsoleColor.Red);
+                        CommandLine.InGameMessage($"to attack target[{target.Name}]!");
                         Console.WriteLine();
                     }
 
@@ -98,11 +98,11 @@ namespace WoMInterface.Game.Combat
 
             if (winner != null)
             {
-                CommandLine.ColorWriteLine($"Combat is over! The winner is {winner.Entity.Name}", ConsoleColor.Cyan);
+                CommandLine.InGameMessage($"Combat is over! The winner is {winner.Entity.Name}", ConsoleColor.Cyan, true);
             }
             else
             {
-                CommandLine.ColorWriteLine($"No winner, no loser, this fight was a draw!", ConsoleColor.Cyan);
+                CommandLine.InGameMessage($"No winner, no loser, this fight was a draw!", ConsoleColor.Cyan, true);
             }
 
         }

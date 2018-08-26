@@ -34,9 +34,10 @@ namespace WoMInterface.Node
 
         private static Blockchain instance;
 
-        public static Blockchain Instance => instance == null ? instance = new Blockchain() : instance;
+        public static Blockchain Instance => instance ?? (instance = new Blockchain());
 
-        private CachingService cachingService = new CachingService(); 
+        private CachingService cachingService = new CachingService();
+        public CachingService CachingService => cachingService;
 
         public Blockchain(string daemonUrl, string rpcUsername, string rpcPassword, string walletPassword)
         {
@@ -59,7 +60,7 @@ namespace WoMInterface.Node
         internal void Exit()
         {
             Console.WriteLine("Persisting current cached informations.");
-            cachingService.Persist();
+            cachingService.Persist(true, true);
             Console.WriteLine("Stoping rpc service.");
             mogwaiService.Stop();
         }
@@ -73,7 +74,7 @@ namespace WoMInterface.Node
 
             uint blockcount = mogwaiService.GetBlockCount();
 
-            int maxBlockCached = clear ? 0 : cachingService.Cache.MaxBlockHash;
+            int maxBlockCached = clear ? 0 : cachingService.BlockHashCache.MaxBlockHash;
 
             for (int i = maxBlockCached + 1; i < blockcount; i++)
             {
@@ -83,13 +84,13 @@ namespace WoMInterface.Node
                 }
 
                 string blockHash = mogwaiService.GetBlockHash(i);
-                cachingService.Cache.BlockHashDict.Add(i, blockHash);
+                cachingService.BlockHashCache.BlockHashDict.Add(i, blockHash);
             }
 
             if (initial)
             {
                 progress.Update(100);
-                cachingService.Persist();
+                cachingService.Persist(true, false);
                 Console.WriteLine();
             }
         }
@@ -99,8 +100,9 @@ namespace WoMInterface.Node
         /// </summary>
         internal void CacheStats()
         {
-            Console.WriteLine($"Blockhashes: {cachingService.Cache.BlockHashDict.Count()}");
-            Console.WriteLine($"BlockHeight: {cachingService.Cache.MaxBlockHash} [curr:{mogwaiService.GetBlockCount()}]");
+            Console.WriteLine($"Blockhashes: {cachingService.BlockHashCache.BlockHashDict.Count()}");
+            Console.WriteLine($"BlockHeight: {cachingService.BlockHashCache.MaxBlockHash} [curr:{mogwaiService.GetBlockCount()}]");
+            Console.WriteLine($"MogwaiPointers: {cachingService.MogwaisCache.MogwaiPointers.Count()}");
         }
         /// <summary>
         /// 
@@ -115,9 +117,10 @@ namespace WoMInterface.Node
         /// 
         /// </summary>
         /// <param name="address"></param>
+        /// <param name="evolveShifts"></param>
         /// <param name="mogwai"></param>
         /// <returns></returns>
-        internal BoundState TryGetMogwai(string address, out Mogwai mogwai)
+        internal BoundState TryGetMogwai(string address, bool evolveShifts, out Mogwai mogwai)
         {
             mogwai = null;
 
@@ -131,6 +134,10 @@ namespace WoMInterface.Node
             if (boundState == BoundState.BOUND)
             {
                 mogwai = new Mogwai(address, shifts);
+                if (evolveShifts)
+                {
+                    mogwai.Evolve();
+                }
             }
 
             return boundState;
@@ -149,7 +156,7 @@ namespace WoMInterface.Node
 
             uint blockcount = mogwaiService.GetBlockCount();
 
-            if (cachingService.Cache.MaxBlockHash < blockcount)
+            if (cachingService.BlockHashCache.MaxBlockHash < blockcount)
             {
                 Cache(false, false);
             }
@@ -157,7 +164,7 @@ namespace WoMInterface.Node
             string blockHash;
             for (int i = fromBlockHeight; i < toBlockHeight; i++)
             {
-                if (!cachingService.Cache.BlockHashDict.TryGetValue(i, out blockHash))
+                if (!cachingService.BlockHashCache.BlockHashDict.TryGetValue(i, out blockHash))
                 {
                     return false;
                 }

@@ -15,11 +15,14 @@ namespace WoMInterface.Game.Model
 
         private readonly int blockHeight;
 
+
         private List<Shift> Shifts { get; }
 
         public MogwaiState MogwaiState { get; set; }
 
         public Dictionary<int, Shift> LevelShifts { get; }
+
+        public int Pointer { get; private set; }
 
         public string Key { get; }
 
@@ -46,6 +49,7 @@ namespace WoMInterface.Game.Model
             var creationShift = shifts[0];
 
             blockHeight = creationShift.Height;
+            Pointer = creationShift.Height;
 
             // create appearance           
             var hexValue = new HexValue(creationShift);
@@ -78,16 +82,35 @@ namespace WoMInterface.Game.Model
             HitPointDice = 8;
             CurrentHitPoints = MaxHitPoints;
 
-            // evolve
-            Evolve(shifts);
         }
 
-        private void Evolve(List<Shift> shifts)
+        public void Evolve(int blockHeight = 0, bool verbose = false)
         {
-            foreach(var shift in shifts.Skip(1))
+            int oldPointer = Pointer;
+
+            foreach(var shift in Shifts)
             {
+                // only evolve to the target block height
+                if (blockHeight != 0 && shift.Height > blockHeight)
+                {
+                    break;
+                }
+
+                // only proccess shifts that aren't proccessed before ...
+                if (shift.Height <= Pointer)
+                {
+                    continue;
+                }
+
+                // setting pointer to the actual shift
+                Pointer = shift.Height;
+
                 // first we always calculated current lazy experience
-                AddExp(Experience.GetExp(CurrentLevel, shift), shift);
+                double lazyExp = Experience.GetExp(CurrentLevel, shift);
+                if (lazyExp > 0)
+                {
+                    AddExp(Experience.GetExp(CurrentLevel, shift), shift);
+                }
 
                 // lazy health regeneration
                 if (MogwaiState == MogwaiState.NONE)
@@ -100,10 +123,21 @@ namespace WoMInterface.Game.Model
                     }
                 }
             }
+
+            CommandLine.InGameMessage($"Evolved {Name} from ");
+            CommandLine.InGameMessage($"{oldPointer}", ConsoleColor.Green);
+            CommandLine.InGameMessage($" to ");
+            CommandLine.InGameMessage($"{Pointer}", ConsoleColor.Green);
+            CommandLine.InGameMessage($"!", true);
         }
 
         public void AddExp(double exp, Shift shift)
         {
+            CommandLine.InGameMessage($"You just earned ");
+            CommandLine.InGameMessage($"+{exp}", ConsoleColor.Green);
+            CommandLine.InGameMessage($" experience!");
+            Console.WriteLine();
+
             Exp += exp;
 
             if (Exp >= XpToLevelUp)
@@ -120,6 +154,12 @@ namespace WoMInterface.Game.Model
         /// <param name="shift"></param>
         private void LevelUp(Shift shift)
         {
+            CommandLine.InGameMessage($"You're mogwai suddenly feels an ancient power around him.", ConsoleColor.Yellow, true);
+            CommandLine.InGameMessage($"Congratulations he just made the ", ConsoleColor.Yellow);
+            CommandLine.InGameMessage($"{CurrentLevel}", ConsoleColor.Green);
+            CommandLine.InGameMessage($" th level!", ConsoleColor.Yellow);
+            Console.WriteLine();
+
             // hit points roll
             HitPointLevelRolls.Add(shift.Dice.Roll(HitPointDice));
             

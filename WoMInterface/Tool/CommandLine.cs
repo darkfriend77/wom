@@ -14,6 +14,7 @@ using WoMInterface.Node;
 using WoMInterface.Game;
 using WoMInterface.Game.Random;
 using WoMInterface.Game.Interaction;
+using static WoMInterface.Tool.CachingService;
 
 namespace WoMInterface.Tool
 {
@@ -38,12 +39,9 @@ namespace WoMInterface.Tool
             @"|  version               | information about the current version                                      |",
             @"|  mogwais               | list of all valid addresses for mogwais and thier state                    |",
             @"|  create                | create a new valid address for a mogwai                                    |",
-            @"|  bind <a>              | activate a valid address to bind a mogwai [a=address]                      |",
-            @"|  show <a>              | show mogwai data                                                           |",
-            @"|  evolve <t>            | ... TODO [t=type]                                                          |",
-            @"|  adventure <d> <l>     | ... TODO [d=depth] [l=level]                                               |",
-            @"|  loot <o>              | ... TODO [o=option]                                                        |",
-            @"|  heatndwater <t>       | ... TODO [t=time]                                                          |",
+            @"|  bind <address>        | activate a valid address to bind a mogwai [a=address]                      |",
+            @"|  show <address>        | show mogwai data                                                           |",
+            @"|  cache (<option>)      | cache blockchain [option=stats|clear]                                      |",
             @"|  exit                  | leave tool                                                                 |",
             @"|--deprecated commands--------------------------------------------------------------------------------+",
             @"|  settings              | rpc settings for wallet connection (deprecated)                            |",
@@ -51,14 +49,31 @@ namespace WoMInterface.Tool
             @"|  This tool is only for testing purpose and shouldn't be used by anyone else then mogwaicoin devs.   |",
             @"+-----------------------------------------------------------------------------------------------------+",
         };
+        readonly string[] mogwai_control = new string[] {
+            @"+-------------------------------------------------------------- copyright by Mogwaicoin Team 2018 ----+",
+            @"|  Mogwai Specific Commands                                                                           |",
+            @"+------------------+----------------------------------------------------------------------------------+",
+            @"|  help                  | show this information again                                                |",
+            @"|  dismiss               | dismiss current mogwai                                                     |",
+            @"|  update (<option>)     | update current mogwai [option=restart|shift]                               |",
+            @"|  show                  | show current mogwai data                                                   |",
+            @"|  shave sheep           | test combat with a common animal                                           |",
+            @"|  evolve <t>            | ... TODO [t=type]                                                          |",
+            @"|  adventure <d> <l>     | ... TODO [d=difficulty]                                                    |",
+            @"|  loot <o>              | ... TODO [o=option]                                                        |",
+            @"|  heatndwater <t>       | ... TODO [t=time]                                                          |",
+            @"+-----------------------------------------------------------------------------------------------------+",
+        };
 
         private static readonly Lazy<CommandLine> _lazyInstance = new Lazy<CommandLine>(() => new CommandLine());
+
+        private MogwaisDB MogwaisCache => Blockchain.Instance.CachingService.MogwaisCache;
+
+        public Mogwai currentMogwai;
 
         public static CommandLine Instance => _lazyInstance.Value;
 
         private CommandLine() { }
-
-        public Mogwai currentMogwai;
 
         public void Start()
         {
@@ -101,7 +116,8 @@ namespace WoMInterface.Tool
 
                 if (line.Equals("help"))
                 {
-                    foreach (string str in help_info)
+                    string[] help = currentMogwai == null ? help_info : mogwai_control;
+                    foreach (string str in help)
                     {
                         ColorWriteLine(str, ConsoleColor.DarkCyan);
                     }
@@ -117,104 +133,56 @@ namespace WoMInterface.Tool
                     ConsoleResponse($"rpcPassword: '{ConfigurationManager.AppSettings["rpcPassword"]}'");
                     ConsoleResponse($"walletPassword: '{ConfigurationManager.AppSettings["walletPassword"]}'");
                 }
-                else if (line.Equals("mogwais"))
+                else if (line.StartsWith("show"))
                 {
-                    Mogwais();
-                }
-                else if (line.Equals("create"))
-                {
-
-                    if (Blockchain.Instance.NewMogwaiAddress(out string mogwaiAddress))
-                    {
-                        ConsoleResponse($"Successfuly, created a new address with a valid mogwai connection! Check with 'mogwais'.");
-                    }
-                    else
-                    {
-                        ConsoleWarn($"Couldn't create a new mogwaiaddress, try again!");
-                    };
-                }
-                else if (line.StartsWith("bind"))
-                {
-                    string[] strArray = line.Split(' ');
-                    if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
-                    {
-                        if (Blockchain.Instance.BindMogwai(strArray[1]))
-                        {
-                            // TODO
-                        }
-                        else
-                        {
-                            ConsoleWarn($"Couldn't bind mogwai!");
-                        }
-                    }
-                    else
-                    {
-                        ConsoleWarn($"Wrong number of arguments or invalid mogwaiaddress, check help for detailed informations!");
-                    }
-
-                }
-                else if (line.StartsWith("show "))
-                {
-                    string[] strArray = line.Split(' ');
-                    if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
-                    {
-                        if (Blockchain.Instance.TryGetMogwai(strArray[1], out Mogwai mogwai) == Blockchain.BoundState.BOUND)
-                        {
-                            Print(mogwai);
-                        }
-                        else
-                        {
-                            ConsoleWarn($"Couldn't show mogwai!");
-                        }
-                    }
-                    else
-                    {
-                        ConsoleWarn($"Wrong number of arguments or invalid mogwaiaddress, check help for detailed informations!");
-                    }
-
-                }
-                else if (line.StartsWith("choose"))
-                {
-                    Choose(line);
-                }
-                else if (currentMogwai != null && line.StartsWith("shave sheep"))
-                {
-                    ShaveSheep();
+                    Show(line);
                 }
                 else if (line.StartsWith("cache"))
                 {
-                    string[] strArray = line.Split(' ');
-                    if (strArray.Count() == 1)
-                    {
-                        Blockchain.Instance.Cache(false, true);
-                    }
-                    else if (strArray.Count() == 2)
-                    {
-                        switch (strArray[1])
-                        {
-                            case "clear":
-                                Blockchain.Instance.Cache(true, true);
-                                break;
-                            case "stats":
-                                Blockchain.Instance.CacheStats();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        ConsoleWarn($"Wrong number of arguments or invalid command, check help for detailed informations!");
-                    }
-
-                }
-                else if (line.Equals("dismiss"))
-                {
-                    ConsoleResponse($"You've dismissed {currentMogwai.Name}!");
-                    currentMogwai = null;
+                    Cache(line);
                 }
                 else if (line.Equals("exit"))
                 {
                     Blockchain.Instance.Exit();
                     return;
+                }
+                // commands without a current mogwai
+                else if (currentMogwai == null)
+                {
+                    if (line.Equals("mogwais"))
+                    {
+                        Mogwais();
+                    }
+                    else if (line.Equals("create"))
+                    {
+                        Create();
+                    }
+                    else if (line.StartsWith("bind"))
+                    {
+                        Bind(line);
+                    }
+
+                    else if (line.StartsWith("choose"))
+                    {
+                        Choose(line);
+                    }
+                }
+                // commands that are only valid wit a current mogwai
+                else if (currentMogwai != null)
+                {
+                    if (line.Equals("dismiss"))
+                    {
+                        ConsoleResponse($"You've dismissed {currentMogwai.Name}!");
+                        currentMogwai = null;
+                    }
+                    else if (line.StartsWith("update"))
+                    {
+                        Update(line);
+                    }
+                    else if (line.StartsWith("shave sheep"))
+                    {
+                        ShaveSheep();
+                    }
                 }
                 else
                 {
@@ -226,6 +194,138 @@ namespace WoMInterface.Tool
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="line"></param>
+        private void Update(string line)
+        {
+            string[] strArray = line.Split(' ');
+            if (strArray[0].Equals("update"))
+            {
+                currentMogwai.Evolve();
+                MogwaisCache.Update(currentMogwai);
+            }
+            else if (strArray.Count() == 2 && strArray[1].Equals("restart"))
+            {
+
+            }
+            else if (strArray.Count() == 2 && strArray[1].Equals("shift"))
+            {
+
+            }
+            else
+            {
+                ConsoleWarn($"Wrong number of arguments or invalid mogwaiaddress, check help for detailed informations!");
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void Create()
+        {
+            if (Blockchain.Instance.NewMogwaiAddress(out string mogwaiAddress))
+            {
+                ConsoleResponse($"Successfuly, created a new address with a valid mogwai connection! Check with 'mogwais'.");
+            }
+            else
+            {
+                ConsoleWarn($"Couldn't create a new mogwaiaddress, try again!");
+            };
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="line"></param>
+        private void Bind(string line)
+        {
+            string[] strArray = line.Split(' ');
+            if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
+            {
+                if (Blockchain.Instance.BindMogwai(strArray[1]))
+                {
+                    // TODO
+                }
+                else
+                {
+                    ConsoleWarn($"Couldn't bind mogwai!");
+                }
+            }
+            else
+            {
+                ConsoleWarn($"Wrong number of arguments or invalid mogwaiaddress, check help for detailed informations!");
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="line"></param>
+        private void Show(string line)
+        {
+            string[] strArray = line.Split(' ');
+            if (strArray[0].Equals("show"))
+            {
+                if (currentMogwai != null)
+                {
+                    Print(currentMogwai);
+                }
+                else
+                {
+                    ConsoleWarn($"No mogwai choosen to show!");
+                }
+            }
+            else if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
+            {
+                if (Blockchain.Instance.TryGetMogwai(strArray[1], false, out Mogwai mogwai) == Blockchain.BoundState.BOUND)
+                {
+                    Print(mogwai);
+                }
+                else
+                {
+                    ConsoleWarn($"Couldn't show mogwai!");
+                }
+            }
+            else
+            {
+                ConsoleWarn($"Wrong number of arguments or invalid mogwaiaddress, check help for detailed informations!");
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="line"></param>
+        private void Cache(string line)
+        {
+            string[] strArray = line.Split(' ');
+            if (strArray.Count() == 1)
+            {
+                Blockchain.Instance.Cache(false, true);
+            }
+            else if (strArray.Count() == 2)
+            {
+                switch (strArray[1])
+                {
+                    case "clear":
+                        Blockchain.Instance.Cache(true, true);
+                        break;
+                    case "stats":
+                        Blockchain.Instance.CacheStats();
+                        break;
+                }
+            }
+            else
+            {
+                ConsoleWarn($"Wrong number of arguments or invalid command, check help for detailed informations!");
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private void Mogwais()
         {
             var mogwaiAddressesDict = Blockchain.Instance.ValidMogwaiAddresses();
@@ -237,12 +337,15 @@ namespace WoMInterface.Tool
             {
                 var key = keyValue.Key;
                 var unspent = Blockchain.Instance.UnspendFunds(key, out List<ListUnspentResponse> listUnspent);
-                var created = Blockchain.Instance.TryGetMogwai(key, out Mogwai mogwai);
+                var created = Blockchain.Instance.TryGetMogwai(key, false, out Mogwai mogwai);
                 ConsoleResponse($"| {string.Format("{0,34}", key)} | {string.Format("{0,5}", created)} | {string.Format("{0,5}", mogwai == null ? 0 : mogwai.CurrentLevel)} | {string.Format("{0:###0.0000}", unspent).PadLeft(10).Substring(0, 10)} |");
                 ConsoleResponse(defaultStr);
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void ShaveSheep()
         {
             ConsoleResponse("Let's start and shave a sheep!");
@@ -263,15 +366,24 @@ namespace WoMInterface.Tool
             combat.Start();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="line"></param>
         private void Choose(string line)
         {
             string[] strArray = line.Split(' ');
             if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
             {
-                if (Blockchain.Instance.TryGetMogwai(strArray[1], out Mogwai mogwai) == Blockchain.BoundState.BOUND)
+                if (Blockchain.Instance.TryGetMogwai(strArray[1], false, out Mogwai mogwai) == Blockchain.BoundState.BOUND)
                 {
+                    foreach (string str in mogwai_control)
+                    {
+                        ColorWriteLine(str, ConsoleColor.DarkCyan);
+                    }
                     ConsoleResponse($"You've choosen {mogwai.Name} [{mogwai.CurrentLevel}]!");
                     currentMogwai = mogwai;
+                    mogwai.Evolve(MogwaisCache.Pointer(currentMogwai), false);
                 }
                 else
                 {
@@ -339,7 +451,15 @@ namespace WoMInterface.Tool
             Console.ResetColor();
         }
 
-        public static void ColorWrite(string value, ConsoleColor foreground = ConsoleColor.White, ConsoleColor background = ConsoleColor.Black)
+        public static void InGameMessage(string value, bool line = false)
+        {
+            InGameMessage(value,  ConsoleColor.White, ConsoleColor.Black, line);
+        }
+        public static void InGameMessage(string value, ConsoleColor foreground, bool line = false)
+        {
+            InGameMessage(value, foreground, ConsoleColor.Black, line);
+        }
+        public static void InGameMessage(string value, ConsoleColor foreground, ConsoleColor background, bool line)
         {
             //
             // This method writes an entire line to the console with the string.
@@ -347,6 +467,10 @@ namespace WoMInterface.Tool
             Console.BackgroundColor = background;
             Console.ForegroundColor = foreground;
             Console.Write(value.PadRight(value.Length - 1)); // <-- see note
+            if (line)
+            {
+                Console.WriteLine();
+            }
             //
             // Reset the color.
             //
