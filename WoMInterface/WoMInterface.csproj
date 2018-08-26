@@ -115,6 +115,7 @@
     <Compile Include="Game\Enums\Difficulty.cs" />
     <Compile Include="Game\Interaction\Interaction.cs" />
     <Compile Include="Game\Interaction\Translate.cs" />
+    <Compile Include="Game\Interaction\Unknown.cs" />
     <Compile Include="Game\Model\Attribute.cs" />
     <Compile Include="Game\Model\Mogwai\Body.cs" />
     <Compile Include="Game\Model\Mogwai\Coat.cs" />

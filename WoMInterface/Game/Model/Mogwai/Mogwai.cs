@@ -112,6 +112,11 @@ namespace WoMInterface.Game.Model
                     AddExp(Experience.GetExp(CurrentLevel, shift), shift);
                 }
 
+                if (!shift.IsSmallShift)
+                {
+                    //Console.WriteLine(shift.ToString());
+                }
+
                 // lazy health regeneration
                 if (MogwaiState == MogwaiState.NONE)
                 {

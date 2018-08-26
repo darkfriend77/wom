@@ -223,28 +223,14 @@ namespace WoMInterface.Node
                     {
                         foreach(var blockHash in blockHashes)
                         {
-                            result.Add(new Shift(result.Count())
-                            {
-                                AdHex = pubMogAddressHex,
-                                BkHex = blockHash.Value,
-                                Height = blockHash.Key
-                            });
+                            result.Add(new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
                         }
                     }
                 }
 
                 lastBlockHeight = block.Height;
 
-                result.Add(new Shift(result.Count()) {
-                    Time = tx.Time,
-                    AdHex = pubMogAddressHex,
-                    Height = block.Height,
-                    BkHex = tx.BlockHash,
-                    BkIndex = tx.BlockIndex,
-                    TxHex = tx.TxId,
-                    Amount = amount,
-                    Fee = tx.Fee
-                });
+                result.Add(new Shift(result.Count(), tx.Time, pubMogAddressHex, block.Height, tx.BlockHash, tx.BlockIndex, tx.TxId, amount, Math.Abs(tx.Fee + txFee)));
             }
 
             // add small shifts
@@ -252,41 +238,12 @@ namespace WoMInterface.Node
             {
                 foreach (var blockHash in finalBlockHashes)
                 {
-                    result.Add(new Shift(result.Count())
-                    {
-                        AdHex = pubMogAddressHex,
-                        BkHex = blockHash.Value,
-                        Height = blockHash.Key
-                    });
+                    result.Add(new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
                 }
             }
 
             //result.ForEach(p => Console.WriteLine(p.ToString()));
             return result;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="address"></param>
-        /// <returns></returns>
-        internal bool EvolveMogwai(string address)
-        {
-            if (!TryGetMogwaiAddress(address, out string mogwaiAddress))
-            {
-                return false;
-            }
-
-            if (IsMogwaiBound(address, mogwaiAddress, out List<Shift> shifts) != BoundState.BOUND)
-            {
-                return false;
-            }
-
-            Console.WriteLine($"Evolving mogwai now!");
-
-            var burned = BurnMogs(address, mogwaiAddress, mogwaiCost, txFee);
-
-            return burned;
         }
 
         /// <summary>
@@ -312,6 +269,28 @@ namespace WoMInterface.Node
             Console.WriteLine($"Starting mogwai creation now!");
 
             var burned = BurnMogs(address, mogwaiAddress, mogwaiCost, txFee);
+
+            return burned;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="interaction"></param>
+        /// <returns></returns>
+        internal bool SendInteraction(string address, Interaction interaction)
+        {
+            if (!TryGetMogwaiAddress(address, out string mogwaiAddress))
+            {
+                return false;
+            }
+
+            if (IsMogwaiBound(address, mogwaiAddress, out List<Shift> shifts) != BoundState.BOUND)
+            {
+                return false;
+            }
+
+            var burned = BurnMogs(address, mogwaiAddress, interaction.GetValue1(), txFee + interaction.GetValue2());
 
             return burned;
         }

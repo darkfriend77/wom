@@ -15,6 +15,7 @@ using WoMInterface.Game;
 using WoMInterface.Game.Random;
 using WoMInterface.Game.Interaction;
 using static WoMInterface.Tool.CachingService;
+using WoMInterface.Game.Enums;
 
 namespace WoMInterface.Tool
 {
@@ -57,9 +58,9 @@ namespace WoMInterface.Tool
             @"|  dismiss               | dismiss current mogwai                                                     |",
             @"|  update (<option>)     | update current mogwai [option=restart|shift]                               |",
             @"|  show                  | show current mogwai data                                                   |",
+            @"|  adventure <t> <d>     | sent current mogwai to an adventure [t=adventuretype][d=difficulty]        |",
             @"|  shave sheep           | test combat with a common animal                                           |",
             @"|  evolve <t>            | ... TODO [t=type]                                                          |",
-            @"|  adventure <d> <l>     | ... TODO [d=difficulty]                                                    |",
             @"|  loot <o>              | ... TODO [o=option]                                                        |",
             @"|  heatndwater <t>       | ... TODO [t=time]                                                          |",
             @"+-----------------------------------------------------------------------------------------------------+",
@@ -185,6 +186,10 @@ namespace WoMInterface.Tool
                     {
                         ShaveSheep();
                     }
+                    else if (line.StartsWith("adventure"))
+                    {
+                        Adventure(line);
+                    }
                 }
                 else
                 {
@@ -194,6 +199,25 @@ namespace WoMInterface.Tool
                 // put whatever note stuff you want to execute again and again in here
             }
 
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="line"></param>
+        private void Adventure(string line)
+        {
+            string[] strArray = line.Split(' ');
+            if (strArray.Count() == 3 && Enum.TryParse<AdventureType>(strArray[1], out AdventureType adventureType) 
+                && Enum.TryParse<DifficultyType>(strArray[2], out DifficultyType difficultyType))
+            {
+                Blockchain.Instance.SendInteraction(currentMogwai.Key, new Adventure(adventureType, difficultyType, currentMogwai.CurrentLevel));
+
+            }
+            else
+            {
+                ConsoleWarn($"Wrong number of arguments, check help for detailed informations!");
+            }
         }
 
         /// <summary>
@@ -220,7 +244,7 @@ namespace WoMInterface.Tool
             }
             else
             {
-                ConsoleWarn($"Wrong number of arguments or invalid mogwaiaddress, check help for detailed informations!");
+                ConsoleWarn($"Wrong number of arguments, check help for detailed informations!");
             }
         }
 
@@ -294,7 +318,7 @@ namespace WoMInterface.Tool
             }
             else
             {
-                ConsoleWarn($"Wrong number of arguments or invalid mogwaiaddress, check help for detailed informations!");
+                ConsoleWarn($"Wrong number of arguments, check help for detailed informations!");
             }
         }
 
@@ -341,7 +365,7 @@ namespace WoMInterface.Tool
             {
                 var key = keyValue.Key;
                 var unspent = Blockchain.Instance.UnspendFunds(key, out List<ListUnspentResponse> listUnspent);
-                var created = Blockchain.Instance.TryGetMogwai(key, false, out Mogwai mogwai);
+                var created = Blockchain.Instance.TryGetMogwai(key, true, out Mogwai mogwai);
                 ConsoleResponse($"| {string.Format("{0,34}", key)} | {string.Format("{0,5}", created)} | {string.Format("{0,5}", mogwai == null ? 0 : mogwai.CurrentLevel)} | {string.Format("{0:###0.0000}", unspent).PadLeft(10).Substring(0, 10)} |");
                 ConsoleResponse(defaultStr);
             }
@@ -353,16 +377,15 @@ namespace WoMInterface.Tool
         private void ShaveSheep()
         {
             ConsoleResponse("Let's start and shave a sheep!");
-            Shift shift = new Shift(0D)
-            {
-                Time = 1531171420,
-                AdHex = "32f13027e869de56de3c2d5af13f572b67b5e75a18594013ec",
-                Height = 9196,
-                BkHex = "000000001f2ade78b094fce0fbfacc55da3a23ec82489171eb2687a1b6582d13",
-                BkIndex = 11,
-                TxHex = "9679a3d39efdf8faa019410250fa91647a76cbb1bd2fd1c5d7ba80551b4edd7b",
-                Amount = 1
-            };
+            Shift shift = new Shift(0D,
+                1531171420,
+                "32f13027e869de56de3c2d5af13f572b67b5e75a18594013ec",
+                9196,
+                "000000001f2ade78b094fce0fbfacc55da3a23ec82489171eb2687a1b6582d13",
+                11,
+                "9679a3d39efdf8faa019410250fa91647a76cbb1bd2fd1c5d7ba80551b4edd7b",
+                1.00m,
+                0.0001m);
             Dice mogwaiDice = new Dice(shift);
             Dice monsterDice = new Dice(shift, 2);
             Monster monster = new Rat(monsterDice);

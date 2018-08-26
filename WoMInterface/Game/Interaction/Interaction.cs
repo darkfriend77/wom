@@ -7,6 +7,7 @@ using WoMInterface.Game.Enums;
 
 namespace WoMInterface.Game.Interaction
 {
+
     public abstract class Interaction
     {
         public CostType CostType { get; set; }
@@ -19,7 +20,7 @@ namespace WoMInterface.Game.Interaction
 
         public Interaction(InteractionType interactionType)
         {
-            CostType = CostType.STANDARD; 
+            CostType = CostType.STANDARD;
             InteractionType = interactionType;
         }
 
@@ -36,43 +37,29 @@ namespace WoMInterface.Game.Interaction
 
         public static Interaction GetInteraction(decimal amount, decimal fee)
         {
-            string parm1 = (amount - fee).ToString("0.00000000").Split('.')[1];
-            CostType costType = (CostType) int.Parse(parm1.Substring(0, 2));
-            InteractionType interactionType = (InteractionType) int.Parse(parm1.Substring(2, 2));
-            int addParam1 = int.Parse(parm1.Substring(4, 4));
-            int addParam2 = int.Parse(fee.ToString("0.00000000").Split('.')[1].Substring(4, 4));
-            switch (interactionType)
+            string parm1 = amount.ToString("0.00000000").Split('.')[1];
+            int costTypeInt = int.Parse(parm1.Substring(0, 2));
+            int interactionTypInt = int.Parse(parm1.Substring(2, 2));
+            if (Enum.IsDefined(typeof(CostType), costTypeInt)
+             && Enum.IsDefined(typeof(InteractionType), interactionTypInt))
             {
-                case InteractionType.NONE:
-                    throw new NotImplementedException();
+                CostType costType = (CostType)costTypeInt;
+                InteractionType interactionType = (InteractionType)interactionTypInt;
+                int addParam1 = int.Parse(parm1.Substring(4, 4));
+                int addParam2 = int.Parse(fee.ToString("0.00000000").Split('.')[1].Substring(4, 4));
 
-                case InteractionType.CREATION:
-                    throw new NotImplementedException();
-
-                case InteractionType.MODIFICATION:
-                    throw new NotImplementedException();
-
-                case InteractionType.LEVELING:
-                    throw new NotImplementedException();
-
-                case InteractionType.ADVENTURE:
-                    return new Adventure(addParam1, addParam2);
-
-                case InteractionType.DUELL:
-                    throw new NotImplementedException();
-
-                case InteractionType.BREEDING:
-                    throw new NotImplementedException();
-
-                case InteractionType.LOOTING:
-                    throw new NotImplementedException();
-
-                case InteractionType.UNDEFINED:
-                    throw new NotImplementedException();
-
-                default:
-                    throw new NotImplementedException();
+                switch (interactionType)
+                {
+                    case InteractionType.ADVENTURE:
+                        if (Adventure.TryGetAdventure(addParam1, addParam2, out Adventure adventure))
+                        {
+                            return adventure;
+                        }
+                        break;
+                }
             }
+
+            return new Unknown();
         }
     }
 }

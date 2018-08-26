@@ -13,69 +13,52 @@ namespace WoMInterface.Game.Interaction
     {
         public double Index { get; }
 
-        public double Time { get; set; }
-        public string AdHex { get; set; }
-        public int Height { get; set; }
-        public string BkHex { get; set; }
-        public double BkIndex { get; set; }
-        public string TxHex { get; set; }
-        public decimal Amount { get; set; }
-        public decimal Fee { get; set; }
+        public double Time { get; }
+        public string AdHex { get;}
+        public int Height { get; }
+        public string BkHex { get; }
+        public double BkIndex { get; }
+        public string TxHex { get;}
+        public decimal Amount { get; }
+        public decimal Fee { get; }
 
         public bool IsSmallShift => TxHex == null;
 
         private Dice dice;
         public Dice Dice => dice ?? (dice = new Dice(this));
 
-        public InteractionType InteractionType { get; }
+        public Interaction Interaction { get; }
 
-        public Shift(double index)
+        public Shift(double index, double time, string adHex, int height, string bkHex, double bkIndex, string txHex, decimal amount, decimal fee )
         {
             Index = index;
-            InteractionType = GetInteractionType();
-            
+            Time = time;
+            AdHex = adHex;
+            Height = height;
+            BkHex = bkHex;
+            BkIndex = bkIndex;
+            TxHex = txHex;
+            Amount = amount;
+            Fee = fee;
+            Interaction = Interaction.GetInteraction(amount, fee);
         }
 
-        private InteractionType GetInteractionType()
+        public Shift(double index, string adHex, int height, string bkHex)
         {
-            if (Index == 0)
-            {
-                return InteractionType.CREATION;
-            }
-
-            if (IsSmallShift)
-            {
-                return InteractionType.NONE;
-            }
-
-            decimal rAmount = Amount - Fee;
-            string parm1 = (Amount - Fee).ToString("0.00000000").Split('.')[1];
-            string saveParam = Fee.ToString("0.00000000").Split('.')[1].Substring(5);
-            string costType = parm1.Substring(0, 2);
-            string actionType = parm1.Substring(2, 2);
-            string addParam = parm1.Substring(4, 4);
-
-            //  action part 1
-            //    ct at spec           
-            //  0.00 00 0000
-
-            //  action part 2
-            //         save
-            //  0.0001 0000
-
-            return InteractionType.UNDEFINED;
-
+            Index = index;
+            AdHex = adHex;
+            Height = height;
+            BkHex = bkHex;
+            Interaction = null;
         }
 
         public override string ToString()
         {
-            return $"{Time};{AdHex};{Height};{BkHex};{BkIndex};{TxHex};{Amount}";
+            return $"Interaction[{Interaction.InteractionType}]\n" +
+                   $"Time = {Time}, BkIndex = {BkIndex}, Amount = {Amount}m, Fee = {Fee}m, Height = {Height}," +
+                   $" AdHex = \"{AdHex}\", BkHex = \"{BkHex}\", TxHex = \"{TxHex}\"";
         }
 
-        public void Action()
-        {
-
-        }
     }
 
 }
