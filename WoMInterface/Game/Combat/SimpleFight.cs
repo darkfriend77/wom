@@ -176,11 +176,6 @@ namespace WoMInterface.Game.Combat
                 if (p is Monster)
                 {
                     int expReward = ((Monster)p).Experience;
-                    CommandLine.InGameMessage($"The ");
-                    CommandLine.InGameMessage($"{p.Name}", ConsoleColor.DarkGray);
-                    CommandLine.InGameMessage($" gave you ");
-                    CommandLine.InGameMessage($"+{expReward}", ConsoleColor.Green);
-                    CommandLine.InGameMessage($"!", ConsoleColor.Cyan, true);
                     mogwai.AddExp(expReward);
                 }
             });

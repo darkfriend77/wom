@@ -223,7 +223,7 @@ namespace WoMInterface.Tool
         private void Update(string line)
         {
             string[] strArray = line.Split(' ');
-            if (strArray[0].Equals("update"))
+            if (strArray.Count() == 1 &&strArray[0].Equals("update"))
             {
                 int oldPointer = currentMogwai.Pointer;
                 currentMogwai.Evolve();
@@ -232,7 +232,11 @@ namespace WoMInterface.Tool
             }
             else if (strArray.Count() == 2 && strArray[1].Equals("restart"))
             {
-
+                if (Blockchain.Instance.TryGetMogwai(currentMogwai.Key, false, out Mogwai mogwai) == Blockchain.BoundState.BOUND)
+                {
+                    ConsoleResponse($"Pointer reseted for {mogwai.Name} [{mogwai.CurrentLevel}]! Rpointer: {mogwai.Pointer}");
+                    currentMogwai = mogwai;
+                }
             }
             else if (strArray.Count() == 2 && strArray[1].Equals("shift"))
             {

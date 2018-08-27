@@ -124,6 +124,7 @@
     <Compile Include="Game\Combat\SimpleFight.cs" />
     <Compile Include="Game\Model\Entity.cs" />
     <Compile Include="Game\Model\Equipment\Equipment.cs" />
+    <Compile Include="Game\Enums\HealType.cs" />
     <Compile Include="Game\Model\Mogwai\HexValue.cs" />
     <Compile Include="Game\Enums\EvolutionPattern.cs" />
     <Compile Include="Game\Model\LazyExperience.cs" />

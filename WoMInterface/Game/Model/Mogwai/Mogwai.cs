@@ -10,7 +10,7 @@ using WoMInterface.Tool;
 
 namespace WoMInterface.Game.Model
 {
-    public class Mogwai : Entity
+    public partial class Mogwai : Entity
     {
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -143,12 +143,7 @@ namespace WoMInterface.Game.Model
                 // lazy health regeneration
                 if (MogwaiState == MogwaiState.NONE)
                 {
-                    int naturalHealing = shift.IsSmallShift ? 2 * CurrentLevel : CurrentLevel;
-                    CurrentHitPoints += naturalHealing;
-                    if (CurrentHitPoints > MaxHitPoints)
-                    {
-                        CurrentHitPoints = MaxHitPoints;
-                    }
+                    Heal(shift.IsSmallShift ? 2 * CurrentLevel : CurrentLevel, HealType.RESTING);
                 }
             }
 
@@ -162,11 +157,41 @@ namespace WoMInterface.Game.Model
             CommandLine.InGameMessage($"!", true);
         }
 
-        public void AddExp(double exp)
+        public void Heal(int healAmount, HealType healType)
         {
-            CommandLine.InGameMessage($"You just earned ");
-            CommandLine.InGameMessage($"+{exp}", ConsoleColor.Green);
-            CommandLine.InGameMessage($" experience!", true);
+            int missingHealth = MaxHitPoints - CurrentHitPoints;
+            if (missingHealth <= 0 || healAmount <= 0)
+            {
+                return;
+            }
+
+            if (missingHealth < healAmount )
+            {
+                healAmount = missingHealth;
+            }
+
+            CommandLine.InGameMessage($"{Name} got healed for ");
+            CommandLine.InGameMessage($"+{healAmount}", ConsoleColor.Green);
+            CommandLine.InGameMessage($" by {healType.ToString().ToLower()}.", true);
+            CurrentHitPoints += healAmount;
+        }
+
+        public void AddExp(double exp, Monster monster = null)
+        {
+            if (monster == null)
+            {
+                CommandLine.InGameMessage($"You just earned ");
+                CommandLine.InGameMessage($"+{exp}", ConsoleColor.Green);
+                CommandLine.InGameMessage($" experience!", true);
+            }
+            else
+            {
+                CommandLine.InGameMessage($"The ");
+                CommandLine.InGameMessage($"{monster.Name}", ConsoleColor.DarkGray);
+                CommandLine.InGameMessage($" gave you ");
+                CommandLine.InGameMessage($"+{exp}", ConsoleColor.Green);
+                CommandLine.InGameMessage($"!", ConsoleColor.Cyan, true);
+            }
 
             Exp += exp;
 
