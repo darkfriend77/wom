@@ -99,35 +99,19 @@ namespace WoMInterface.Game.Combat
 
                     Entity target = combatant.Enemies.Where(p => p.CurrentHitPoints > 0).FirstOrDefault();
 
-                    CommandLine.InGameMessage($"-> TURN");
-                    CommandLine.InGameMessage($" - [{combatant.Entity.Name}, HP:");
-                    CommandLine.InGameMessage($"{combatant.Entity.CurrentHitPoints}", combatant.Entity.CurrentHitPoints > 0 ? ConsoleColor.Green : ConsoleColor.Red);
-                    CommandLine.InGameMessage($"]", true);
-
                     int attack = combatant.Entity.AttackRoll(combatant.Dice);
-                    CommandLine.InGameMessage($"   attacking with [");
-                    CommandLine.InGameMessage($"{combatant.Entity.Equipment.PrimaryWeapon.Name}", ConsoleColor.Gray);
-                    CommandLine.InGameMessage($"] target[{target.Name}, AC:");
-                    CommandLine.InGameMessage($"{target.ArmorClass}", ConsoleColor.Yellow);
-                    CommandLine.InGameMessage($"] with ");
-                    CommandLine.InGameMessage($"{attack}", ConsoleColor.Yellow);
-                    CommandLine.InGameMessage($" roll!", true);
+
+                    StringHelpers.Msg($" {combatant.Entity.Name} initiating attack ¬Y{attack}§ with [¬A{combatant.Entity.Equipment.PrimaryWeapon.Name}§] against {target.Name}[AC¬Y{target.ArmorClass}§]!¬");
 
                     if (attack > target.ArmorClass)
                     {
                         int damage = combatant.Entity.DamageRoll(combatant.Dice);
-                        CommandLine.InGameMessage($"   successful ", ConsoleColor.Yellow);
-                        CommandLine.InGameMessage($"hitting target[{target.Name}, HP:");
-                        CommandLine.InGameMessage($"{target.CurrentHitPoints}", target.CurrentHitPoints > 0 ? ConsoleColor.Green : ConsoleColor.Red);
-                        CommandLine.InGameMessage($"] for ");
-                        CommandLine.InGameMessage($"-{damage}", ConsoleColor.Red);
-                        CommandLine.InGameMessage($" damage!", true);
+                        StringHelpers.Msg($" ¬Gsuccessful§ hitting target {target.Name}[¬GHP{target.CurrentHitPoints}§] for ¬R{damage}§ damage!¬");
                         target.CurrentHitPoints -= damage;
                     }
                     else
                     {
-                        CommandLine.InGameMessage($"   failed ", ConsoleColor.Red);
-                        CommandLine.InGameMessage($"to attack target[{target.Name}]!", true);
+                        StringHelpers.Msg($" ¬Rfailed§ to attack target {target.Name}!¬");
                     }
 
                     if (!combatant.Enemies.Exists(p => p.CurrentHitPoints > 0))
@@ -140,7 +124,7 @@ namespace WoMInterface.Game.Combat
 
             if (winner != null)
             {
-                CommandLine.InGameMessage($"Combat is over! The winner is {winner.Entity.Name}", ConsoleColor.Cyan, true);
+                StringHelpers.Msg($"¬CCombat is over! The winner is {winner.Entity.Name}§¬");
 
                 if (winner.IsHero)
                 {
@@ -153,7 +137,7 @@ namespace WoMInterface.Game.Combat
             }
             else
             {
-                CommandLine.InGameMessage($"No winner, no loser, this fight was a draw!", ConsoleColor.Cyan, true);
+                 StringHelpers.Msg($"¬CNo winner, no loser, this fight was a draw!§");
                 return false;
             }
 

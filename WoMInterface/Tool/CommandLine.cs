@@ -234,7 +234,7 @@ namespace WoMInterface.Tool
             {
                 if (Blockchain.Instance.TryGetMogwai(currentMogwai.Key, false, out Mogwai mogwai) == Blockchain.BoundState.BOUND)
                 {
-                    ConsoleResponse($"Pointer reseted for {mogwai.Name} [{mogwai.CurrentLevel}]! Rpointer: {mogwai.Pointer}");
+                    ConsoleResponse($"Pointer reseted for {mogwai.Name} [{mogwai.CurrentLevel}]! Pointer: {mogwai.Pointer}");
                     currentMogwai = mogwai;
                 }
             }

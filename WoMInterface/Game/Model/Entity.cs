@@ -44,8 +44,7 @@ namespace WoMInterface.Game.Model
         public int[] HitPointDiceRollEvent { get; set; }
         public List<int> HitPointLevelRolls { get; }
         public int MaxHitPoints => HitPointDice + HitPointLevelRolls.Sum();
-        private int currentHitPoints = 0;
-        public int CurrentHitPoints { get { return currentHitPoints; } set { currentHitPoints = value; } }
+        public int CurrentHitPoints { get; set; }
 
         // initiative = dex modifier + misc modifier
         public int Initiative => DexterityMod;
@@ -54,7 +53,7 @@ namespace WoMInterface.Game.Model
         public int BaseAttackBonus { get; set; }
 
         // attackbonus = base attack bonus + strength modifier + size modifier
-        public int AttackBonus => BaseAttackBonus + StrengthMod;
+        public int AttackBonus => BaseAttackBonus + StrengthMod + (int) SizeType;
 
         // attack roll
         public int AttackRoll(Dice dice) => dice.Roll(DiceType.D20) + AttackBonus;

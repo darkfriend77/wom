@@ -22,10 +22,11 @@ namespace WoMInterface
         {
             CommandLine.Instance.Start();
 
-            //Test();
+            //Test1();
+            //Test2();
         }
 
-        static void Test()
+        static void Test1()
         {
             decimal amount = 0.12345678m;
             decimal fee = 0.00011234m;
@@ -46,6 +47,13 @@ namespace WoMInterface
             Console.WriteLine($"Value1: {adventure.GetValue1()}");
             Console.WriteLine($"Value2: {adventure.GetValue2()}");
 
+            Console.ReadKey();
+        }
+        static void Test2()
+        {
+            StringHelpers.Msg("this is a ¬Rmessage§ red info");
+            StringHelpers.Msg(" same line this is ¬Yyellow§ and ¬ydarkyellow§  and on next line¬");
+            StringHelpers.Msg("¬Bblue§¬Wberry$¬Rmuffin§!!!");
             Console.ReadKey();
         }
     }
