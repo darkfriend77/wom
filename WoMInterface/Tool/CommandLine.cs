@@ -85,6 +85,7 @@ namespace WoMInterface.Tool
             catch (Exception e)
             {
                 ConsoleError($"Terminating commandLine, with exception '{e.Message}'! check log for full exception.");
+                ConsoleWarn(e.ToString());
                 _log.Error(e.ToString());
                 Console.ReadKey();
             }
@@ -386,7 +387,7 @@ namespace WoMInterface.Tool
                 "9679a3d39efdf8faa019410250fa91647a76cbb1bd2fd1c5d7ba80551b4edd7b",
                 1.00m,
                 0.0001m);
-            SimpleFight combat = new SimpleFight(new List<Monster>() { new Rat() });
+            SimpleFight combat = new SimpleFight(new List<Monster>() { Animals.Rat });
             combat.Create(currentMogwai, shift);
             combat.Run();
         }

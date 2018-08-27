@@ -83,15 +83,17 @@ namespace WoMInterface.Game.Combat
         {
             var hero = inititiveOrder.Where(p => p.IsHero).First();
             var sheep = inititiveOrder.Where(p => !p.IsHero).First();
-            CommandLine.InGameMessage($"SimpleFight: {hero.Entity.Name}[{hero.InititativeValue},{hero.Entity.Dexterity}] vs. {sheep.Entity.Name}[{sheep.InititativeValue},{sheep.Entity.Dexterity}]", ConsoleColor.Cyan, true);
+            StringHelpers.Msg($"¬YSimpleFight§: ¬C{hero.Entity.Name}§[¬Y{hero.InititativeValue}§] vs. ¬C{sheep.Entity.Name}§[¬Y{sheep.InititativeValue}§]¬");
             // let's start the rounds ...
             Fighter winner = null;
             for (currentRound = 1; currentRound < maxRounds && winner == null; currentRound++)
             {
-                CommandLine.InGameMessage($"ROUND [{currentRound}] --------", ConsoleColor.Green, true);
+                int sec = (currentRound - 1) * 6;
+                StringHelpers.Msg($"[R¬G{currentRound.ToString("00")}§|¬a{(sec/60).ToString("00")}§:¬a{(sec%60).ToString("00")}§]¬");
 
-                foreach (var combatant in inititiveOrder)
+                for (int i = 0; i < inititiveOrder.Count; i++)
                 {
+                    Fighter combatant = inititiveOrder[i];
                     if (combatant.Entity.CurrentHitPoints < 1)
                     {
                         continue;
@@ -101,17 +103,17 @@ namespace WoMInterface.Game.Combat
 
                     int attack = combatant.Entity.AttackRoll(combatant.Dice);
 
-                    StringHelpers.Msg($" {combatant.Entity.Name} initiating attack ¬Y{attack}§ with [¬A{combatant.Entity.Equipment.PrimaryWeapon.Name}§] against {target.Name}[AC¬Y{target.ArmorClass}§]!¬");
+                    StringHelpers.Msg($" + ¬g{i.ToString("00")}§: ¬C{combatant.Entity.Name}§ attacks ¬C{target.Name}§ with ¬c{combatant.Entity.Equipment.PrimaryWeapon.Name}§ roll ¬Y{attack}§[¬a{target.ArmorClass}§]:");
 
                     if (attack > target.ArmorClass)
                     {
                         int damage = combatant.Entity.DamageRoll(combatant.Dice);
-                        StringHelpers.Msg($" ¬Gsuccessful§ hitting target {target.Name}[¬GHP{target.CurrentHitPoints}§] for ¬R{damage}§ damage!¬");
+                        StringHelpers.Msg($" ¬Gsucced§ ¬R{damage}§ damage!¬");
                         target.CurrentHitPoints -= damage;
                     }
                     else
                     {
-                        StringHelpers.Msg($" ¬Rfailed§ to attack target {target.Name}!¬");
+                        StringHelpers.Msg($" ¬Rfailed§!¬");
                     }
 
                     if (!combatant.Enemies.Exists(p => p.CurrentHitPoints > 0))
