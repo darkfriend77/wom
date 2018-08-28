@@ -16,7 +16,7 @@ namespace WoMInterface.Game.Model
             .SetAbilities(2, 15, 11, 2, 13, 2)
             .SetHitPointDiceRollEvent(new int[] { 1, 8 })
             .SetBaseAttackBonus(0)
-            .SetBaseWeapon(new Weapon("Bite", new int[] { 1, 3 }))
+            .SetBaseWeapon(NaturalWeapon.Bite(SizeType.TINY))
             .SetDescription("Fecund and secretive, rats are omnivorous rodents that particularly thrive in urban areas.")
             .Build();
 
@@ -27,7 +27,7 @@ namespace WoMInterface.Game.Model
             .SetNaturalArmor(2)
             .SetHitPointDiceRollEvent(new int[] { 2, 8, 0, 4 })
             .SetBaseAttackBonus(1)
-            .SetBaseWeapon(new Weapon("Bite", new int[] { 1, 6 }))
+            .SetBaseWeapon(NaturalWeapon.Bite(SizeType.MEDIUM))
             .SetDescription("Wandering alone or in packs, wolves sit at the top of the food chain. Ferociously " +
                 "territorial and exceptionally wide-ranging in their hunting, wolf packs cover broad " +
                 "areas. A wolf’s wide paws contain slight webbing between the toes that assists in " +

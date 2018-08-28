@@ -26,7 +26,7 @@ namespace WoMInterface.Game.Model
         // hitcoints
         private int[] hitPointDiceRollEvent = new int[] { 1, 6, 0 };
         // equipment
-        private Weapon baseWeapon = new Weapon("Bite", new int[] { 1, 6, 0 });
+        private Weapon baseWeapon = NaturalWeapon.Bite(SizeType.MEDIUM);
         private Weapon primaryWeapon = null;
         private Treasure treasure = null;
         // description
@@ -104,10 +104,9 @@ namespace WoMInterface.Game.Model
         public Monster Build()
         {
 
-            return new Monster(name, challengeRating, monsterType, experience)
+            Monster monster = new Monster(name, challengeRating, monsterType, experience)
             {
                 SizeType = sizeType,
-
                 Strength = strength,
                 Dexterity = dexterity,
                 Constitution = constitution,
@@ -117,15 +116,12 @@ namespace WoMInterface.Game.Model
                 NaturalArmor = naturalArmor,
                 BaseAttackBonus = baseAttackBonus,
                 HitPointDiceRollEvent = hitPointDiceRollEvent,
-                Equipment = new Equipment()
-                {
-                    BaseWeapon = baseWeapon,
-                    PrimaryWeapon = primaryWeapon
-                },
                 Treasure = treasure,
                 Description = description
-
             };
+            monster.Equipment.BaseWeapon = baseWeapon;
+            monster.Equipment.PrimaryWeapon = primaryWeapon;
+            return monster;
         }
 
     }
@@ -141,6 +137,10 @@ namespace WoMInterface.Game.Model
 
         public string Description { get; set; }
 
+        public bool IsLooted { get; set; }
+
+        public bool RewardedXP { get; set; }
+
         public Monster(string name, double challengeRating, MonsterType monsterType, int experience)
         {
             Name = name;
@@ -149,9 +149,10 @@ namespace WoMInterface.Game.Model
             Experience = experience;
         }
 
-        public void Create(Dice dice)
+        public void Initialize(Dice dice)
         {
-            HitPointDice = dice.Roll(HitPointDiceRollEvent);
+            Dice = dice;
+            HitPointDice = Dice.Roll(HitPointDiceRollEvent);
             CurrentHitPoints = MaxHitPoints;
         }
     }

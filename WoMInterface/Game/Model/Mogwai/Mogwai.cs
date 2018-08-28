@@ -7,6 +7,7 @@ using WoMInterface.Game.Generator;
 using WoMInterface.Game.Enums;
 using WoMInterface.Game.Interaction;
 using WoMInterface.Tool;
+using WoMInterface.Game.Random;
 
 namespace WoMInterface.Game.Model
 {
@@ -42,6 +43,8 @@ namespace WoMInterface.Game.Model
         public double XpToLevelUp => CurrentLevel * 1000;
 
         public Adventure Adventure { get; set; }
+
+        public override Dice Dice => currentShift.MogwaiDice;
 
         public Mogwai(string key, List<Shift> shifts)
         {
@@ -79,8 +82,8 @@ namespace WoMInterface.Game.Model
             // create experience
             Experience = new Experience(creationShift);
 
-            // add simple hand as weapon
-            Equipment.BaseWeapon = new Fist();
+            // add simple gauntlets as weapon
+            Equipment.BaseWeapon = Weapons.Gauntlet;
 
             HitPointDice = 8;
             CurrentHitPoints = MaxHitPoints;
@@ -143,7 +146,7 @@ namespace WoMInterface.Game.Model
                 // lazy health regeneration
                 if (MogwaiState == MogwaiState.NONE)
                 {
-                    Heal(shift.IsSmallShift ? 2 * CurrentLevel : CurrentLevel, HealType.RESTING);
+                    Heal(shift.IsSmallShift ? 2 * CurrentLevel : CurrentLevel, HealType.REST);
                 }
             }
 
@@ -155,25 +158,6 @@ namespace WoMInterface.Game.Model
             CommandLine.InGameMessage($" to ");
             CommandLine.InGameMessage($"{Pointer}", ConsoleColor.Green);
             CommandLine.InGameMessage($"!", true);
-        }
-
-        public void Heal(int healAmount, HealType healType)
-        {
-            int missingHealth = MaxHitPoints - CurrentHitPoints;
-            if (missingHealth <= 0 || healAmount <= 0)
-            {
-                return;
-            }
-
-            if (missingHealth < healAmount )
-            {
-                healAmount = missingHealth;
-            }
-
-            CommandLine.InGameMessage($"{Name} got healed for ");
-            CommandLine.InGameMessage($"+{healAmount}", ConsoleColor.Green);
-            CommandLine.InGameMessage($" by {healType.ToString().ToLower()}.", true);
-            CurrentHitPoints += healAmount;
         }
 
         public void AddExp(double exp, Monster monster = null)

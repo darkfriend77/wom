@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMInterface.Game.Enums;
 using WoMInterface.Game.Interaction;
 using WoMInterface.Game.Model;
 using WoMInterface.Game.Random;
@@ -26,21 +27,6 @@ namespace WoMInterface.Game.Combat
             this.maxRounds = maxRounds;
 
             inititiveOrder = new List<Fighter>();
-
-            //    new Fighter(mogwai) {
-            //        IsHero = true,
-            //        InititativeValue = mogwai.InitiativeRoll(mogwaiDice),
-            //        Dice = mogwaiDice,
-            //        Enemies = new List<Entity> { monster } },
-
-            //    new Fighter(monster) {
-            //        InititativeValue = monster.InitiativeRoll(monsterDice),
-            //        Dice = monsterDice,
-            //        Enemies = new List<Entity> { mogwai }
-            //    }
-            //};
-
-            //inititiveOrder.OrderBy(s => s.InititativeValue).ThenBy(s => s.Entity.Dexterity);
         }
 
         /// <summary>
@@ -53,12 +39,11 @@ namespace WoMInterface.Game.Combat
             foreach (var monster in monsters)
             {
                 Dice dice = new Dice(shift, m);
-                monster.Create(dice);
+                monster.Initialize(dice);
                 inititiveOrder.Add(
                     new Fighter(monster)
                     {
                         InititativeValue = monster.InitiativeRoll(dice),
-                        Dice = dice,
                         Enemies = new List<Entity> { mogwai }
                     });
             };
@@ -67,8 +52,7 @@ namespace WoMInterface.Game.Combat
                 new Fighter(mogwai)
                 {
                     IsHero = true,
-                    InititativeValue = mogwai.InitiativeRoll(shift.MogwaiDice),
-                    Dice = shift.MogwaiDice,
+                    InititativeValue = mogwai.InitiativeRoll(mogwai.Dice),
                     Enemies = monsters.Select(p => p as Entity).ToList()
                 });
 
@@ -81,42 +65,38 @@ namespace WoMInterface.Game.Combat
         /// <returns></returns>
         public bool Run()
         {
-            var hero = inititiveOrder.Where(p => p.IsHero).First();
-            var sheep = inititiveOrder.Where(p => !p.IsHero).First();
-            StringHelpers.Msg($"¬YSimpleFight§: ¬C{hero.Entity.Name}§[¬Y{hero.InititativeValue}§] vs. ¬C{sheep.Entity.Name}§[¬Y{sheep.InititativeValue}§]¬");
-            // let's start the rounds ...
+            var heros = string.Join(",", inititiveOrder.Where(p => p.IsHero).Select(p => $"{p.Entity.Name} [{p.InititativeValue}]").ToArray());
+            var monsters = string.Join(",", inititiveOrder.Where(p => !p.IsHero).Select(p => $"{p.Entity.Name} [{p.InititativeValue}]").ToArray());
+            StringHelpers.Msg($"¬YSimpleFight§: [¬C{heros}§] vs. [¬C{monsters}§]¬");
+
             Fighter winner = null;
+
+            // let's start the rounds ...
             for (currentRound = 1; currentRound < maxRounds && winner == null; currentRound++)
             {
                 int sec = (currentRound - 1) * 6;
-                StringHelpers.Msg($"[R¬G{currentRound.ToString("00")}§|¬a{(sec/60).ToString("00")}§:¬a{(sec%60).ToString("00")}§]¬");
+                StringHelpers.Msg($"[R¬G{currentRound.ToString("00")}§|¬a{(sec / 60).ToString("00")}§:¬a{(sec % 60).ToString("00")}§]¬");
 
-                for (int i = 0; i < inititiveOrder.Count; i++)
+                for (int turn = 0; turn < inititiveOrder.Count; turn++)
                 {
-                    Fighter combatant = inititiveOrder[i];
+                    Fighter combatant = inititiveOrder[turn];
+
                     if (combatant.Entity.CurrentHitPoints < 1)
                     {
                         continue;
                     }
 
-                    Entity target = combatant.Enemies.Where(p => p.CurrentHitPoints > 0).FirstOrDefault();
+                    Entity target = combatant.Enemies.Where(p => p.CurrentHitPoints > -1).FirstOrDefault();
 
-                    int attack = combatant.Entity.AttackRoll(combatant.Dice);
+                    // attack
+                    combatant.Entity.Attack(turn, target);
 
-                    StringHelpers.Msg($" + ¬g{i.ToString("00")}§: ¬C{combatant.Entity.Name}§ attacks ¬C{target.Name}§ with ¬c{combatant.Entity.Equipment.PrimaryWeapon.Name}§ roll ¬Y{attack}§[¬a{target.ArmorClass}§]:");
-
-                    if (attack > target.ArmorClass)
+                    if (target.CurrentHitPoints < 1)
                     {
-                        int damage = combatant.Entity.DamageRoll(combatant.Dice);
-                        StringHelpers.Msg($" ¬Gsucced§ ¬R{damage}§ damage!¬");
-                        target.CurrentHitPoints -= damage;
-                    }
-                    else
-                    {
-                        StringHelpers.Msg($" ¬Rfailed§!¬");
+
                     }
 
-                    if (!combatant.Enemies.Exists(p => p.CurrentHitPoints > 0))
+                    if (!combatant.Enemies.Exists(p => p.CurrentHitPoints > -1))
                     {
                         winner = combatant;
                         break;
@@ -139,7 +119,7 @@ namespace WoMInterface.Game.Combat
             }
             else
             {
-                 StringHelpers.Msg($"¬CNo winner, no loser, this fight was a draw!§");
+                StringHelpers.Msg($"¬CNo winner, no loser, this fight was a draw!§");
                 return false;
             }
 

@@ -12,6 +12,7 @@ using WoMInterface.Game.Random;
 using WoMInterface.Game.Interaction;
 using WoMInterface.Game.Enums;
 using WoMInterface.Game.Combat;
+using static WoMInterface.Node.Blockchain;
 
 namespace WoMInterface.Tool
 {
@@ -34,11 +35,11 @@ namespace WoMInterface.Tool
             @"+------------------+----------------------------------------------------------------------------------+",
             @"|  help                  | information about the tool                                                 |",
             @"|  version               | information about the current version                                      |",
-            @"|  mogwais               | list of all valid addresses for mogwais and thier state                    |",
+            @"|  mogwais (<s>)         | list of all valid addresses for mogwais and thier state [s=state]          |",
             @"|  create                | create a new valid address for a mogwai                                    |",
-            @"|  bind <address>        | activate a valid address to bind a mogwai [a=address]                      |",
-            @"|  show <address>        | show mogwai data                                                           |",
-            @"|  cache (<option>)      | cache blockchain [option=stats|clear]                                      |",
+            @"|  bind <a>              | activate a valid address to bind a mogwai [a=address]                      |",
+            @"|  show <a>              | show mogwai data                                                           |",
+            @"|  cache (<o>)           | cache blockchain [o=stats|clear]                                           |",
             @"|  exit                  | leave tool                                                                 |",
             @"|--deprecated commands--------------------------------------------------------------------------------+",
             @"|  settings              | rpc settings for wallet connection (deprecated)                            |",
@@ -52,7 +53,7 @@ namespace WoMInterface.Tool
             @"+------------------+----------------------------------------------------------------------------------+",
             @"|  help                  | show this information again                                                |",
             @"|  dismiss               | dismiss current mogwai                                                     |",
-            @"|  update (<option>)     | update current mogwai [option=restart|shift]                               |",
+            @"|  update (<o>)          | update current mogwai [o=restart|shift]                                    |",
             @"|  show                  | show current mogwai data                                                   |",
             @"|  adventure <t> <d>     | sent current mogwai to an adventure [t=adventuretype][d=difficulty]        |",
             @"|  shave sheep           | test combat with a common animal                                           |",
@@ -149,9 +150,9 @@ namespace WoMInterface.Tool
                 // commands without a current mogwai
                 else if (currentMogwai == null)
                 {
-                    if (line.Equals("mogwais"))
+                    if (line.StartsWith("mogwais"))
                     {
-                        Mogwais();
+                        Mogwais(line);
                     }
                     else if (line.Equals("create"))
                     {
@@ -295,7 +296,7 @@ namespace WoMInterface.Tool
         private void Show(string line)
         {
             string[] strArray = line.Split(' ');
-            if (strArray[0].Equals("show"))
+            if (strArray.Count() == 1 && strArray[0].Equals("show"))
             {
                 if (currentMogwai != null)
                 {
@@ -315,6 +316,17 @@ namespace WoMInterface.Tool
                 else
                 {
                     ConsoleWarn($"Couldn't show mogwai!");
+                }
+            }
+            else if (strArray.Count() == 2 && strArray[1].Equals("all"))
+            {
+                var mogwaiAddressesDict = Blockchain.Instance.ValidMogwaiAddresses();
+                foreach (var keyValue in mogwaiAddressesDict)
+                {
+                    if (Blockchain.Instance.TryGetMogwai(keyValue.Key, false, out Mogwai mogwai) == Blockchain.BoundState.BOUND)
+                    {
+                        Print(mogwai);
+                    }
                 }
             }
             else
@@ -355,8 +367,15 @@ namespace WoMInterface.Tool
         /// <summary>
         /// 
         /// </summary>
-        private void Mogwais()
+        private void Mogwais(string line)
         {
+            string[] strArray = line.Split(' ');
+            BoundState boundState = BoundState.BOUND;
+            if (strArray.Count() == 2 && Enum.TryParse<BoundState>(strArray[1], out boundState))
+            {
+
+            }
+
             var mogwaiAddressesDict = Blockchain.Instance.ValidMogwaiAddresses();
             string defaultStr = "+------------------------------------+-------+-------+------------+";
             ConsoleResponse(defaultStr);
@@ -367,8 +386,11 @@ namespace WoMInterface.Tool
                 var key = keyValue.Key;
                 var unspent = Blockchain.Instance.UnspendFunds(key, out List<ListUnspentResponse> listUnspent);
                 var created = Blockchain.Instance.TryGetMogwai(key, false, out Mogwai mogwai);
-                ConsoleResponse($"| {string.Format("{0,34}", key)} | {string.Format("{0,5}", created)} | {string.Format("{0,5}", mogwai == null ? 0 : mogwai.CurrentLevel)} | {string.Format("{0:###0.0000}", unspent).PadLeft(10).Substring(0, 10)} |");
-                ConsoleResponse(defaultStr);
+                if (strArray.Count() == 1 || created == boundState)
+                {
+                    ConsoleResponse($"| {string.Format("{0,34}", key)} | {string.Format("{0,5}", created)} | {string.Format("{0,5}", mogwai == null ? 0 : mogwai.CurrentLevel)} | {string.Format("{0:###0.0000}", unspent).PadLeft(10).Substring(0, 10)} |");
+                    ConsoleResponse(defaultStr);
+                }
             }
         }
 

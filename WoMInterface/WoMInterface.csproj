@@ -105,6 +105,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game\Enums\DamageType.cs" />
+    <Compile Include="Game\Enums\WeaponDamageType.cs" />
     <Compile Include="Game\Generator\Adventure.cs" />
     <Compile Include="Game\Generator\AdventureGenerator.cs" />
     <Compile Include="Game\Combat\Fighter.cs" />
@@ -120,6 +122,7 @@
     <Compile Include="Game\Interaction\Unknown.cs" />
     <Compile Include="Game\Model\Attribute.cs" />
     <Compile Include="Game\Model\Dungeon\Room.cs" />
+    <Compile Include="Game\Model\Equipment\Weapons.cs" />
     <Compile Include="Game\Model\Mogwai\Body.cs" />
     <Compile Include="Game\Model\Mogwai\Coat.cs" />
     <Compile Include="Game\Combat\SimpleFight.cs" />
