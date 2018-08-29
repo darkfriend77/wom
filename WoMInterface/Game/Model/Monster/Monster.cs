@@ -22,7 +22,7 @@ namespace WoMInterface.Game.Model
         // armor
         private int naturalArmor = 0;
         // attack
-        private int baseAttackBonus = 0;
+        private int[] baseAttackBonus = new int[] { 0 };
         // hitcoints
         private int[] hitPointDiceRollEvent = new int[] { 1, 6, 0 };
         // equipment
@@ -72,6 +72,11 @@ namespace WoMInterface.Game.Model
             return this;
         }
         public MonsterBuilder SetBaseAttackBonus(int baseAttackBonus)
+        {
+            this.baseAttackBonus = new int[] { baseAttackBonus };
+            return this;
+        }
+        public MonsterBuilder SetBaseAttackBonus(int[] baseAttackBonus)
         {
             this.baseAttackBonus = baseAttackBonus;
             return this;
@@ -155,5 +160,6 @@ namespace WoMInterface.Game.Model
             HitPointDice = Dice.Roll(HitPointDiceRollEvent);
             CurrentHitPoints = MaxHitPoints;
         }
+
     }
 }

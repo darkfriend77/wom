@@ -8,5 +8,4 @@
         BATTLE = 3,
         QUEST = 4
     }
-
 }

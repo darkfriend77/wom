@@ -409,7 +409,7 @@ namespace WoMInterface.Tool
                 "9679a3d39efdf8faa019410250fa91647a76cbb1bd2fd1c5d7ba80551b4edd7b",
                 1.00m,
                 0.0001m);
-            SimpleFight combat = new SimpleFight(new List<Monster>() { Animals.Rat });
+            SimpleCombat combat = new SimpleCombat(new List<Monster>() { Monsters.Rat });
             combat.Create(currentMogwai, shift);
             combat.Run();
         }

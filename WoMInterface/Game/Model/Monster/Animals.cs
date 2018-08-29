@@ -4,23 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WoMInterface.Game.Enums;
-using WoMInterface.Game.Random;
 
 namespace WoMInterface.Game.Model
 {
-    public class Animals
+    public partial class Monsters
     {
-        public static Monster Rat => 
+        public static Monster Rat =>
             MonsterBuilder.Create("Rat", 0.25, MonsterType.ANIMALS, 100)
-            .SetSizeType(SizeType.TINY)
-            .SetAbilities(2, 15, 11, 2, 13, 2)
-            .SetHitPointDiceRollEvent(new int[] { 1, 8 })
-            .SetBaseAttackBonus(0)
-            .SetBaseWeapon(NaturalWeapon.Bite(SizeType.TINY))
-            .SetDescription("Fecund and secretive, rats are omnivorous rodents that particularly thrive in urban areas.")
-            .Build();
+             .SetSizeType(SizeType.TINY)
+             .SetAbilities(2, 15, 11, 2, 13, 2)
+             .SetHitPointDiceRollEvent(new int[] { 1, 8 })
+             .SetBaseAttackBonus(0)
+             .SetBaseWeapon(NaturalWeapon.Bite(SizeType.TINY))
+             .SetDescription("Fecund and secretive, rats are omnivorous rodents that particularly thrive in urban areas.")
+             .Build();
 
-        public static Monster Wolf => 
+        public static Monster Wolf =>
             MonsterBuilder.Create("Wolf", 1, MonsterType.ANIMALS, 400)
             .SetSizeType(SizeType.MEDIUM)
             .SetAbilities(13, 15, 15, 2, 12, 6)

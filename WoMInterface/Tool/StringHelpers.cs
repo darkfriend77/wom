@@ -67,8 +67,27 @@ namespace WoMInterface.Tool
                     return ConsoleColor.White;
             }
         }
-
-        public static void Msg(string message)
+        public static void EvntMsg(string message)
+        {
+            Msg($"[¬YEVNT§] {message}");
+        }
+        public static void InfoMsg(string message)
+        {
+            Msg($"[¬aINFO§] {message}");
+        }
+        public static void CombMsg(string message)
+        {
+            Msg($"[¬yCOMB§] {message}");
+        }
+        public static void HealMsg(string message)
+        {
+            Msg($"[¬gHEAL§] {message}");
+        }
+        public static void DamgMsg(string message)
+        {
+            Msg($"[¬rDAMG§] {message}");
+        }
+        private static void Msg(string message)
         {
             // this is a ¬Rmessage§ red info => message red
             // ¬ last sign           => nextline

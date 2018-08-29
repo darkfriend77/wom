@@ -11,22 +11,26 @@ using WoMInterface.Tool;
 
 namespace WoMInterface.Game.Combat
 {
-    public class SimpleFight
+    public class SimpleCombat
     {
         private int maxRounds;
 
-        private List<Fighter> inititiveOrder;
+        private List<Combatant> inititiveOrder;
 
         private List<Monster> monsters;
 
         private int currentRound;
 
-        public SimpleFight(List<Monster> monsters, int maxRounds = 50)
+        public List<Entity> Heroes => inititiveOrder.Where(p => p.IsHero).Select(p => p.Entity).ToList();
+
+        public List<Entity> Monsters => inititiveOrder.Where(p => !p.IsHero).Select(p => p.Entity).ToList();
+
+        public SimpleCombat(List<Monster> monsters, int maxRounds = 50)
         {
             this.monsters = monsters;
             this.maxRounds = maxRounds;
 
-            inititiveOrder = new List<Fighter>();
+            inititiveOrder = new List<Combatant>();
         }
 
         /// <summary>
@@ -38,10 +42,10 @@ namespace WoMInterface.Game.Combat
             int m = 1;
             foreach (var monster in monsters)
             {
-                Dice dice = new Dice(shift, m);
+                Dice dice = new Dice(shift, m++);
                 monster.Initialize(dice);
                 inititiveOrder.Add(
-                    new Fighter(monster)
+                    new Combatant(monster)
                     {
                         InititativeValue = monster.InitiativeRoll(dice),
                         Enemies = new List<Entity> { mogwai }
@@ -49,7 +53,7 @@ namespace WoMInterface.Game.Combat
             };
 
             inititiveOrder.Add(
-                new Fighter(mogwai)
+                new Combatant(mogwai)
                 {
                     IsHero = true,
                     InititativeValue = mogwai.InitiativeRoll(mogwai.Dice),
@@ -67,21 +71,22 @@ namespace WoMInterface.Game.Combat
         {
             var heros = string.Join(",", inititiveOrder.Where(p => p.IsHero).Select(p => $"{p.Entity.Name} [{p.InititativeValue}]").ToArray());
             var monsters = string.Join(",", inititiveOrder.Where(p => !p.IsHero).Select(p => $"{p.Entity.Name} [{p.InititativeValue}]").ToArray());
-            StringHelpers.Msg($"¬YSimpleFight§: [¬C{heros}§] vs. [¬C{monsters}§]¬");
+            StringHelpers.EvntMsg($"¬YSimpleCombat§ [¬C{heros}§] vs. [¬C{monsters}§]¬");
 
-            Fighter winner = null;
+            Combatant winner = null;
 
             // let's start the rounds ...
             for (currentRound = 1; currentRound < maxRounds && winner == null; currentRound++)
             {
                 int sec = (currentRound - 1) * 6;
-                StringHelpers.Msg($"[R¬G{currentRound.ToString("00")}§|¬a{(sec / 60).ToString("00")}§:¬a{(sec % 60).ToString("00")}§]¬");
+                StringHelpers.EvntMsg($"[ROUND ¬G{currentRound.ToString("00")}§] time: ¬a{(sec / 60).ToString("00")}§m:¬a{(sec % 60).ToString("00")}§s¬");
 
                 for (int turn = 0; turn < inititiveOrder.Count; turn++)
                 {
-                    Fighter combatant = inititiveOrder[turn];
+                    Combatant combatant = inititiveOrder[turn];
 
-                    if (combatant.Entity.CurrentHitPoints < 1)
+                    // dead targets can't attack any more
+                    if (combatant.Entity.CurrentHitPoints < 0)
                     {
                         continue;
                     }
@@ -91,9 +96,11 @@ namespace WoMInterface.Game.Combat
                     // attack
                     combatant.Entity.Attack(turn, target);
 
-                    if (target.CurrentHitPoints < 1)
+                    if (target.CurrentHitPoints < 0 && target is Monster)
                     {
-
+                        Monster killedMonster = ((Monster)target);
+                        int expReward = killedMonster.Experience / Heroes.Count;
+                        Heroes.ForEach(p => p.AddExp(expReward, killedMonster));
                     }
 
                     if (!combatant.Enemies.Exists(p => p.CurrentHitPoints > -1))
@@ -106,11 +113,10 @@ namespace WoMInterface.Game.Combat
 
             if (winner != null)
             {
-                StringHelpers.Msg($"¬CCombat is over! The winner is {winner.Entity.Name}§¬");
+                StringHelpers.EvntMsg($"¬YSimpleCombat§ Fight is over! The winner is ¬C{winner.Entity.Name}§¬");
 
                 if (winner.IsHero)
                 {
-                    Reward(winner.Entity as Mogwai, winner.Enemies);
                     Loot(winner.Entity as Mogwai, winner.Enemies);
                     return true;
                 }
@@ -119,32 +125,10 @@ namespace WoMInterface.Game.Combat
             }
             else
             {
-                StringHelpers.Msg($"¬CNo winner, no loser, this fight was a draw!§");
+                StringHelpers.EvntMsg($"¬YSimpleCombat§ No winner, no loser, this fight was a draw!");
                 return false;
             }
 
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="mogwai"></param>
-        /// <param name="enemies"></param>
-        private void Reward(Mogwai mogwai, List<Entity> enemies)
-        {
-            CommandLine.InGameMessage($"Rewarding ", ConsoleColor.Cyan);
-            CommandLine.InGameMessage($"{mogwai.Name}");
-            CommandLine.InGameMessage($" for the victory.", ConsoleColor.Cyan, true);
-
-            // award experience for each killed enemy
-            enemies.ForEach(p =>
-            {
-                if (p is Monster)
-                {
-                    int expReward = ((Monster)p).Experience;
-                    mogwai.AddExp(expReward);
-                }
-            });
         }
 
         /// <summary>

@@ -184,7 +184,7 @@ namespace WoMInterface.Game.Model
     public class MonsterRoom : Room
     {
         private readonly List<Monster> monsters = new List<Monster>();
-        private SimpleFight fight;
+        private SimpleCombat fight;
 
         public override void Initialise(Mogwai mogwai, Shift shift)
         {
@@ -192,7 +192,7 @@ namespace WoMInterface.Game.Model
             CreateMonsters(mogwai, shift);
 
             // second, generate a fight instance
-            fight = new SimpleFight(monsters);
+            fight = new SimpleCombat(monsters);
             fight.Create(mogwai, shift);
         }
 
@@ -216,7 +216,7 @@ namespace WoMInterface.Game.Model
         private void CreateMonsters(Mogwai mogwai, Shift shift)
         {
             // not implemented
-            monsters.Add(Animals.Rat);
+            monsters.Add(Monsters.Rat);
         }
     }
 }

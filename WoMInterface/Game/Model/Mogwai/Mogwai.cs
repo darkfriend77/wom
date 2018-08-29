@@ -77,13 +77,13 @@ namespace WoMInterface.Game.Model
             NaturalArmor = 0;
             SizeType = SizeType.MEDIUM;
 
-            BaseAttackBonus = 1;
+            BaseAttackBonus = new int[] { 0 };
 
             // create experience
             Experience = new Experience(creationShift);
 
             // add simple gauntlets as weapon
-            Equipment.BaseWeapon = Weapons.Gauntlet;
+            Equipment.BaseWeapon = Weapons.Rapier;
 
             HitPointDice = 8;
             CurrentHitPoints = MaxHitPoints;
@@ -160,21 +160,15 @@ namespace WoMInterface.Game.Model
             CommandLine.InGameMessage($"!", true);
         }
 
-        public void AddExp(double exp, Monster monster = null)
+        public override void AddExp(double exp, Monster monster = null)
         {
             if (monster == null)
             {
-                CommandLine.InGameMessage($"You just earned ");
-                CommandLine.InGameMessage($"+{exp}", ConsoleColor.Green);
-                CommandLine.InGameMessage($" experience!", true);
+                StringHelpers.InfoMsg($"You just earned ¬G+{exp}§ experience!¬");
             }
             else
             {
-                CommandLine.InGameMessage($"The ");
-                CommandLine.InGameMessage($"{monster.Name}", ConsoleColor.DarkGray);
-                CommandLine.InGameMessage($" gave you ");
-                CommandLine.InGameMessage($"+{exp}", ConsoleColor.Green);
-                CommandLine.InGameMessage($"!", ConsoleColor.Cyan, true);
+                StringHelpers.InfoMsg($"The ¬C{monster.Name}§ gave you ¬G+{exp}§!¬");
             }
 
             Exp += exp;

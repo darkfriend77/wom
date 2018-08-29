@@ -7,6 +7,7 @@ namespace WoMInterface.Game.Model
     public sealed class WeaponBuilder
     {
         // description
+        private bool isTwoHanded = false;
         private int criticalMinRoll = 20;
         private int criticalMultiplier = 2;
         private WeaponDamageType[] weaponDamageTypes = new WeaponDamageType[] { WeaponDamageType.BLUDGEONING, WeaponDamageType.PIERCING, WeaponDamageType.SLASHING };
@@ -14,20 +15,27 @@ namespace WoMInterface.Game.Model
         private string description = string.Empty;
 
         public string name;
-        public int[] damageRollEvent;
+        public int[] damageSmallRollEvent;
+        public int[] damageMediumRollEvent;
 
-        private WeaponBuilder(string name, int[] damageRollEvent)
+        private WeaponBuilder(string name, int[] damageSmallRollEvent, int[] damageMediumRollEvent)
         {
             this.name = name;
-            this.damageRollEvent = damageRollEvent;
+            this.damageSmallRollEvent = damageSmallRollEvent;
+            this.damageMediumRollEvent = damageMediumRollEvent;
         }
-        public static WeaponBuilder Create(string name, int[] damageRollEvent)
+        public static WeaponBuilder Create(string name, int[] damageSmallRollEvent, int[] damageMediumRollEvent)
         {
-            return new WeaponBuilder(name, damageRollEvent);
+            return new WeaponBuilder(name, damageSmallRollEvent, damageMediumRollEvent);
         }
         public WeaponBuilder SetCriticalMinRoll(int criticalMinRoll)
         {
             this.criticalMinRoll = criticalMinRoll;
+            return this;
+        }
+        public WeaponBuilder IsTwoHanded()
+        {
+            isTwoHanded = true;
             return this;
         }
         public WeaponBuilder SetCriticalMultiplier(int criticalMultiplier)
@@ -52,7 +60,7 @@ namespace WoMInterface.Game.Model
         }
         public Weapon Build()
         {
-            return new Weapon(name, damageRollEvent, criticalMinRoll, criticalMultiplier, weaponDamageTypes, weight)
+            return new Weapon(name, damageSmallRollEvent, damageMediumRollEvent, criticalMinRoll, criticalMultiplier, weaponDamageTypes, weight, isTwoHanded)
             {
                 Description = description
             };
@@ -79,15 +87,29 @@ namespace WoMInterface.Game.Model
     public class Weapon
     {
         public string Name { get; }
-        public int[] DamageRoll { get; }
+        public int[] DamageRoll { get; set; }
+        private int[] damageSmallRollEvent;
+
         public int CriticalMinRoll { get; }
         public int CriticalMultiplier { get; }
         public WeaponDamageType[] WeaponDamageTypes { get; }
         public double Weight { get; }
         public string Description { get; set; }
         public bool IsCriticalRoll(int roll) => roll >= CriticalMinRoll;
-        
-        public Weapon(string name, int[] damageRoll, int criticalMinRoll, int criticalMultiplier, WeaponDamageType[] weaponDamageTypes, double weight)
+        public bool IsTwoHanded { get; }
+        public Weapon Small
+        {
+            get
+            {
+                if (damageSmallRollEvent != null)
+                {
+                    DamageRoll = damageSmallRollEvent;
+                }
+                return this;
+            }
+        }
+
+        public Weapon(string name, int[] damageRoll, int criticalMinRoll, int criticalMultiplier, WeaponDamageType[] weaponDamageTypes, double weight, bool isTwoHanded = false)
         {
             Name = name;
             DamageRoll = damageRoll;
@@ -95,6 +117,19 @@ namespace WoMInterface.Game.Model
             CriticalMultiplier = criticalMultiplier;
             WeaponDamageTypes = weaponDamageTypes;
             Weight = weight;
+            IsTwoHanded = isTwoHanded;
+        }
+
+        public Weapon(string name, int[] damageSmallRollEvent, int[] damageMediumRollEvent, int criticalMinRoll, int criticalMultiplier, WeaponDamageType[] weaponDamageTypes, double weight, bool isTwoHanded = false)
+        {
+            Name = name;
+            DamageRoll = damageMediumRollEvent;
+            this.damageSmallRollEvent = damageSmallRollEvent;
+            CriticalMinRoll = criticalMinRoll;
+            CriticalMultiplier = criticalMultiplier;
+            WeaponDamageTypes = weaponDamageTypes;
+            Weight = weight;
+            IsTwoHanded = isTwoHanded;
         }
 
     }

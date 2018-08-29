@@ -4,7 +4,7 @@ using WoMInterface.Game.Random;
 
 namespace WoMInterface.Game.Combat
 {
-    public class Fighter
+    public class Combatant
     {
         public bool IsHero { get; set; } = false;
         public Entity Entity { get; }
@@ -12,7 +12,7 @@ namespace WoMInterface.Game.Combat
         public Dice Dice { get; set; }
         public List<Entity> Enemies { get; set; }
 
-        public Fighter(Entity entity)
+        public Combatant(Entity entity)
         {
             Entity = entity;
         }

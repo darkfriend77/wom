@@ -22,7 +22,7 @@ namespace WoMInterface.Game.Generator
 
         private static TestRoom CreateTestRoom(int challengeRatingt)
         {
-            SimpleFight simpleFight = new SimpleFight(new List<Monster> {Animals.Rat});
+            SimpleCombat simpleFight = new SimpleCombat(new List<Monster> {Monsters.Rat, Monsters.Rat});
             TestRoom testRoom = new TestRoom(simpleFight);
             return testRoom;
         }

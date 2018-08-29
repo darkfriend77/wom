@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using WoMInterface.Game.Model;
 using WoMInterface.Game.Interaction;
 
-namespace WoMInterface.Game.Tests
+namespace WoMInterface.Game.Model.Tests
 {
     [TestClass()]
     public class MogwaiTest

@@ -53,19 +53,19 @@ namespace WoMInterface.Game.Model
         public int Initiative => DexterityMod;
 
         // base attack bonus = class dependent value
-        public int BaseAttackBonus { get; set; }
+        public int[] BaseAttackBonus { get; set; }
 
         // attackbonus = base attack bonus + strength modifier + size modifier
-        public int AttackBonus => BaseAttackBonus + StrengthMod + (int) SizeType;
+        public int AttackBonus(int attackIndex) => BaseAttackBonus[attackIndex] + StrengthMod + (int) SizeType;
 
         // attack roll
-        public int[] AttackRolls(Dice dice, int criticalMinRoll = 21)
+        public int[] AttackRolls(Dice dice, int attackIndex, int criticalMinRoll = 21)
         {
             int lastRoll = 0;
             List<int> rolls = new List<int>();
             for (int i = 0; i < 3; i++) {
                 lastRoll = dice.Roll(DiceType.D20);
-                rolls.Add(lastRoll + AttackBonus);
+                rolls.Add(lastRoll + AttackBonus(attackIndex));
                 if (lastRoll < criticalMinRoll)
                     break;
             }
@@ -78,7 +78,7 @@ namespace WoMInterface.Game.Model
         // damage
         public int DamageRoll(Dice dice)
         {
-            int damage = dice.Roll(Equipment.PrimaryWeapon.DamageRoll) + StrengthMod;
+            int damage = dice.Roll(Equipment.PrimaryWeapon.DamageRoll) + (Equipment.PrimaryWeapon.IsTwoHanded ? (int) Math.Floor(1.5 * StrengthMod) : StrengthMod);
             return damage < 1 ? 1 : damage;
         }
 
@@ -135,31 +135,39 @@ namespace WoMInterface.Game.Model
         {
             Weapon weapon = Equipment.PrimaryWeapon;
 
-            int[] attackRolls = AttackRolls(Dice, weapon.CriticalMinRoll);
-            int attack = AttackRoll(attackRolls, target.ArmorClass, out int criticalCounts);
-
-            string attackStr = criticalCounts > 0 ? "critical" : attack.ToString();
-            StringHelpers.Msg($" + ¬g{turn.ToString("00")}§: ¬C{Name}§[¬G{CurrentHitPoints}§] attacks ¬C{target.Name}§ with ¬c{weapon.Name}§ roll ¬Y{attackStr}§[¬a{target.ArmorClass}§]:");
-
-            if (attack > target.ArmorClass || criticalCounts > 0)
+            // all attacks are calculated
+            for (int attackIndex = 0; attackIndex < BaseAttackBonus.Length; attackIndex++)
             {
 
-                int damage = DamageRoll(Dice);
-                int criticalDamage = 0;
-                if (criticalCounts > 0)
+                int[] attackRolls = AttackRolls(Dice, attackIndex, weapon.CriticalMinRoll);
+                int attack = AttackRoll(attackRolls, target.ArmorClass, out int criticalCounts);
+
+                //string turnStr = $" + ¬g{turn.ToString("00")}§: ";
+                string attackStr = criticalCounts > 0 ? "critical" : attack.ToString();
+                string attackIndexStr = (attackIndex + 1).ToString() + (attackIndex == 0 ? "st" : "th");
+                string message = $"¬C{Name}§[¬G{CurrentHitPoints}§] ¬y{attackIndexStr}§ " +
+                    $"attack ¬C{target.Name}§ with ¬c{weapon.Name}§ roll ¬Y{attackStr}§[¬a{target.ArmorClass}§]:";
+
+                if (attack > target.ArmorClass || criticalCounts > 0)
                 {
-                    for (int i = 0; i < weapon.CriticalMultiplier-1; i++)
+
+                    int damage = DamageRoll(Dice);
+                    int criticalDamage = 0;
+                    if (criticalCounts > 0)
                     {
-                        criticalDamage += DamageRoll(Dice); 
+                        for (int i = 0; i < weapon.CriticalMultiplier - 1; i++)
+                        {
+                            criticalDamage += DamageRoll(Dice);
+                        }
                     }
+                    string criticalStr = criticalDamage > 0 ? $"¬y(+{criticalDamage})§" : string.Empty;
+                    StringHelpers.CombMsg($"{message} ¬Ghit for§ ¬y{damage}§{criticalStr} ¬Gdamage!§¬");
+                    target.Damage(damage + criticalDamage, DamageType.WEAPON);
                 }
-                string criticalStr = criticalDamage > 0 ? $"¬y(+{criticalDamage})§" : string.Empty;
-                StringHelpers.Msg($" hit for ¬y{damage}§{criticalStr} damage!¬");
-                target.Damage(damage + criticalDamage, DamageType.WEAPON);
-            }
-            else
-            {
-                StringHelpers.Msg($" ¬Rfailed§!¬");
+                else
+                {
+                    StringHelpers.CombMsg($"{message} ¬Rfailed§!¬");
+                }
             }
         }
 
@@ -185,6 +193,16 @@ namespace WoMInterface.Game.Model
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="exp"></param>
+        /// <param name="monster"></param>
+        public virtual void AddExp(double exp, Monster monster = null)
+        {
+            // nothing here ..
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="healAmount"></param>
         /// <param name="healType"></param>
         public void Heal(int healAmount, HealType healType)
@@ -200,7 +218,7 @@ namespace WoMInterface.Game.Model
                 healAmount = missingHealth;
             }
 
-            StringHelpers.Msg($"¬C{Name}§ restores ¬G{healAmount}§ HP from {healType.ToString().ToLower()} healing.¬");
+            StringHelpers.HealMsg($"¬C{Name}§ restores ¬G{healAmount}§ HP from {healType.ToString().ToLower()} healing.¬");
             CurrentHitPoints += healAmount;
         }
 
@@ -216,12 +234,12 @@ namespace WoMInterface.Game.Model
                 return;
             }
 
-            StringHelpers.Msg($"¬C{Name}§ suffers ¬R{damageAmount}§ HP from {damageType.ToString().ToLower()} damage.¬");
+            StringHelpers.DamgMsg($"¬C{Name}§ suffers ¬R{damageAmount}§ HP from {damageType.ToString().ToLower()} damage.¬");
             CurrentHitPoints -= damageAmount;
 
             if (CurrentHitPoints < 1)
             {
-                StringHelpers.Msg($"¬C{Name}§ got a deadly hit, healthstate is ¬R{HealthState.ToString().ToLower()}§.¬");
+                StringHelpers.DamgMsg($"¬C{Name}§ got a deadly hit, healthstate is ¬R{HealthState.ToString().ToLower()}§.¬");
             }
         }
     }

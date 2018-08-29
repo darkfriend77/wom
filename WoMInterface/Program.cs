@@ -51,9 +51,9 @@ namespace WoMInterface
         }
         static void Test2()
         {
-            StringHelpers.Msg("this is a ¬Rmessage§ red info");
-            StringHelpers.Msg(" same line this is ¬Yyellow§ and ¬ydarkyellow§  and on next line¬");
-            StringHelpers.Msg("¬Bblue§¬Wberry$¬Rmuffin§!!!");
+            StringHelpers.InfoMsg("this is a ¬Rmessage§ red info");
+            StringHelpers.InfoMsg(" same line this is ¬Yyellow§ and ¬ydarkyellow§  and on next line¬");
+            StringHelpers.InfoMsg("¬Bblue§¬Wberry$¬Rmuffin§!!!");
             Console.ReadKey();
         }
     }
