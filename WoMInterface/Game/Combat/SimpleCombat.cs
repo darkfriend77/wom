@@ -79,7 +79,7 @@ namespace WoMInterface.Game.Combat
             for (currentRound = 1; currentRound < maxRounds && winner == null; currentRound++)
             {
                 int sec = (currentRound - 1) * 6;
-                StringHelpers.EvntMsg($"[ROUND ¬G{currentRound.ToString("00")}§] time: ¬a{(sec / 60).ToString("00")}§m:¬a{(sec % 60).ToString("00")}§s¬");
+                StringHelpers.EvntMsg($"[ROUND ¬G{currentRound.ToString("00")}§] time: ¬a{(sec / 60).ToString("00")}§m:¬a{(sec % 60).ToString("00")}§s Monsters: {Monsters.Count} ({string.Join(",",Monsters.Select(p => p.Name))})¬");
 
                 for (int turn = 0; turn < inititiveOrder.Count; turn++)
                 {
@@ -117,7 +117,7 @@ namespace WoMInterface.Game.Combat
 
                 if (winner.IsHero)
                 {
-                    Loot(winner.Entity as Mogwai, winner.Enemies);
+                    Loot(Heroes, Monsters);
                     return true;
                 }
 
@@ -136,7 +136,7 @@ namespace WoMInterface.Game.Combat
         /// </summary>
         /// <param name="mogwai"></param>
         /// <param name="enemies"></param>
-        internal void Loot(Mogwai mogwai, List<Entity> enemies)
+        internal void Loot(List<Entity> mogwais, List<Entity> enemies)
         {
             // award experience for each killed enemy
             enemies.ForEach(p =>
@@ -144,19 +144,8 @@ namespace WoMInterface.Game.Combat
                 if (p is Monster)
                 {
                     Treasure treasure = ((Monster)p).Treasure;
-                    CommandLine.InGameMessage($"Looting the ");
-                    CommandLine.InGameMessage($"{p.Name}", ConsoleColor.DarkGray);
-                    CommandLine.InGameMessage($" he has ");
-                    if (treasure != null)
-                    {
-                        CommandLine.InGameMessage($"a Treasure", ConsoleColor.Green);
-                    }
-                    else
-                    {
-                        CommandLine.InGameMessage($"no Treasure", ConsoleColor.Red);
-                    }
-
-                    CommandLine.InGameMessage($"!", true);
+                    string treasureStr = treasure != null ? "¬Ga Treasure§" : "¬Rno Treasure§";
+                    StringHelpers.EvntMsg($"¬YLooting§ the ¬C{p.Name}§ he has {treasureStr}!¬");
                 }
             });
         }
