@@ -91,7 +91,7 @@ namespace WoMInterface.Game.Model
     {
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private HexValue hexValue;
+        private HexValue _hexValue;
 
         public string Name { get; }
         public bool Salted { get; }
@@ -106,11 +106,11 @@ namespace WoMInterface.Game.Model
 
         private double value = -1;
 
-        public Attribute(string name, bool salted, int postion, int size, int creation, int minRange, int maxRange, EvolutionPattern evoPat)
+        public Attribute(string name, bool salted, int position, int size, int creation, int minRange, int maxRange, EvolutionPattern evoPat)
         {
             Name = name;
             Salted = salted;
-            Position = postion;
+            Position = position;
             Size = size;
             Creation = creation;
             MinRange = minRange;
@@ -125,9 +125,9 @@ namespace WoMInterface.Game.Model
         
         public bool CreateValue(HexValue hexValue)
         {
-            this.hexValue = hexValue;
+            this._hexValue = hexValue;
 
-            if (this.hexValue == null)
+            if (this._hexValue == null)
             {
                 Console.WriteLine($"HexValue is null, can't calculate value without.");
                 return false;
