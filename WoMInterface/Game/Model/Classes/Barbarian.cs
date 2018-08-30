@@ -17,6 +17,10 @@ namespace WoMInterface.Game.Model
         {
             base.LevelUp();
 
+            FortitudeBaseSave += 1;
+            ReflexBaseSave += 1;
+            WillBaseSave += 1;
+
             AddBaseAttackBonus(1);
         }
     }

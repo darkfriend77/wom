@@ -10,33 +10,17 @@ namespace WoMInterface.Game.Model
     {
         public int ClassLevel { get; set; }
 
-        public int[] BaseAttackBonus { get; set; }
+        public int FortitudeBaseSave { get; set; }
+        public int ReflexBaseSave { get; set; }
+        public int WillBaseSave { get; set; }
 
+        public int[] BaseAttackBonus { get; set; }
+        
         public Classes()
         {
             ClassLevel = 1;
             BaseAttackBonus = new int[] { 0 };
         }
-
-        //internal void AddBaseAttackBonus(int value)
-        //{
-        //    int currentBaseAttackBonus = BaseAttackBonus[0] + value;
-        //    int babCount = currentBaseAttackBonus / 5;
-
-        //    if (currentBaseAttackBonus % 5 == 0 && babCount > 0)
-        //    {
-        //        babCount -= 1;
-        //    }
-
-        //    int[] result = new int[babCount];
-        //    for (int i = 0; i < result.Length; i++)
-        //    {
-        //        result[i] = currentBaseAttackBonus;
-        //        currentBaseAttackBonus -= 5;
-        //    }
-
-        //    BaseAttackBonus = result;
-        //}
 
         internal void AddBaseAttackBonus(int value)
         {

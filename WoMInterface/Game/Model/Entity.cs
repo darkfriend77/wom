@@ -18,6 +18,8 @@ namespace WoMInterface.Game.Model
 
         public SizeType SizeType { get; set; }
 
+        #region abilities
+
         public int Strength { get; set; }
         public int StrengthMod => Modifier(Strength);
 
@@ -37,10 +39,12 @@ namespace WoMInterface.Game.Model
         public int CharismaMod => Modifier(Charisma);
 
         private int Modifier(int ability) => (int)Math.Floor((ability - 10) / 2.0);
+        
+        #endregion
 
+        public int NaturalArmor { get; set; }
         // armorclass = 10 + armor bonus + shield bonus + dex modifier + size modifier + natural armor + deflection + misc modifier
         public int ArmorClass => 10 + Equipment.ArmorBonus + Equipment.ShieldBonus + DexterityMod + (int) SizeType + NaturalArmor;
-        public int NaturalArmor { get; set; }
 
         // hitpoints
         public int HitPointDice { get; set; }
@@ -51,6 +55,18 @@ namespace WoMInterface.Game.Model
 
         // initiative = dex modifier + misc modifier
         public int Initiative => DexterityMod;
+
+        #region saving throws
+
+        //saving throw = basesave + abilitymod + misc modifier + magic modifier + temp modifier
+        public int FortitudeBaseSave { get; set; }
+        public int Fortitude => FortitudeBaseSave + ConstitutionMod;
+        public int ReflexBaseSave { get; set; }
+        public int Reflex => ReflexBaseSave + DexterityMod;
+        public int WillBaseSave { get; set; }
+        public int Will => WillBaseSave + WisdomMod;
+
+        #endregion
 
         // base attack bonus = class dependent value
         public int[] BaseAttackBonus { get; set; }
