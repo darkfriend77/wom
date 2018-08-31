@@ -15,10 +15,17 @@ namespace WoMInterface.Game.Model
         public int WillBaseSave { get; set; }
 
         public int[] BaseAttackBonus { get; set; }
-        
+
+        public int[] HitHitPointDiceRollEvent { get; set; }
+
+        public int[] WealthDiceRollEvent { get; set; }
+
+        public string Description { get; set; }
+        public string Role { get; set; }
+
         public Classes()
         {
-            ClassLevel = 1;
+            ClassLevel = 0;
             BaseAttackBonus = new int[] { 0 };
         }
 
@@ -34,7 +41,7 @@ namespace WoMInterface.Game.Model
             BaseAttackBonus = baseAttackBonusList.ToArray();
         }
 
-        public virtual void LevelUp()
+        public virtual void ClassLevelUp()
         {
             ClassLevel += 1;
         }

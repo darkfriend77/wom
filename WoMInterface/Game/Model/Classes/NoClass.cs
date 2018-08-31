@@ -12,9 +12,9 @@ namespace WoMInterface.Game.Model
         {
         }
 
-        public override void LevelUp()
+        public override void ClassLevelUp()
         {
-            base.LevelUp();
+            base.ClassLevelUp();
         }
     }
 }
