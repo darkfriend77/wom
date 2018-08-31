@@ -7,9 +7,9 @@ using WoMInterface.Game.Enums;
 
 namespace WoMInterface.Game.Interaction
 {
-    class SelectionAction : Interaction
+    class LevelingAction : Interaction
     {
-        public SelectionType SelectionType { get; }
+        public LevelingType LevelingType { get; }
 
         public ClassType ClassType { get; }
 
@@ -17,33 +17,33 @@ namespace WoMInterface.Game.Interaction
 
         public int ClassLevel { get; }
 
-        public SelectionAction(SelectionType selectionType, ClassType classType, int currentLevel, int classLevel) : base(InteractionType.SELECTION)
+        public LevelingAction(LevelingType levelingType, ClassType classType, int currentLevel, int classLevel) : base(InteractionType.LEVELING)
         {
-            SelectionType = selectionType;
+            LevelingType = levelingType;
             ClassType = classType;
             CurrentLevel = currentLevel;
             ClassLevel = classLevel;
-            ParamAdd1 = ((int)selectionType * 100) + (int)classType;
+            ParamAdd1 = ((int)levelingType * 100) + (int)classType;
             ParamAdd2 =  ((int)currentLevel * 100) + (int)classLevel;
         }
 
-        public static bool TryGetAdventure(int paramAdd1, int paramAdd2, out SelectionAction selection)
+        public static bool TryGetAdventure(int paramAdd1, int paramAdd2, out LevelingAction leveling)
         {
-            if (Enum.IsDefined(typeof(SelectionType), int.Parse(paramAdd1.ToString("0000").Substring(0, 2)))
+            if (Enum.IsDefined(typeof(LevelingType), int.Parse(paramAdd1.ToString("0000").Substring(0, 2)))
              && Enum.IsDefined(typeof(ClassType), int.Parse(paramAdd1.ToString("0000").Substring(2, 2))))
             {
-                selection = new SelectionAction(paramAdd1, paramAdd2);
+                leveling = new LevelingAction(paramAdd1, paramAdd2);
                 return true;
             }
 
-            selection = null;
+            leveling = null;
             return false;
         }
 
-        private SelectionAction(int paramAdd1, int paramAdd2) : base(InteractionType.SELECTION)
+        private LevelingAction(int paramAdd1, int paramAdd2) : base(InteractionType.LEVELING)
         {
             string param1 = paramAdd1.ToString("0000");
-            SelectionType = (SelectionType)int.Parse(param1.Substring(0, 2));
+            LevelingType = (LevelingType)int.Parse(param1.Substring(0, 2));
             ClassType =  (ClassType)int.Parse(param1.Substring(2, 2));
 
             string param2 = paramAdd2.ToString("0000");

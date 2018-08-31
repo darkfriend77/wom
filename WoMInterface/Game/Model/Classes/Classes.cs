@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMInterface.Game.Enums;
 
 namespace WoMInterface.Game.Model
 {
     public abstract class Classes
     {
+        public string Name => ClassType.ToString().Substring(0, 1) + ClassType.ToString().Substring(1).ToLower();
+
+        public ClassType ClassType { get; set; }
         public int ClassLevel { get; set; }
 
         public int FortitudeBaseSave { get; set; }
@@ -23,7 +27,7 @@ namespace WoMInterface.Game.Model
         public string Description { get; set; }
         public string Role { get; set; }
 
-        public Classes()
+        public Classes(ClassType ClassType)
         {
             ClassLevel = 0;
             BaseAttackBonus = new int[] { 0 };

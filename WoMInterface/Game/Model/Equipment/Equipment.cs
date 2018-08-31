@@ -9,7 +9,9 @@
 
         public Weapon SecondaryWeapon { get; set; }
 
-        public int ArmorBonus => 0;
+        public Armor Armor { get; set; }
+
+        public int ArmorBonus => 0 + (Armor != null ? Armor.ArmorBonus : 0);
 
         public int ShieldBonus => 0;
     }

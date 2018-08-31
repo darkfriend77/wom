@@ -2,6 +2,6 @@
 {
     public enum SelectionType
     {
-        CLASS = 0
+        NONE = 0
     }
 }

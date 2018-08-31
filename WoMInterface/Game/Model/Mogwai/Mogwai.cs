@@ -50,7 +50,7 @@ namespace WoMInterface.Game.Model
         {
             Key = key;
             Shifts = shifts;
-            LevelShifts = new Dictionary<int, Shift>();
+            LevelShifts = new Dictionary<int, Shift>() { { CurrentLevel, currentShift } };
 
             var creationShift = shifts[0];
 
@@ -82,8 +82,11 @@ namespace WoMInterface.Game.Model
             // create experience
             Experience = new Experience(creationShift);
 
-            // add simple gauntlets as weapon
-            Equipment.BaseWeapon = Weapons.Rapier;
+            // add simple rapier as weapon
+            Equipment.PrimaryWeapon = Weapons.Rapier;
+
+            // add simple rapier as weapon
+            Equipment.Armor = Armors.StuddedLeather;
 
             HitPointDice = 8;
             CurrentHitPoints = MaxHitPoints;
@@ -137,6 +140,9 @@ namespace WoMInterface.Game.Model
                     {
                         case InteractionType.ADVENTURE:
                             Adventure = AdventureGenerator.Create(shift, (AdventureAction) shift.Interaction);
+                            break;
+                        case InteractionType.LEVELING:
+                            Console.WriteLine("Received a leveling action!");
                             break;
                         default:
                             break;
@@ -222,5 +228,6 @@ namespace WoMInterface.Game.Model
             Stats.All.ForEach(p => Console.WriteLine($"{p.Name}: {p.GetValue()} [{p.MinRange}-{p.Creation-1}] Var:{p.MaxRange}-->{p.Valid}"));
             Experience.Print();
         }
+
     }
 }

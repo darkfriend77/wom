@@ -263,8 +263,6 @@ namespace WoMInterface.Node
                 return false;
             }
 
-            Console.WriteLine($"Starting mogwai creation now!");
-
             var burned = BurnMogs(address, mogwaiAddress, mogwaiCost, txFee);
 
             return burned;
@@ -340,13 +338,14 @@ namespace WoMInterface.Node
             }
 
             var rawTx = mogwaiService.CreateRawTransaction(rawTxRequest);
-            Console.WriteLine($"rawTx: {rawTx}");
+            _log.Info($"rawTx: {rawTx}");
 
             var signedRawTx = mogwaiService.SignRawTransaction(new SignRawTransactionRequest(rawTx));
-            Console.WriteLine($"signedRawTx: {signedRawTx.Hex}");
+            _log.Info($"signedRawTx: {signedRawTx.Hex}");
 
             var sendRawTx = mogwaiService.SendRawTransaction(signedRawTx.Hex, false);
-            Console.WriteLine($"sendRawTx: {sendRawTx}");
+            _log.Info($"sendRawTx: {sendRawTx}");
+            Console.WriteLine($"txid: {sendRawTx}");
 
             return true;
         }

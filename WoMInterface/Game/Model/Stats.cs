@@ -25,39 +25,39 @@ namespace WoMInterface.Game.Model
             switch(Allignment)
             {
                 case 0:
-                    return "LG";
+                    return "Lawful Good";
                 case 1:
-                    return "LG";
+                    return "Lawful Good";
                 case 2:
-                    return "LG";
+                    return "Lawful Good";
                 case 3:
-                    return "LG";
+                    return "Lawful Good";
                 case 4:
-                    return "LG";
+                    return "Lawful Good";
                 case 5:
-                    return "NG";
+                    return "Neutral Good";
                 case 6:
-                    return "NG";
+                    return "Neutral Good";
                 case 7:
-                    return "CG";
+                    return "Chaotic Good";
                 case 8:
-                    return "LN";
+                    return "Lawful Neutral";
                 case 9:
-                    return "LN";
+                    return "Lawful Neutral";
                 case 10:
-                    return "TN";
+                    return "True Neutral";
                 case 11:
-                    return "TN";
+                    return "True Neutral";
                 case 12:
-                    return "CN";
+                    return "Chaotic Neutral";
                 case 13:
-                    return "LE";
+                    return "Lawful Evil";
                 case 14:
-                    return "NE";
+                    return "Neutral Evil";
                 case 15:
-                    return "CE";
+                    return "Chaotic Evil";
                 default: 
-                    return "LG";
+                    return "Lawful Good";
             }
         }
     }

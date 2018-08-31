@@ -14,7 +14,14 @@ namespace WoMInterface.Game.Model
         public string Name { get; set; }
 
         public int Gender { get; set; }
-        public string MapGender => ((GenderType)Gender).ToString();
+        public string MapGender
+        {
+            get
+            {
+                string gender = ((GenderType)Gender).ToString();
+                return gender.Substring(0,1) + gender.Substring(1).ToLower();
+            }
+        }
 
         public SizeType SizeType { get; set; }
 
@@ -132,6 +139,13 @@ namespace WoMInterface.Game.Model
         // dice
         public virtual Dice Dice { get; set; }
 
+        public Classes CurrentClass => Classes.Count > 0 ? Classes[0] : null;
+        public List<Classes> Classes { get; }
+        public int GetClassLevel(ClassType classType)
+        {
+            Classes classes = Classes.Where(p => p.ClassType == classType).FirstOrDefault();
+            return classes == null ? 0 : classes.ClassLevel;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -140,7 +154,7 @@ namespace WoMInterface.Game.Model
             // initialize
             HitPointLevelRolls = new List<int>();
             Equipment = new Equipment();
-
+            Classes = new List<Classes>();
         }
 
         /// <summary>

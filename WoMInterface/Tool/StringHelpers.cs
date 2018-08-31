@@ -87,7 +87,7 @@ namespace WoMInterface.Tool
         {
             Msg($"[¬rDAMG§] {message}");
         }
-        private static void Msg(string message)
+        public static void Msg(string message)
         {
             // this is a ¬Rmessage§ red info => message red
             // ¬ last sign           => nextline
@@ -132,6 +132,14 @@ namespace WoMInterface.Tool
                 Console.WriteLine();
             }
 
+        }
+
+        internal static string GetBar(double value1, double value2, out int hpPerc)
+        {
+            var rate = value1 / value2;
+            hpPerc = (int) (rate * 100);
+            int count = (int) (15 * rate);
+            return "¬G"+ string.Empty.PadRight(count,'o') + "§" + "¬R"+ string.Empty.PadRight(15-count,'.') + "§";
         }
     }
 }

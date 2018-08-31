@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMInterface.Game.Enums;
 
 namespace WoMInterface.Game.Model
 {
     public class Barbarian : Classes
     {
-        public Barbarian()
+        public Barbarian() : base(ClassType.BARBARIAN)
         {
             HitHitPointDiceRollEvent = new int[] { 1, 12 };
             WealthDiceRollEvent = new int[] { 3, 6 , 0, 1};
@@ -30,9 +31,9 @@ namespace WoMInterface.Game.Model
         {
             base.ClassLevelUp();
 
-            FortitudeBaseSave += 1;
-            ReflexBaseSave += 1;
-            WillBaseSave += 1;
+            FortitudeBaseSave = (int) (2+((double)ClassLevel/2));
+            ReflexBaseSave = (int) (0+((double)ClassLevel/3));
+            WillBaseSave = (int)  (0+((double)ClassLevel/3));
 
             AddBaseAttackBonus(1);
         }

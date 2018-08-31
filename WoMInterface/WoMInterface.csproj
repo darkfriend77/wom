@@ -105,8 +105,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game\Enums\ArmorType.cs" />
     <Compile Include="Game\Enums\ClassType.cs" />
     <Compile Include="Game\Enums\DamageType.cs" />
+    <Compile Include="Game\Enums\LevelingType.cs" />
     <Compile Include="Game\Enums\SelectionType.cs" />
     <Compile Include="Game\Enums\WeaponDamageType.cs" />
     <Compile Include="Game\Generator\Adventure.cs" />
@@ -122,6 +124,7 @@
     <Compile Include="Game\Interaction\AdventureAction.cs" />
     <Compile Include="Game\Enums\Difficulty.cs" />
     <Compile Include="Game\Interaction\Interaction.cs" />
+    <Compile Include="Game\Interaction\LevelingAction.cs" />
     <Compile Include="Game\Interaction\SelectionAction.cs" />
     <Compile Include="Game\Interaction\Unknown.cs" />
     <Compile Include="Game\Model\Attribute.cs" />
@@ -133,6 +136,7 @@
     <Compile Include="Game\Model\Dungeon\Room.cs" />
     <Compile Include="Game\Model\Dungeon\Wall.cs" />
     <Compile Include="Game\Model\Equipment\Armor.cs" />
+    <Compile Include="Game\Model\Equipment\Armors.cs" />
     <Compile Include="Game\Model\Equipment\Weapons.cs" />
     <Compile Include="Game\Model\Mogwai\Body.cs" />
     <Compile Include="Game\Model\Mogwai\Coat.cs" />

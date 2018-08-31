@@ -56,6 +56,12 @@ namespace WoMInterface.Game.Interaction
                             return adventure;
                         }
                         break;
+                    case InteractionType.LEVELING:
+                        if (LevelingAction.TryGetAdventure(addParam1, addParam2, out LevelingAction leveling))
+                        {
+                            return leveling;
+                        }
+                        break;
                 }
             }
 

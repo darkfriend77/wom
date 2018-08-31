@@ -97,6 +97,10 @@ namespace WoMInterface.Game.Model
         public string Description { get; set; }
         public bool IsCriticalRoll(int roll) => roll >= CriticalMinRoll;
         public bool IsTwoHanded { get; }
+
+        public int MinDmg => DamageRoll[0] + (DamageRoll.Length > 3 ? DamageRoll[3] : 0);
+        public int MaxDmg => (DamageRoll[0] * DamageRoll[1]) + (DamageRoll.Length > 3 ? DamageRoll[3] : 0);
+
         public Weapon Small
         {
             get
