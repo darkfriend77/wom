@@ -7,7 +7,7 @@ using WoMInterface.Game.Enums;
 
 namespace WoMInterface.Game.Interaction
 {
-    class LevelingAction : Interaction
+    public class LevelingAction : Interaction
     {
         public LevelingType LevelingType { get; }
 

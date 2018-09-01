@@ -1,23 +1,21 @@
-﻿using BitcoinLib.Responses;
-using log4net;
+﻿using log4net;
 using log4net.Config;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using WoMInterface.Game.Ascii;
+using WoMInterface.Game.Combat;
+using WoMInterface.Game.Enums;
+using WoMInterface.Game.Interaction;
 using WoMInterface.Game.Model;
 using WoMInterface.Node;
-using WoMInterface.Game.Random;
-using WoMInterface.Game.Interaction;
-using WoMInterface.Game.Enums;
-using WoMInterface.Game.Combat;
-using static WoMInterface.Node.Blockchain;
-using WoMInterface.Game.Ascii;
+using WoMInterface.Tool;
 
-namespace WoMInterface.Tool
+namespace WoMAscii
 {
-    class CommandLine
+    public class CommandLine
     {
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -127,7 +125,7 @@ namespace WoMInterface.Tool
                 }
                 else if (line.Equals("version"))
                 {
-                    ConsoleResponse($"Wallet: {Blockchain.Instance.GetInfo().WalletVersion}, CmdLine: {Assembly.GetExecutingAssembly().GetName().Version}");
+                    ConsoleResponse($"Wallet: {Blockchain.Instance.GetWalletVersion()}, CmdLine: {Assembly.GetExecutingAssembly().GetName().Version}");
                 }
                 else if (line.Equals("settings"))
                 {
@@ -263,7 +261,7 @@ namespace WoMInterface.Tool
             }
             else if (strArray.Count() == 2 && strArray[1].Equals("restart"))
             {
-                if (Blockchain.Instance.TryGetMogwai(currentMogwai.Key, false, out Mogwai mogwai) == Blockchain.BoundState.BOUND)
+                if (Blockchain.Instance.TryGetMogwai(currentMogwai.Key, false, out Mogwai mogwai) == BoundState.BOUND)
                 {
                     ConsoleResponse($"Pointer reseted for {mogwai.Name} [{mogwai.CurrentLevel}]! Pointer: {mogwai.Pointer}");
                     currentMogwai = mogwai;
@@ -338,7 +336,7 @@ namespace WoMInterface.Tool
             }
             else if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
             {
-                if (Blockchain.Instance.TryGetMogwai(strArray[1], false, out Mogwai mogwai) == Blockchain.BoundState.BOUND)
+                if (Blockchain.Instance.TryGetMogwai(strArray[1], false, out Mogwai mogwai) == BoundState.BOUND)
                 {
                     Print(mogwai);
                 }
@@ -352,7 +350,7 @@ namespace WoMInterface.Tool
                 var mogwaiAddressesDict = Blockchain.Instance.ValidMogwaiAddresses();
                 foreach (var keyValue in mogwaiAddressesDict)
                 {
-                    if (Blockchain.Instance.TryGetMogwai(keyValue.Key, false, out Mogwai mogwai) == Blockchain.BoundState.BOUND)
+                    if (Blockchain.Instance.TryGetMogwai(keyValue.Key, false, out Mogwai mogwai) == BoundState.BOUND)
                     {
                         Print(mogwai);
                     }
@@ -413,7 +411,7 @@ namespace WoMInterface.Tool
             foreach (var keyValue in mogwaiAddressesDict)
             {
                 var key = keyValue.Key;
-                var unspent = Blockchain.Instance.UnspendFunds(key, out List<ListUnspentResponse> listUnspent);
+                var unspent = Blockchain.Instance.UnspendFunds(key);
                 var created = Blockchain.Instance.TryGetMogwai(key, false, out Mogwai mogwai);
                 if (strArray.Count() == 1 || created == boundState)
                 {
@@ -452,7 +450,7 @@ namespace WoMInterface.Tool
             string[] strArray = line.Split(' ');
             if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
             {
-                if (Blockchain.Instance.TryGetMogwai(strArray[1], false, out Mogwai mogwai) == Blockchain.BoundState.BOUND)
+                if (Blockchain.Instance.TryGetMogwai(strArray[1], false, out Mogwai mogwai) == BoundState.BOUND)
                 {
                     foreach (string str in mogwai_control)
                     {

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using WoMInterface.Game.Enums;
 using WoMInterface.Game.Interaction;
 using WoMInterface.Game.Model;
 using WoMInterface.Tool;
@@ -16,11 +17,6 @@ namespace WoMInterface.Node
 {
     public class Blockchain
     {
-        internal enum BoundState
-        {
-            BOUND, WAIT, NONE
-        }
-
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private const decimal mogwaiCost = 1.0m;
@@ -54,7 +50,7 @@ namespace WoMInterface.Node
         /// <summary>
         /// 
         /// </summary>
-        internal void Exit()
+        public void Exit()
         {
             Console.WriteLine("Persisting current cached informations.");
             cachingService.Persist(true, true);
@@ -65,7 +61,7 @@ namespace WoMInterface.Node
         /// <summary>
         /// 
         /// </summary>
-        internal void Cache(bool clear, bool initial)
+        public void Cache(bool clear, bool initial)
         {
             var progress = new ProgressBar(60);
 
@@ -95,7 +91,7 @@ namespace WoMInterface.Node
         /// <summary>
         /// 
         /// </summary>
-        internal void CacheStats()
+        public void CacheStats()
         {
             Console.WriteLine($"Blockhashes: {cachingService.BlockHashCache.BlockHashDict.Count()}");
             Console.WriteLine($"BlockHeight: {cachingService.BlockHashCache.MaxBlockHash} [curr:{mogwaiService.GetBlockCount()}]");
@@ -105,9 +101,9 @@ namespace WoMInterface.Node
         /// 
         /// </summary>
         /// <returns></returns>
-        internal GetInfoResponse GetInfo()
+        public string GetWalletVersion()
         {
-            return mogwaiService.GetInfo();
+            return mogwaiService.GetInfo().WalletVersion;
         }
 
         /// <summary>
@@ -117,7 +113,7 @@ namespace WoMInterface.Node
         /// <param name="evolveShifts"></param>
         /// <param name="mogwai"></param>
         /// <returns></returns>
-        internal BoundState TryGetMogwai(string address, bool evolveShifts, out Mogwai mogwai)
+        public BoundState TryGetMogwai(string address, bool evolveShifts, out Mogwai mogwai)
         {
             mogwai = null;
 
@@ -248,7 +244,7 @@ namespace WoMInterface.Node
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        internal bool BindMogwai(string address)
+        public bool BindMogwai(string address)
         {
             if (!TryGetMogwaiAddress(address, out string mogwaiAddress))
             {
@@ -273,7 +269,7 @@ namespace WoMInterface.Node
         /// </summary>
         /// <param name="interaction"></param>
         /// <returns></returns>
-        internal bool SendInteraction(string address, Interaction interaction)
+        public bool SendInteraction(string address, Interaction interaction)
         {
             if (!TryGetMogwaiAddress(address, out string mogwaiAddress))
             {
@@ -296,11 +292,21 @@ namespace WoMInterface.Node
         /// <param name="fromaddress"></param>
         /// <param name="listUnspent"></param>
         /// <returns></returns>
-        internal decimal UnspendFunds(string fromaddress, out List<ListUnspentResponse> listUnspent)
+        public decimal UnspendFunds(string fromaddress, out List<ListUnspentResponse> listUnspent)
         {
             listUnspent = mogwaiService.ListUnspent(6, 9999999, new List<string> { fromaddress });
             var unspentAmount = listUnspent.Sum(p => p.Amount);
             return unspentAmount;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fromaddress"></param>
+        /// <returns></returns>
+        public decimal UnspendFunds(string fromaddress)
+        {
+            var value = UnspendFunds(fromaddress, out List<ListUnspentResponse> listUnspent);
+            return value;
         }
 
         /// <summary>
@@ -389,7 +395,13 @@ namespace WoMInterface.Node
             return true;
         }
 
-        internal bool NewMogwaiAddress(out string mogwaiAddress, int tryes = 10)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mogwaiAddress"></param>
+        /// <param name="tryes"></param>
+        /// <returns></returns>
+        public bool NewMogwaiAddress(out string mogwaiAddress, int tryes = 10)
         {
             mogwaiAddress = null;
             List<string> listPoolAddresses;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WoMInterface.Tool
 {
-    class StringHelpers
+    public class StringHelpers
     {
         public static bool StringContainsStringFromArray(String inputStr, String[] strArray)
         {
@@ -134,7 +134,7 @@ namespace WoMInterface.Tool
 
         }
 
-        internal static string GetBar(double value1, double value2, out int hpPerc)
+        public static string GetBar(double value1, double value2, out int hpPerc)
         {
             var rate = value1 / value2;
             hpPerc = (int) (rate * 100);

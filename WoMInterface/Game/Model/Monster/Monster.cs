@@ -19,6 +19,8 @@ namespace WoMInterface.Game.Model
         private int intelligence = 10;
         private int wisdom = 10;
         private int charisma = 10;
+        // speed
+        private int baseSpeed = 20;
         // armor
         private int naturalArmor = 0;
         // attack
@@ -64,6 +66,11 @@ namespace WoMInterface.Game.Model
             this.intelligence = intelligence;
             this.wisdom = wisdom;
             this.charisma = charisma;
+            return this;
+        }
+        public MonsterBuilder SetBaseSpeed(int baseSpeed)
+        {
+            this.baseSpeed = baseSpeed;
             return this;
         }
         public MonsterBuilder SetNaturalArmor(int naturalArmor)
@@ -118,6 +125,7 @@ namespace WoMInterface.Game.Model
                 Inteligence = intelligence,
                 Wisdom = wisdom,
                 Charisma = charisma,
+                BaseSpeed = baseSpeed,
                 NaturalArmor = naturalArmor,
                 BaseAttackBonus = baseAttackBonus,
                 HitPointDiceRollEvent = hitPointDiceRollEvent,

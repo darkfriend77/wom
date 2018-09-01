@@ -18,6 +18,7 @@ namespace WoMInterface.Game.Model
         private readonly int blockHeight;
 
         private Shift currentShift;
+
         private List<Shift> Shifts { get; }
 
         public MogwaiState MogwaiState { get; set; }
@@ -45,6 +46,8 @@ namespace WoMInterface.Game.Model
         public Adventure Adventure { get; set; }
 
         public override Dice Dice => currentShift.MogwaiDice;
+
+        public static GameLog History = new GameLog();
 
         public Mogwai(string key, List<Shift> shifts)
         {
@@ -74,6 +77,8 @@ namespace WoMInterface.Game.Model
             Wisdom = creationShift.MogwaiDice.Roll(rollEvent);
             Charisma = creationShift.MogwaiDice.Roll(rollEvent);
 
+            BaseSpeed = 30;
+
             NaturalArmor = 0;
             SizeType = SizeType.MEDIUM;
 
@@ -93,6 +98,10 @@ namespace WoMInterface.Game.Model
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="blockHeight"></param>
         public void Evolve(int blockHeight = 0)
         {
             int oldPointer = Pointer;
@@ -159,13 +168,14 @@ namespace WoMInterface.Game.Model
             // no more shifts to proccess
             currentShift = null;
 
-            CommandLine.InGameMessage($"Evolved {Name} from ");
-            CommandLine.InGameMessage($"{oldPointer}", ConsoleColor.Green);
-            CommandLine.InGameMessage($" to ");
-            CommandLine.InGameMessage($"{Pointer}", ConsoleColor.Green);
-            CommandLine.InGameMessage($"!", true);
+            StringHelpers.InfoMsg($"Evolved {Name} from ¬G{oldPointer}§  to ¬G{Pointer}§!¬");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exp"></param>
+        /// <param name="monster"></param>
         public override void AddExp(double exp, Monster monster = null)
         {
             if (monster == null)
@@ -193,10 +203,8 @@ namespace WoMInterface.Game.Model
         /// <param name="shift"></param>
         private void LevelUp(Shift shift)
         {
-            CommandLine.InGameMessage($"You're mogwai suddenly feels an ancient power around him.", ConsoleColor.Yellow, true);
-            CommandLine.InGameMessage($"Congratulations he just made the ", ConsoleColor.Yellow);
-            CommandLine.InGameMessage($"{CurrentLevel}", ConsoleColor.Green);
-            CommandLine.InGameMessage($" th level!", ConsoleColor.Yellow, true);
+            StringHelpers.InfoMsg($"¬YYou're mogwai suddenly feels an ancient power around him.§¬");
+            StringHelpers.InfoMsg($"¬YCongratulations he just made the§ ¬G{CurrentLevel}§ ¬Yth level!§¬");
 
             // hit points roll
             HitPointLevelRolls.Add(shift.MogwaiDice.Roll(HitPointDice));

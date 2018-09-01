@@ -59,35 +59,25 @@ namespace WoMInterface.Game.Model
         }
         public Armor Build()
         {
-            return new Armor(name, armorType, armorBonus, maxDexterityBonus, armorCheckPenalty, arcaneSpellFailureChance, cost, weight)
-            {
-                Description = description
-            };
+            return new Armor(name, armorType, armorBonus, maxDexterityBonus, armorCheckPenalty, arcaneSpellFailureChance, cost, weight, description);
         }
     }
 
-    public class Armor
+    public class Armor : BaseItem
     {
-        public string Name { get; }
         public ArmorType ArmorType { get; }
         public int ArmorBonus { get; }
         public int MaxDexterityBonus { get; }
         public int ArmorCheckPenalty { get; }
         public double ArcaneSpellFailureChance { get; }
-        public int Cost { get; }
-        public int Weight { get; }
-        public string Description { get; set; }
 
-        public Armor(string name, ArmorType armorType, int armorBonus, int maxDexterityBonus, int armorCheckPenalty, double arcaneSpellFailureChance, int cost, int weight)
+        public Armor(string name, ArmorType armorType, int armorBonus, int maxDexterityBonus, int armorCheckPenalty, double arcaneSpellFailureChance, int cost, int weight, string description) : base(name, cost, weight, description)
         {
-            Name = name;
             ArmorType = armorType;
             ArmorBonus = armorBonus;
             MaxDexterityBonus = maxDexterityBonus;
             ArmorCheckPenalty = armorCheckPenalty;
             ArcaneSpellFailureChance = arcaneSpellFailureChance;
-            Cost = cost;
-            Weight = weight;
         }
     }
 }

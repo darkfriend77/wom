@@ -49,6 +49,8 @@ namespace WoMInterface.Game.Model
         
         #endregion
 
+        public int BaseSpeed { get; set; }
+
         public int NaturalArmor { get; set; }
         // armorclass = 10 + armor bonus + shield bonus + dex modifier + size modifier + natural armor + deflection + misc modifier
         public int ArmorClass => 10 + Equipment.ArmorBonus + Equipment.ShieldBonus + DexterityMod + (int) SizeType + NaturalArmor;
@@ -146,6 +148,7 @@ namespace WoMInterface.Game.Model
             Classes classes = Classes.Where(p => p.ClassType == classType).FirstOrDefault();
             return classes == null ? 0 : classes.ClassLevel;
         }
+
         /// <summary>
         /// 
         /// </summary>

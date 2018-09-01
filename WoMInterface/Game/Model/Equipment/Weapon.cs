@@ -11,7 +11,9 @@ namespace WoMInterface.Game.Model
         private int criticalMinRoll = 20;
         private int criticalMultiplier = 2;
         private WeaponDamageType[] weaponDamageTypes = new WeaponDamageType[] { WeaponDamageType.BLUDGEONING, WeaponDamageType.PIERCING, WeaponDamageType.SLASHING };
-        private int weight = 1;
+        private int range = 1;
+        private int cost = 1;
+        private double weight = 1;
         private string description = string.Empty;
 
         public string name;
@@ -53,6 +55,21 @@ namespace WoMInterface.Game.Model
             this.weaponDamageTypes = weaponDamageTypes;
             return this;
         }
+        public WeaponBuilder SetRange(int range)
+        {
+            this.range = range;
+            return this;
+        }
+        public WeaponBuilder SetCost(int cost)
+        {
+            this.cost = cost;
+            return this;
+        }
+        public WeaponBuilder SetWeight(double weight)
+        {
+            this.weight = weight;
+            return this;
+        }
         public WeaponBuilder SetDescription(string description)
         {
             this.description = description;
@@ -60,10 +77,7 @@ namespace WoMInterface.Game.Model
         }
         public Weapon Build()
         {
-            return new Weapon(name, damageSmallRollEvent, damageMediumRollEvent, criticalMinRoll, criticalMultiplier, weaponDamageTypes, weight, isTwoHanded)
-            {
-                Description = description
-            };
+            return new Weapon(name, damageSmallRollEvent, damageMediumRollEvent, criticalMinRoll, criticalMultiplier, weaponDamageTypes, range, isTwoHanded, cost, weight, description);
         }
     }
     public class NaturalWeapon
@@ -81,20 +95,18 @@ namespace WoMInterface.Game.Model
 
         public static Weapon Bite(SizeType sizeType)
         {
-            return new Weapon("Bite", BiteDic[sizeType], 20, 2, new WeaponDamageType[] { WeaponDamageType.BLUDGEONING, WeaponDamageType.PIERCING, WeaponDamageType.SLASHING }, 0);
+            return new Weapon("Bite", BiteDic[sizeType], 20, 2, new WeaponDamageType[] { WeaponDamageType.BLUDGEONING, WeaponDamageType.PIERCING, WeaponDamageType.SLASHING }, 1, false, 1, 0, "");
         }
     }
-    public class Weapon
+    public class Weapon : BaseItem
     {
-        public string Name { get; }
         public int[] DamageRoll { get; set; }
         private int[] damageSmallRollEvent;
 
         public int CriticalMinRoll { get; }
         public int CriticalMultiplier { get; }
         public WeaponDamageType[] WeaponDamageTypes { get; }
-        public double Weight { get; }
-        public string Description { get; set; }
+        public int Range { get; }
         public bool IsCriticalRoll(int roll) => roll >= CriticalMinRoll;
         public bool IsTwoHanded { get; }
 
@@ -113,26 +125,24 @@ namespace WoMInterface.Game.Model
             }
         }
 
-        public Weapon(string name, int[] damageRoll, int criticalMinRoll, int criticalMultiplier, WeaponDamageType[] weaponDamageTypes, double weight, bool isTwoHanded = false)
+        public Weapon(string name, int[] damageRoll, int criticalMinRoll, int criticalMultiplier, WeaponDamageType[] weaponDamageTypes, int range, bool isTwoHanded, int cost, double weight, string description) : base(name, cost, weight, description)
         {
-            Name = name;
             DamageRoll = damageRoll;
             CriticalMinRoll = criticalMinRoll;
             CriticalMultiplier = criticalMultiplier;
             WeaponDamageTypes = weaponDamageTypes;
-            Weight = weight;
+            Range = range;
             IsTwoHanded = isTwoHanded;
         }
 
-        public Weapon(string name, int[] damageSmallRollEvent, int[] damageMediumRollEvent, int criticalMinRoll, int criticalMultiplier, WeaponDamageType[] weaponDamageTypes, double weight, bool isTwoHanded = false)
+        public Weapon(string name, int[] damageSmallRollEvent, int[] damageMediumRollEvent, int criticalMinRoll, int criticalMultiplier, WeaponDamageType[] weaponDamageTypes, int range, bool isTwoHanded, int cost, double weight, string description) : base(name, cost, weight, description)
         {
-            Name = name;
             DamageRoll = damageMediumRollEvent;
             this.damageSmallRollEvent = damageSmallRollEvent;
             CriticalMinRoll = criticalMinRoll;
             CriticalMultiplier = criticalMultiplier;
             WeaponDamageTypes = weaponDamageTypes;
-            Weight = weight;
+            Range = range;
             IsTwoHanded = isTwoHanded;
         }
 

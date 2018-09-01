@@ -15,12 +15,12 @@ namespace WoMInterface.Tool
         {
             public Dictionary<string, int> MogwaiPointers = new Dictionary<string, int>();
 
-            internal void Update(Mogwai mogwai)
+            public void Update(Mogwai mogwai)
             {
                 MogwaiPointers[mogwai.Key] = mogwai.Pointer;
             }
 
-            internal int Pointer(Mogwai mogwai)
+            public int Pointer(Mogwai mogwai)
             {
                 if (MogwaiPointers.ContainsKey(mogwai.Key))
                 {

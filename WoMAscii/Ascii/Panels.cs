@@ -73,6 +73,7 @@ namespace WoMInterface.Game.Ascii
             int addAtb = mogwai.AttackBonus(0) - mogwai.BaseAttackBonus[0];
             template[7] = template[7].Replace("<atb >", string.Format("¬W{0,2}§[¬{1}{2,2}§]", mogwai.BaseAttackBonus[0], addAtb > 0 ? "G" : addAtb < 0 ? "R" : "Y", addAtb.ToString("+0;-#")));
             template[8] = template[8].Replace("<acl >", string.Format("¬W{0}§", mogwai.ArmorClass.ToString().PadLeft(2).PadRight(6)));
+            template[9] = template[9].Replace("<sp  >", string.Format("¬W{0}§ft ", mogwai.BaseSpeed.ToString().PadRight(1).PadRight(3)));
 
             template[6] = template[6].Replace("<pweap      >", string.Format("¬W{0}§", mogwai.Equipment.PrimaryWeapon.Name.PadRight(13)));
             template[6] = template[6].Replace("<pdmg  >", "¬Y" + string.Format("{0}-{1}", mogwai.Equipment.PrimaryWeapon.MinDmg, mogwai.Equipment.PrimaryWeapon.MaxDmg).PadRight(8) + "§");

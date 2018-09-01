@@ -11,7 +11,7 @@ namespace WoMInterface.Tool
         public int pointer;
         public List<LogEntry> logEntries;
 
-        public GameLog(string key)
+        public GameLog()
         {
 
             logEntries = new List<LogEntry>();
@@ -69,4 +69,5 @@ namespace WoMInterface.Tool
         }
 
     }
+
 }

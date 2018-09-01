@@ -105,8 +105,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game\Ascii\Panels.cs" />
     <Compile Include="Game\Enums\ArmorType.cs" />
+    <Compile Include="Game\Enums\BoundState.cs" />
     <Compile Include="Game\Enums\ClassType.cs" />
     <Compile Include="Game\Enums\DamageType.cs" />
     <Compile Include="Game\Enums\LevelingType.cs" />
@@ -140,6 +140,7 @@
     <Compile Include="Game\Model\Dungeon\Wall.cs" />
     <Compile Include="Game\Model\Equipment\Armor.cs" />
     <Compile Include="Game\Model\Equipment\Armors.cs" />
+    <Compile Include="Game\Model\Equipment\BaseItem.cs" />
     <Compile Include="Game\Model\Equipment\Weapons.cs" />
     <Compile Include="Game\Model\Mogwai\Body.cs" />
     <Compile Include="Game\Model\Mogwai\Coat.cs" />
@@ -170,7 +171,6 @@
     <Compile Include="Game\Model\Mogwai\Mogwai.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tool\CommandLine.cs" />
     <Compile Include="Tool\GameLog.cs" />
     <Compile Include="Tool\HexHashUtil.cs" />
     <Compile Include="Tool\NameGen.cs" />
