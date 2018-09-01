@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WoMInterface.Game.Model
 {
@@ -70,6 +71,39 @@ namespace WoMInterface.Game.Model
                 throw new ArgumentOutOfRangeException();
 
             return _directions[direction];
+        }
+
+        public static Coordinate Round(double x, double y, double z)
+        {
+            int rx = (int) Math.Round(x);
+            int ry = (int) Math.Round(y);
+            int rz = (int) Math.Round(z);
+
+            double xDiff = Math.Abs(rx - x);
+            double yDiff = Math.Abs(ry - y);
+            double zDiff = Math.Abs(rz - z);
+
+            if (xDiff > yDiff && xDiff > zDiff)
+                rx = -ry - rz;
+            else if (yDiff > zDiff)
+                ry = -rx - rz;
+            else
+                rz = -rx - ry;
+           
+            return new Coordinate(rx, ry, rz);
+        }
+
+        public static IEnumerable<Coordinate> GetLine(Coordinate a, Coordinate b)
+        {
+            double Lerp(int x, int y, double t) => x + (y - x) * t;
+
+            int d = Distance(a, b);
+
+            for (int i = 0 ; i < d; i++)
+            {
+                double t = (double)i / d;
+                yield return Round(Lerp(a.X, a.X, t), Lerp(a.Y, b.Y, t), Lerp(a.Z, b.Z, t));
+            }
         }
 
         public override bool Equals(object obj)
