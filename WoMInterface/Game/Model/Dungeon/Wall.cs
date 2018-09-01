@@ -10,6 +10,8 @@ namespace WoMInterface.Game.Model
     {
         public Tile Parent;
 
+        public abstract bool IsBlocked { get; set; }
+
         public abstract bool Interact(Mogwai mogwai);
     }
 
@@ -17,6 +19,8 @@ namespace WoMInterface.Game.Model
     {
         public Tile Inside;
         public Tile Outside;
+        public override bool IsBlocked { get; set; } = false;
+
         public override bool Interact(Mogwai mogwai)
         {
             throw new NotImplementedException();
@@ -25,6 +29,8 @@ namespace WoMInterface.Game.Model
 
     public class StoneWall : Wall
     {
+        public override bool IsBlocked { get; set; } = true;
+
         public override bool Interact(Mogwai mogwai)
         {
             throw new NotImplementedException();
