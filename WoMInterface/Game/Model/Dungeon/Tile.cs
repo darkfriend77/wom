@@ -1,19 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace WoMInterface.Game.Model
 {
+    /// <summary>
+    /// Represents the basic hex tile.
+    /// </summary>
     public abstract class Tile
     {
-        public Room Parent;
-
-        public int Height;
+        public readonly Room Parent;
+        public readonly Coordinate Coordinate;
         public readonly Wall[] Sides = new Wall[6];
 
+        public int Height;
+
+        protected Tile(Room parent, Coordinate coordinate)
+        {
+            Parent = parent;
+            Coordinate = coordinate;
+        }
+
         public abstract bool IsSolid { get; }
+
+        //public abstract void Interact(Mogwai mog);
 
         public Wall NorthWestSide
         {
@@ -50,10 +61,18 @@ namespace WoMInterface.Game.Model
     public class StoneTile : Tile
     {
         public override bool IsSolid => true;
+
+        public StoneTile(Room parent, Coordinate coordinate) : base(parent, coordinate)
+        {
+        }
     }
 
     public class WaterTile : Tile
     {
         public override bool IsSolid => false;
+
+        public WaterTile(Room parent, Coordinate coordinate) : base(parent, coordinate)
+        {
+        }
     }
 }

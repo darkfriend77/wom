@@ -131,7 +131,9 @@
     <Compile Include="Game\Model\Classes\Barbarian.cs" />
     <Compile Include="Game\Model\Classes\Classes.cs" />
     <Compile Include="Game\Model\Classes\NoClass.cs" />
+    <Compile Include="Game\Model\Dungeon\Coordinate.cs" />
     <Compile Include="Game\Model\Dungeon\Dungeon.cs" />
+    <Compile Include="Game\Model\Dungeon\Dungeoneer.cs" />
     <Compile Include="Game\Model\Dungeon\Tile.cs" />
     <Compile Include="Game\Model\Dungeon\Room.cs" />
     <Compile Include="Game\Model\Dungeon\Wall.cs" />
