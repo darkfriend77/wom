@@ -87,7 +87,9 @@ namespace WoMAscii.Tool
 
                 var consColor = MsgColorMap(currentStr.Substring(0, 1));
                 string[] subStrArray = currentStr.Substring(1).Split('§');
-                string colorStr = subStrArray[0].PadRight(subStrArray[0].Length - 1);
+
+                
+                string colorStr = subStrArray[0].Length > 0 ? subStrArray[0].PadRight(subStrArray[0].Length - 1) : "";
 
                 string restStr = subStrArray.Length > 1 && subStrArray[1].Length > 0 ? subStrArray[1].PadRight(subStrArray[1].Length - 1) : "";
 

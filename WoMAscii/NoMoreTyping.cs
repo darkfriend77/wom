@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
+using System.Timers;
 using WoMAscii.Ascii;
 using WoMAscii.Tool;
 using WoMInterface.Game.Enums;
@@ -39,12 +39,13 @@ namespace WoMAscii
             try
             {
                 Console.WriteLine($"Teleport activated to enter into the World of Mogwais!");
+                Console.CursorVisible = false;
 
                 // get deposit address
                 string depositAddress = Blockchain.Instance.GetDepositAddress();
 
                 // current un set funds on the wallet.
-                decimal unsetFunds = Blockchain.Instance.UnspendFunds(depositAddress);
+                decimal unsetFunds = Blockchain.Instance.UnspendFunds(depositAddress, 6);
 
                 // amount of mog that need to be moved minimaly
                 int mogAmount = 2;// unsetFunds > 2.0001m ? 2 : 0;
@@ -83,13 +84,31 @@ namespace WoMAscii
                     PrintMogwais(pointer);
                     AsciiHelpers.Msg(Art.Trailer);
 
+                    var start_time = DateTime.Now;
                     while (!Console.KeyAvailable)
                     {
-                        // Do something, but don't read key here
+                        TimeSpan ts = DateTime.Now.Subtract(start_time);
+                        if (ts.TotalSeconds > 5)
+                        {
+                            Console.SetCursorPosition(1, 33);
+                            AsciiHelpers.Msg("¬cUpdating§ ¬a... please wait!§");
+                            Update();
+                            Console.SetCursorPosition(1, 33);
+                            Console.Write("".PadLeft(30));
+                            Console.SetCursorPosition(1, 33);
+                            break;
+                        }                       
                     }
 
                     // reset response
                     response = " ";
+
+                    // no key readed
+                    if (!Console.KeyAvailable)
+                    {
+                        key = 0;
+                        continue;
+                    }
 
                     // Key is available - read it
                     key = Console.ReadKey(true).Key;
@@ -98,16 +117,19 @@ namespace WoMAscii
                     {
                         case ConsoleKey.PageUp:
                             mogAmount = mogAmount < 9 ? mogAmount + 1 : mogAmount;
-                            break; ;
+                            break;
+
                         case ConsoleKey.PageDown:
                             mogAmount = mogAmount > 2 ? mogAmount - 1 : mogAmount;
                             break;
+
                         case ConsoleKey.DownArrow:
                             if (pointer < mogwais.Count - 1)
                             {
                                 pointer++;
                             }
                             break;
+
                         case ConsoleKey.UpArrow:
                             if (pointer > 0)
                             {
@@ -117,7 +139,8 @@ namespace WoMAscii
 
                         case ConsoleKey.S:
                             if (unsetFunds > mogAmount + fees)
-                            response = Send(depositAddress, mogwais[pointer].key, mogAmount, fees);
+                            response = Spend(depositAddress, mogwais[pointer].key, mogAmount, fees);
+                            unsetFunds = Blockchain.Instance.UnspendFunds(depositAddress, 6);
                             Update();
                             break;
 
@@ -126,9 +149,25 @@ namespace WoMAscii
                             Update();
                             break;
 
+                        case ConsoleKey.T:
+                            mogwais[pointer].IsTagged = true;
+                            Update();
+                            break;
+
                         case ConsoleKey.B:
                             response = Bind(mogwais[pointer].key);
                             Update();
+                            break;
+
+                        case ConsoleKey.P:
+                            Play();
+                            break;
+
+                        case ConsoleKey.D5:
+                            mogwais = mogwais.OrderByDescending(p => p.rateMogwai).ToList();
+                            break;
+
+                        default:
                             break;
                     }
 
@@ -142,6 +181,12 @@ namespace WoMAscii
                 Console.ReadKey();
             }
 
+        }
+
+        private void Play()
+        {
+            var womGui = new WoMGui(mogwais[pointer].mogwai);
+            womGui.Start();
         }
 
         private void PrintMogwais(int pointer)
@@ -182,15 +227,15 @@ namespace WoMAscii
             }
         }
 
-        private string Send(string fromaddress, string toaddress, decimal burnMogs, decimal fees)
+        private string Spend(string fromaddress, string toaddress, decimal burnMogs, decimal fees)
         {
             if (Blockchain.Instance.BurnMogs(fromaddress, toaddress, burnMogs, fees))
             {
-                return $"¬GSuccessfuly, sent ¬y{burnMogs}§ mogs to mogwais address!§";
+                return $"¬GSent§ ¬y{burnMogs}§ ¬Gmogs to the mogwai!§";
             }
             else
             {
-                return $"¬YCouldn't create a new mogwaiaddress, try again!§";
+                return $"¬YCouldn't send mogs!§";
             };
         }
 
@@ -198,7 +243,7 @@ namespace WoMAscii
         {
             if (Blockchain.Instance.NewMogwaiAddress(out string mogwaiAddress))
             {
-                return $"¬GSuccessfuly, created a new address with a valid mogwai connection!§";
+                return $"¬GCreated a new address with a mogwai connection!§";
             }
             else
             {
@@ -210,7 +255,7 @@ namespace WoMAscii
         {
             if (Blockchain.Instance.BindMogwai(address))
             {
-                return $"¬GSuccessfuly, bound a mogwai, please wait till the connection is established.§";
+                return $"¬GBound a mogwai, wait for connection.§";
             }
             else
             {
@@ -221,16 +266,28 @@ namespace WoMAscii
         private class MogwaiInfo
         {
             public bool IsSelected { get; set; }
+            public bool IsTagged { get; set; }
             public string key;
             public decimal funds;
             public BoundState state;
             public Mogwai mogwai;
+            public double rateMogwai = 0;
             public MogwaiInfo(string key, decimal funds, BoundState state, Mogwai mogwai)
             {
                 this.key = key;
                 this.funds = funds;
                 this.state = state;
                 this.mogwai = mogwai;
+                if (mogwai != null)
+                {
+                    rateMogwai = (double)
+                        (3 * mogwai.Strength 
+                        + 3 * mogwai.Dexterity 
+                        + 2 * mogwai.Constitution 
+                        + 3 * mogwai.Inteligence 
+                        + 2 * mogwai.Wisdom 
+                        + mogwai.Charisma) / 14;
+                }
             }
             public override string ToString()
             {
@@ -240,19 +297,17 @@ namespace WoMAscii
                 string goldMogwaiStr = "...";
                 if (mogwai != null)
                 {
-                    double rateMogwai = (double)(3 * mogwai.Strength + 3 * mogwai.Dexterity + 2 * mogwai.Constitution + 3 * mogwai.Inteligence + 2 * mogwai.Wisdom + mogwai.Charisma) / 14;
                     rateMogwaiStr = rateMogwai.ToString("#0.00");
                     levelMogwaiStr = mogwai.CurrentLevel.ToString();
                     goldMogwaiStr = mogwai.Wealth.Gold.ToString();
-
                 }
-                string stateColor = state == BoundState.NONE ? "a" : state == BoundState.WAIT ? "Y" : "y";
+                string stateColor = state == BoundState.NONE ? "a" : state == BoundState.WAIT ? "b" : "y";
                 string stateStr = state.ToString().Substring(0, 1) + state.ToString().Substring(1).ToLower();
                 string mogwaiName = mogwai != null ? $"{mogwai.Name}" : "...";
                 string mCol = mogwai != null ? "y" : "a";
                 string selected = IsSelected ? "==>" : "";
-                string keyColor = IsSelected ? "y" : "a";
-                string fundsColor = funds > 0 ? "y" : "a";
+                string keyColor = IsTagged ? "g" : IsSelected ? "y" : "a";
+                string fundsColor = funds == 0 ? "a" : mogwai != null ? "y" : "W";
                 return 
                     $"¬G{selected.PadRight(3).PadLeft(4)}§ " +
                     $"¬{keyColor}{key}§  " +

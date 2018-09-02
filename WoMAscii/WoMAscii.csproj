@@ -54,6 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tool\AsciiHelpers.cs" />
     <Compile Include="Tool\ProgressBar.cs" />
+    <Compile Include="WoMGui.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

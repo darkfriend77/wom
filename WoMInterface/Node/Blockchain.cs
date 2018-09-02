@@ -187,7 +187,7 @@ namespace WoMInterface.Node
                 index += chunkSize;
             }
 
-            var incUnconfTx = allTxs.Where(p => p.Address == mogwaiAddress && p.Category == "send").OrderBy(p => p.Time).ThenBy(p=> p.BlockIndex);
+            var incUnconfTx = allTxs.Where(p => p.Address == mogwaiAddress && p.Category == "send").OrderBy(p => p.Time).ThenBy(p => p.BlockIndex);
             var validTx = incUnconfTx.Where(p => p.Confirmations > 0);
             openShifts = incUnconfTx.Count() > validTx.Count();
 
@@ -200,17 +200,17 @@ namespace WoMInterface.Node
                 decimal amount = Math.Abs(tx.Amount);
                 if (!creation && amount < mogwaiCost)
                     continue;
-                
+
                 creation = true;
 
                 var block = mogwaiService.GetBlock(tx.BlockHash);
 
-                if(lastBlockHeight != 0 && lastBlockHeight + 1 < block.Height)
+                if (lastBlockHeight != 0 && lastBlockHeight + 1 < block.Height)
                 {
                     // add small shifts
-                    if ( TryGetBlockHashes(lastBlockHeight + 1, block.Height, null, out Dictionary<int,string> blockHashes))
+                    if (TryGetBlockHashes(lastBlockHeight + 1, block.Height, null, out Dictionary<int, string> blockHashes))
                     {
-                        foreach(var blockHash in blockHashes)
+                        foreach (var blockHash in blockHashes)
                         {
                             result.Add(blockHash.Key, new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
                         }
@@ -223,7 +223,7 @@ namespace WoMInterface.Node
             }
 
             // add small shifts
-            if (creation && TryGetBlockHashes(lastBlockHeight + 1, (int) mogwaiService.GetBlockCount(), null, out Dictionary<int, string> finalBlockHashes))
+            if (creation && TryGetBlockHashes(lastBlockHeight + 1, (int)mogwaiService.GetBlockCount(), null, out Dictionary<int, string> finalBlockHashes))
             {
                 foreach (var blockHash in finalBlockHashes)
                 {
@@ -285,12 +285,65 @@ namespace WoMInterface.Node
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="account"></param>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        public Dictionary<string, decimal[]> UnconfirmedTxOnAddresses(string account, string[] addresses)
+        {
+            var allTxs = new List<ListTransactionsResponse>();
+
+            List<ListTransactionsResponse> listTxs = null;
+            int index = 0;
+            int chunkSize = 50;
+            while (listTxs == null || listTxs.Count > 0)
+            {
+                listTxs = mogwaiService.ListTransactions(account, chunkSize, index);
+                allTxs.AddRange(listTxs);
+                index += chunkSize;
+            }
+            Dictionary<string, decimal[]> unconfirmedFunds = new Dictionary<string, decimal[]>();
+            foreach (var tx in allTxs)
+            {
+                if (addresses.Contains(tx.Address) && tx.Category == "receive" && tx.Confirmations < 6)
+                {
+                    if (unconfirmedFunds.TryGetValue(tx.Address, out decimal[] funds))
+                    {
+                        if (tx.Confirmations == 0)
+                        {
+                            funds[0] = funds[0] + tx.Amount;
+                        }
+                        else
+                        {
+                            funds[1] = funds[1] + tx.Amount;
+                        }
+                    }
+                    else
+                    {
+                        if (tx.Confirmations == 0)
+                        {
+                            funds = new decimal[] { tx.Amount, 0m };
+                        }
+                        else
+                        {
+                            funds = new decimal[] { 0m, tx.Amount };
+                        }
+                    }
+                    unconfirmedFunds[tx.Address] = funds;
+                }
+            }
+
+            return unconfirmedFunds;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="fromaddress"></param>
         /// <param name="listUnspent"></param>
         /// <returns></returns>
-        public decimal UnspendFunds(string fromaddress, out List<ListUnspentResponse> listUnspent)
+        public decimal UnspendFunds(string fromaddress, int minConf, out List<ListUnspentResponse> listUnspent)
         {
-            listUnspent = mogwaiService.ListUnspent(6, 9999999, new List<string> { fromaddress });
+            listUnspent = mogwaiService.ListUnspent(minConf, 9999999, new List<string> { fromaddress });
             var unspentAmount = listUnspent.Sum(p => p.Amount);
             return unspentAmount;
         }
@@ -299,10 +352,22 @@ namespace WoMInterface.Node
         /// </summary>
         /// <param name="fromaddress"></param>
         /// <returns></returns>
-        public decimal UnspendFunds(string fromaddress)
+        public decimal UnspendFunds(string fromaddress, int minConf = 6)
         {
-            var value = UnspendFunds(fromaddress, out List<ListUnspentResponse> listUnspent);
-            return value;
+            return UnspendFunds(fromaddress, minConf, out List<ListUnspentResponse> listUnspent);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fromaddresses"></param>
+        /// <param name="minConf"></param>
+        /// <returns></returns>
+        public Dictionary<string, decimal> UnspendFunds(List<string> fromaddresses, int minConf)
+        {
+            var listUnspent = mogwaiService.ListUnspent(minConf, 9999999, fromaddresses);
+            var dict = listUnspent.GroupBy(y => y.Address).ToDictionary(g => g.Key, g => g.Sum(v => v.Amount));
+            return dict;
         }
 
         /// <summary>
@@ -315,7 +380,7 @@ namespace WoMInterface.Node
         /// <returns></returns>
         public bool BurnMogs(string fromaddress, string toaddress, decimal burnMogs, decimal txFee)
         {
-            var unspentAmount = UnspendFunds(fromaddress, out List<ListUnspentResponse> listUnspent);
+            var unspentAmount = UnspendFunds(fromaddress, 6, out List<ListUnspentResponse> listUnspent);
             if (unspentAmount < (burnMogs + txFee))
             {
                 Console.WriteLine($"Address hasn't enough funds {unspentAmount} to burn that amount of mogs {(burnMogs + txFee)}!");
@@ -326,7 +391,8 @@ namespace WoMInterface.Node
             var rawTxRequest = new CreateRawTransactionRequest();
 
             // adding all unspent txs
-            listUnspent.ForEach(p => {
+            listUnspent.ForEach(p =>
+            {
                 rawTxRequest.AddInput(new CreateRawTransactionInput() { TxId = p.TxId, Vout = p.Vout });
             });
 
@@ -450,7 +516,8 @@ namespace WoMInterface.Node
         {
             var listAddresses = mogwaiService.GetAddressesByAccount("Mogwai");
             Dictionary<string, string> result = new Dictionary<string, string>();
-            listAddresses.ForEach(p => {
+            listAddresses.ForEach(p =>
+            {
                 if (TryGetMogwaiAddress(p, out string mogwaiAddress))
                 {
                     result.Add(p, mogwaiAddress);
