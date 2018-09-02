@@ -71,7 +71,7 @@ namespace WoMInterface.Game.Combat
         {
             var heros = string.Join(",", inititiveOrder.Where(p => p.IsHero).Select(p => $"{p.Entity.Name} [{p.InititativeValue}]").ToArray());
             var monsters = string.Join(",", inititiveOrder.Where(p => !p.IsHero).Select(p => $"{p.Entity.Name} [{p.InititativeValue}]").ToArray());
-            StringHelpers.EvntMsg($"¬YSimpleCombat§ [¬C{heros}§] vs. [¬C{monsters}§]¬");
+            Mogwai.History.Add(LogType.EVNT, $"¬YSimpleCombat§ [¬C{heros}§] vs. [¬C{monsters}§]¬");
 
             Combatant winner = null;
 
@@ -79,7 +79,7 @@ namespace WoMInterface.Game.Combat
             for (currentRound = 1; currentRound < maxRounds && winner == null; currentRound++)
             {
                 int sec = (currentRound - 1) * 6;
-                StringHelpers.EvntMsg($"[ROUND ¬G{currentRound.ToString("00")}§] time: ¬a{(sec / 60).ToString("00")}§m:¬a{(sec % 60).ToString("00")}§s Monsters: {Monsters.Count} ({string.Join(",",Monsters.Select(p => p.Name))})¬");
+                Mogwai.History.Add(LogType.EVNT, $"[ROUND ¬G{currentRound.ToString("00")}§] time: ¬a{(sec / 60).ToString("00")}§m:¬a{(sec % 60).ToString("00")}§s Monsters: {Monsters.Count} ({string.Join(",",Monsters.Select(p => p.Name))})¬");
 
                 for (int turn = 0; turn < inititiveOrder.Count; turn++)
                 {
@@ -113,7 +113,7 @@ namespace WoMInterface.Game.Combat
 
             if (winner != null)
             {
-                StringHelpers.EvntMsg($"¬YSimpleCombat§ Fight is over! The winner is ¬C{winner.Entity.Name}§¬");
+                Mogwai.History.Add(LogType.EVNT, $"¬YSimpleCombat§ Fight is over! The winner is ¬C{winner.Entity.Name}§¬");
 
                 if (winner.IsHero)
                 {
@@ -125,7 +125,7 @@ namespace WoMInterface.Game.Combat
             }
             else
             {
-                StringHelpers.EvntMsg($"¬YSimpleCombat§ No winner, no loser, this fight was a draw!");
+                Mogwai.History.Add(LogType.EVNT, $"¬YSimpleCombat§ No winner, no loser, this fight was a draw!");
                 return false;
             }
 
@@ -145,7 +145,7 @@ namespace WoMInterface.Game.Combat
                 {
                     Treasure treasure = ((Monster)p).Treasure;
                     string treasureStr = treasure != null ? "¬Ga Treasure§" : "¬Rno Treasure§";
-                    StringHelpers.EvntMsg($"¬YLooting§ the ¬C{p.Name}§ he has {treasureStr}!¬");
+                    Mogwai.History.Add(LogType.EVNT, $"¬YLooting§ the ¬C{p.Name}§ he has {treasureStr}!¬");
                 }
             });
         }

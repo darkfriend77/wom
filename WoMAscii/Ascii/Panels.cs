@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoMAscii.Tool;
 using WoMInterface.Game.Model;
 using WoMInterface.Tool;
 
@@ -54,13 +55,13 @@ namespace WoMInterface.Game.Ascii
             template[3] = template[3].Replace("<chp >", string.Format("¬W{0}§", mogwai.CurrentHitPoints.ToString().PadLeft(6)));
             template[3] = template[3].Replace("<mhp >", string.Format("¬W{0}§", mogwai.MaxHitPoints.ToString().PadRight(6)));
 
-            template[4] = template[4].Replace("<hpbar        >", string.Format("{0}", StringHelpers.GetBar(mogwai.CurrentHitPoints, mogwai.MaxHitPoints, out int hpPerc)));
+            template[4] = template[4].Replace("<hpbar        >", string.Format("{0}", AsciiHelpers.GetBar(mogwai.CurrentHitPoints, mogwai.MaxHitPoints, out int hpPerc)));
             template[4] = template[4].Replace("<h%>", string.Format("¬W{0:##0}§%", hpPerc.ToString().PadLeft(3)));
 
             template[3] = template[3].Replace("<cex >", string.Format("¬W{0}§", mogwai.Exp.ToString().PadLeft(6)));
             template[3] = template[3].Replace("<nex >", string.Format("¬W{0}§", mogwai.XpToLevelUp.ToString().PadRight(6)));
 
-            template[4] = template[4].Replace("<exbar        >", string.Format("{0}", StringHelpers.GetBar(mogwai.Exp, mogwai.XpToLevelUp, out int exPerc)));
+            template[4] = template[4].Replace("<exbar        >", string.Format("{0}", AsciiHelpers.GetBar(mogwai.Exp, mogwai.XpToLevelUp, out int exPerc)));
             template[4] = template[4].Replace("<e%>", string.Format("¬W{0:##0}§%", exPerc.ToString().PadLeft(3)));
 
             template[4] = template[4].Replace("<dex >", string.Format("¬W{0,2}§[¬{1}{2,2}§]", mogwai.Dexterity, mogwai.DexterityMod > 0 ? "G" : mogwai.DexterityMod < 0 ? "R" : "Y", mogwai.DexterityMod.ToString("+0;-#")));

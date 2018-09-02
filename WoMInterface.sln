@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{FB4BE9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMAscii", "WoMAscii\WoMAscii.csproj", "{12277B8F-6D77-40C8-B90C-1A70C7B62603}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMApiTest", "WoMApiTest\WoMApiTest.csproj", "{4DD747DB-DC90-478F-8911-45882F910A86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{12277B8F-6D77-40C8-B90C-1A70C7B62603}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12277B8F-6D77-40C8-B90C-1A70C7B62603}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12277B8F-6D77-40C8-B90C-1A70C7B62603}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DD747DB-DC90-478F-8911-45882F910A86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DD747DB-DC90-478F-8911-45882F910A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DD747DB-DC90-478F-8911-45882F910A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DD747DB-DC90-478F-8911-45882F910A86}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

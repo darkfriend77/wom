@@ -113,7 +113,7 @@ namespace WoMInterface.Node
         /// <param name="evolveShifts"></param>
         /// <param name="mogwai"></param>
         /// <returns></returns>
-        public BoundState TryGetMogwai(string address, bool evolveShifts, out Mogwai mogwai)
+        public BoundState TryGetMogwai(string address, out Mogwai mogwai)
         {
             mogwai = null;
 
@@ -122,15 +122,11 @@ namespace WoMInterface.Node
                 return BoundState.NONE;
             }
 
-            BoundState boundState = IsMogwaiBound(address, mogwaiAddress, out List<Shift> shifts);
+            BoundState boundState = IsMogwaiBound(address, mogwaiAddress, out Dictionary<double, Shift> shifts);
 
             if (boundState == BoundState.BOUND)
             {
                 mogwai = new Mogwai(address, shifts);
-                if (evolveShifts)
-                {
-                    mogwai.Evolve();
-                }
             }
 
             return boundState;
@@ -175,9 +171,9 @@ namespace WoMInterface.Node
         /// </summary>
         /// <param name="mogwaiAddress"></param>
         /// <returns></returns>
-        private List<Shift> GetShifts(string mogwaiAddress, out bool openShifts)
+        private Dictionary<double, Shift> GetShifts(string mogwaiAddress, out bool openShifts)
         {
-            var result = new List<Shift>();
+            var result = new Dictionary<double, Shift>();
 
             var allTxs = new List<ListTransactionsResponse>();
 
@@ -216,14 +212,14 @@ namespace WoMInterface.Node
                     {
                         foreach(var blockHash in blockHashes)
                         {
-                            result.Add(new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
+                            result.Add(blockHash.Key, new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
                         }
                     }
                 }
 
                 lastBlockHeight = block.Height;
 
-                result.Add(new Shift(result.Count(), tx.Time, pubMogAddressHex, block.Height, tx.BlockHash, tx.BlockIndex, tx.TxId, amount, Math.Abs(tx.Fee + txFee)));
+                result.Add(block.Height, new Shift(result.Count(), tx.Time, pubMogAddressHex, block.Height, tx.BlockHash, tx.BlockIndex, tx.TxId, amount, Math.Abs(tx.Fee + txFee)));
             }
 
             // add small shifts
@@ -231,7 +227,7 @@ namespace WoMInterface.Node
             {
                 foreach (var blockHash in finalBlockHashes)
                 {
-                    result.Add(new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
+                    result.Add(blockHash.Key, new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
                 }
             }
 
@@ -253,7 +249,7 @@ namespace WoMInterface.Node
 
             //Console.WriteLine($"{address} --> {mogwaiAddress}");
 
-            if (IsMogwaiBound(address, mogwaiAddress, out List<Shift> shifts) != BoundState.NONE)
+            if (IsMogwaiBound(address, mogwaiAddress, out Dictionary<double, Shift> shifts) != BoundState.NONE)
             {
                 Console.WriteLine("Mogwai already exists or is in creation process!");
                 return false;
@@ -276,7 +272,7 @@ namespace WoMInterface.Node
                 return false;
             }
 
-            if (IsMogwaiBound(address, mogwaiAddress, out List<Shift> shifts) != BoundState.BOUND)
+            if (IsMogwaiBound(address, mogwaiAddress, out Dictionary<double, Shift> shifts) != BoundState.BOUND)
             {
                 return false;
             }
@@ -362,7 +358,7 @@ namespace WoMInterface.Node
         /// <param name="mogwaiAddress"></param>
         /// <param name="shifts"></param>
         /// <returns></returns>
-        internal BoundState IsMogwaiBound(string address, string mogwaiAddress, out List<Shift> shifts)
+        internal BoundState IsMogwaiBound(string address, string mogwaiAddress, out Dictionary<double, Shift> shifts)
         {
             shifts = GetShifts(mogwaiAddress, out bool openShifts);
             // no shifts found

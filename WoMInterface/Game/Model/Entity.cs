@@ -194,12 +194,12 @@ namespace WoMInterface.Game.Model
                         }
                     }
                     string criticalStr = criticalDamage > 0 ? $"¬y(+{criticalDamage})§" : string.Empty;
-                    StringHelpers.CombMsg($"{message} ¬Ghit for§ ¬y{damage}§{criticalStr} ¬Gdamage!§¬");
+                    Mogwai.History.Add(LogType.COMB, $"{message} ¬Ghit for§ ¬y{damage}§{criticalStr} ¬Gdamage!§¬");
                     target.Damage(damage + criticalDamage, DamageType.WEAPON);
                 }
                 else
                 {
-                    StringHelpers.CombMsg($"{message} ¬Rfailed§!¬");
+                    Mogwai.History.Add(LogType.COMB, $"{message} ¬Rfailed§!¬");
                 }
             }
         }
@@ -251,7 +251,7 @@ namespace WoMInterface.Game.Model
                 healAmount = missingHealth;
             }
 
-            StringHelpers.HealMsg($"¬C{Name}§ restores ¬G{healAmount}§ HP from {healType.ToString().ToLower()} healing.¬");
+            Mogwai.History.Add(LogType.HEAL, $"¬C{Name}§ restores ¬G{healAmount}§ HP from {healType.ToString().ToLower()} healing.¬");
             CurrentHitPoints += healAmount;
         }
 
@@ -267,12 +267,12 @@ namespace WoMInterface.Game.Model
                 return;
             }
 
-            StringHelpers.DamgMsg($"¬C{Name}§ suffers ¬R{damageAmount}§ HP from {damageType.ToString().ToLower()} damage.¬");
+            Mogwai.History.Add(LogType.DAMG, $"¬C{Name}§ suffers ¬R{damageAmount}§ HP from {damageType.ToString().ToLower()} damage.¬");
             CurrentHitPoints -= damageAmount;
 
             if (CurrentHitPoints < 1)
             {
-                StringHelpers.DamgMsg($"¬C{Name}§ got a deadly hit, healthstate is ¬R{HealthState.ToString().ToLower()}§.¬");
+                Mogwai.History.Add(LogType.DAMG, $"¬C{Name}§ got a deadly hit, healthstate is ¬R{HealthState.ToString().ToLower()}§.¬");
             }
         }
     }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using WoMAscii.Tool;
 using WoMInterface.Game.Ascii;
 using WoMInterface.Game.Combat;
 using WoMInterface.Game.Enums;
@@ -255,13 +256,17 @@ namespace WoMAscii
             if (strArray.Count() == 1 && strArray[0].Equals("update"))
             {
                 int oldPointer = currentMogwai.Pointer;
-                currentMogwai.Evolve();
+                currentMogwai.Evolve(out GameLog history);
+                foreach (var logEntry in history.logEntries)
+                {
+                    AsciiHelpers.Msg(logEntry.ToString());
+                }
                 CachingService.MogwaisCache.Update(currentMogwai);
                 CachingService.Persist(false, true);
             }
             else if (strArray.Count() == 2 && strArray[1].Equals("restart"))
             {
-                if (Blockchain.Instance.TryGetMogwai(currentMogwai.Key, false, out Mogwai mogwai) == BoundState.BOUND)
+                if (Blockchain.Instance.TryGetMogwai(currentMogwai.Key, out Mogwai mogwai) == BoundState.BOUND)
                 {
                     ConsoleResponse($"Pointer reseted for {mogwai.Name} [{mogwai.CurrentLevel}]! Pointer: {mogwai.Pointer}");
                     currentMogwai = mogwai;
@@ -336,7 +341,7 @@ namespace WoMAscii
             }
             else if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
             {
-                if (Blockchain.Instance.TryGetMogwai(strArray[1], false, out Mogwai mogwai) == BoundState.BOUND)
+                if (Blockchain.Instance.TryGetMogwai(strArray[1], out Mogwai mogwai) == BoundState.BOUND)
                 {
                     Print(mogwai);
                 }
@@ -350,7 +355,7 @@ namespace WoMAscii
                 var mogwaiAddressesDict = Blockchain.Instance.ValidMogwaiAddresses();
                 foreach (var keyValue in mogwaiAddressesDict)
                 {
-                    if (Blockchain.Instance.TryGetMogwai(keyValue.Key, false, out Mogwai mogwai) == BoundState.BOUND)
+                    if (Blockchain.Instance.TryGetMogwai(keyValue.Key, out Mogwai mogwai) == BoundState.BOUND)
                     {
                         Print(mogwai);
                     }
@@ -405,18 +410,18 @@ namespace WoMAscii
 
             var mogwaiAddressesDict = Blockchain.Instance.ValidMogwaiAddresses();
             string defaultStr = "+------------------------------------+-------+-------+------------+";
-            ConsoleResponse(defaultStr);
+            //ConsoleResponse(defaultStr);
             ConsoleResponse($"+ Address                            + Bound + Level + Funds      |");
             ConsoleResponse(defaultStr);
             foreach (var keyValue in mogwaiAddressesDict)
             {
                 var key = keyValue.Key;
                 var unspent = Blockchain.Instance.UnspendFunds(key);
-                var created = Blockchain.Instance.TryGetMogwai(key, false, out Mogwai mogwai);
+                var created = Blockchain.Instance.TryGetMogwai(key, out Mogwai mogwai);
                 if (strArray.Count() == 1 || created == boundState)
                 {
                     ConsoleResponse($"| {string.Format("{0,34}", key)} | {string.Format("{0,5}", created)} | {string.Format("{0,5}", mogwai == null ? 0 : mogwai.CurrentLevel)} | {string.Format("{0:###0.0000}", unspent).PadLeft(10).Substring(0, 10)} |");
-                    ConsoleResponse(defaultStr);
+                    //ConsoleResponse(defaultStr);
                 }
             }
         }
@@ -450,7 +455,7 @@ namespace WoMAscii
             string[] strArray = line.Split(' ');
             if (strArray.Count() == 2 && strArray[1].StartsWith("M") && strArray[1].Length == 34)
             {
-                if (Blockchain.Instance.TryGetMogwai(strArray[1], false, out Mogwai mogwai) == BoundState.BOUND)
+                if (Blockchain.Instance.TryGetMogwai(strArray[1], out Mogwai mogwai) == BoundState.BOUND)
                 {
                     foreach (string str in mogwai_control)
                     {
@@ -458,7 +463,7 @@ namespace WoMAscii
                     }
                     currentMogwai = mogwai;
                     InGameMessageVerbose = false;
-                    mogwai.Evolve(CachingService.MogwaisCache.Pointer(currentMogwai));
+                    //mogwai.Evolve(CachingService.MogwaisCache.Pointer(currentMogwai));
                     InGameMessageVerbose = true;
                     ConsoleResponse($"You've choosen {mogwai.Name} [{mogwai.CurrentLevel}]! pointer: {mogwai.Pointer}");
                 }
@@ -481,7 +486,7 @@ namespace WoMAscii
         {
             foreach (string str in Panels.CharacterPanel(mogwai))
             {
-                StringHelpers.Msg(str);
+                AsciiHelpers.Msg(str);
             }
         }
 

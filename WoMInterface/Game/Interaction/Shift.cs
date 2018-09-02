@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WoMInterface.Game.Enums;
 using WoMInterface.Game.Random;
+using WoMInterface.Tool;
 
 namespace WoMInterface.Game.Interaction
 {
@@ -28,6 +29,8 @@ namespace WoMInterface.Game.Interaction
         public Dice MogwaiDice => mogwaiDice ?? (mogwaiDice = new Dice(this));
 
         public Interaction Interaction { get; }
+
+        public GameLog History { get; } = new GameLog();
 
         public Shift(double index, double time, string adHex, int height, string bkHex, double bkIndex, string txHex, decimal amount, decimal fee )
         {

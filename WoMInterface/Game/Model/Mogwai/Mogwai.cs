@@ -11,19 +11,21 @@ using WoMInterface.Game.Random;
 
 namespace WoMInterface.Game.Model
 {
-    public partial class Mogwai : Entity
+    public class Mogwai : Entity
     {
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static GameLog History => currentShift.History;
+
         private readonly int blockHeight;
 
-        private Shift currentShift;
+        private static Shift currentShift;
 
-        private List<Shift> Shifts { get; }
+        private Dictionary<double, Shift> Shifts { get; }
 
         public MogwaiState MogwaiState { get; set; }
 
-        public Dictionary<int, Shift> LevelShifts { get; }
+        public List<int> LevelShifts { get; } = new List<int>();
 
         public int Pointer { get; private set; }
 
@@ -47,35 +49,34 @@ namespace WoMInterface.Game.Model
 
         public override Dice Dice => currentShift.MogwaiDice;
 
-        public static GameLog History = new GameLog();
-
-        public Mogwai(string key, List<Shift> shifts)
+        public Mogwai(string key, Dictionary<double, Shift> shifts)
         {
             Key = key;
             Shifts = shifts;
-            LevelShifts = new Dictionary<int, Shift>() { { CurrentLevel, currentShift } };
 
-            var creationShift = shifts[0];
+            currentShift = shifts.Values.First();
 
-            blockHeight = creationShift.Height;
-            Pointer = creationShift.Height;
+            LevelShifts.Add(currentShift.Height); // adding initial creation level up
+
+            blockHeight = currentShift.Height;
+            Pointer = currentShift.Height;
 
             // create appearance           
-            var hexValue = new HexValue(creationShift);
+            var hexValue = new HexValue(currentShift);
             Name = NameGen.GenerateName(hexValue);
             Body = new Body(hexValue);
             Coat = new Coat(hexValue);
             Stats = new Stats(hexValue);
 
             // create abilities
-            int[] rollEvent = new int[] {4,6,3};
-            Gender = creationShift.MogwaiDice.Roll(2, -1);
-            Strength = creationShift.MogwaiDice.Roll(rollEvent);
-            Dexterity = creationShift.MogwaiDice.Roll(rollEvent);
-            Constitution = creationShift.MogwaiDice.Roll(rollEvent);
-            Inteligence = creationShift.MogwaiDice.Roll(rollEvent);
-            Wisdom = creationShift.MogwaiDice.Roll(rollEvent);
-            Charisma = creationShift.MogwaiDice.Roll(rollEvent);
+            int[] rollEvent = new int[] { 4, 6, 3 };
+            Gender = currentShift.MogwaiDice.Roll(2, -1);
+            Strength = currentShift.MogwaiDice.Roll(rollEvent);
+            Dexterity = currentShift.MogwaiDice.Roll(rollEvent);
+            Constitution = currentShift.MogwaiDice.Roll(rollEvent);
+            Inteligence = currentShift.MogwaiDice.Roll(rollEvent);
+            Wisdom = currentShift.MogwaiDice.Roll(rollEvent);
+            Charisma = currentShift.MogwaiDice.Roll(rollEvent);
 
             BaseSpeed = 30;
 
@@ -85,7 +86,7 @@ namespace WoMInterface.Game.Model
             BaseAttackBonus = new int[] { 0 };
 
             // create experience
-            Experience = new Experience(creationShift);
+            Experience = new Experience(currentShift);
 
             // add simple rapier as weapon
             Equipment.PrimaryWeapon = Weapons.Rapier;
@@ -102,73 +103,60 @@ namespace WoMInterface.Game.Model
         /// 
         /// </summary>
         /// <param name="blockHeight"></param>
-        public void Evolve(int blockHeight = 0)
+        public void Evolve(out GameLog history)
         {
-            int oldPointer = Pointer;
+            // increase pointer to next block height
+            Pointer++;
 
-            foreach(var shift in Shifts)
+            // set current shift to the actual shift we process
+            currentShift = Shifts[Pointer];
+
+            // assign game log for this shift
+            history = currentShift.History;
+
+            // first we always calculated current lazy experience
+            double lazyExp = Experience.GetExp(CurrentLevel, currentShift);
+            if (lazyExp > 0)
             {
-                // set current shift to the actual shift we process
-                currentShift = shift;
+                AddExp(Experience.GetExp(CurrentLevel, currentShift));
+            }
 
-                // only evolve to the target block height
-                if (blockHeight != 0 && shift.Height > blockHeight)
+            // we go for the adventure if there is one up
+            if (Adventure != null && Adventure.IsActive)
+            {
+                Adventure.NextStep(this, currentShift);
+                return;
+            }
+
+            Adventure = null;
+
+
+            if (!currentShift.IsSmallShift)
+            {
+                switch (currentShift.Interaction.InteractionType)
                 {
-                    break;
-                }
-
-                // only proccess shifts that aren't proccessed before ...
-                if (shift.Height <= Pointer)
-                {
-                    continue;
-                }
-
-                // setting pointer to the actual shift
-                Pointer = shift.Height;
-
-                // first we always calculated current lazy experience
-                double lazyExp = Experience.GetExp(CurrentLevel, shift);
-                if (lazyExp > 0)
-                {
-                    AddExp(Experience.GetExp(CurrentLevel, shift));
-                }
-
-                // we go for the adventure if there is one up
-                if (Adventure != null && Adventure.IsActive)
-                {
-                    Adventure.NextStep(this, shift);
-                    continue;
-                }
-
-                Adventure = null;
-
-
-                if (!shift.IsSmallShift)
-                {
-                    switch (shift.Interaction.InteractionType)
-                    {
-                        case InteractionType.ADVENTURE:
-                            Adventure = AdventureGenerator.Create(shift, (AdventureAction) shift.Interaction);
-                            break;
-                        case InteractionType.LEVELING:
-                            Console.WriteLine("Received a leveling action!");
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                // lazy health regeneration
-                if (MogwaiState == MogwaiState.NONE)
-                {
-                    Heal(shift.IsSmallShift ? 2 * CurrentLevel : CurrentLevel, HealType.REST);
+                    case InteractionType.ADVENTURE:
+                        Adventure = AdventureGenerator.Create(currentShift, (AdventureAction)currentShift.Interaction);
+                        break;
+                    case InteractionType.LEVELING:
+                        Console.WriteLine("Received a leveling action!");
+                        break;
+                    default:
+                        break;
                 }
             }
 
-            // no more shifts to proccess
+            // lazy health regeneration
+            if (MogwaiState == MogwaiState.NONE)
+            {
+                Heal(currentShift.IsSmallShift ? 2 * CurrentLevel : CurrentLevel, HealType.REST);
+            }
+
+            History.Add(LogType.INFO, $"Evolved {Name} shift ¬G{Pointer}§!¬");
+
+            // no more shifts to proccess, no more logging possible to the game log
             currentShift = null;
 
-            StringHelpers.InfoMsg($"Evolved {Name} from ¬G{oldPointer}§  to ¬G{Pointer}§!¬");
         }
 
         /// <summary>
@@ -180,11 +168,11 @@ namespace WoMInterface.Game.Model
         {
             if (monster == null)
             {
-                StringHelpers.InfoMsg($"You just earned ¬G+{exp}§ experience!¬");
+                History.Add(LogType.INFO, $"You just earned ¬G+{exp}§ experience!¬");
             }
             else
             {
-                StringHelpers.InfoMsg($"The ¬C{monster.Name}§ gave you ¬G+{exp}§!¬");
+                History.Add(LogType.INFO, $"The ¬C{monster.Name}§ gave you ¬G+{exp}§!¬");
             }
 
             Exp += exp;
@@ -192,7 +180,7 @@ namespace WoMInterface.Game.Model
             if (Exp >= XpToLevelUp)
             {
                 CurrentLevel += 1;
-                LevelShifts.Add(CurrentLevel, currentShift);
+                LevelShifts.Add(currentShift.Height);
                 LevelUp(currentShift);
             }
         }
@@ -203,12 +191,12 @@ namespace WoMInterface.Game.Model
         /// <param name="shift"></param>
         private void LevelUp(Shift shift)
         {
-            StringHelpers.InfoMsg($"¬YYou're mogwai suddenly feels an ancient power around him.§¬");
-            StringHelpers.InfoMsg($"¬YCongratulations he just made the§ ¬G{CurrentLevel}§ ¬Yth level!§¬");
+            History.Add(LogType.INFO, $"¬YYou're mogwai suddenly feels an ancient power around him.§¬");
+            History.Add(LogType.INFO, $"¬YCongratulations he just made the§ ¬G{CurrentLevel}§ ¬Yth level!§¬");
 
             // hit points roll
             HitPointLevelRolls.Add(shift.MogwaiDice.Roll(HitPointDice));
-            
+
             // leveling up will heal you to max hitpoints
             CurrentHitPoints = MaxHitPoints;
         }
@@ -229,11 +217,11 @@ namespace WoMInterface.Game.Model
             Console.WriteLine();
             Console.WriteLine("*** Mogwai Attributes ***");
             Console.WriteLine("- Body:");
-            Body.All.ForEach(p => Console.WriteLine($"{p.Name}: {p.GetValue()} [{p.MinRange}-{p.Creation-1}] Var:{p.MaxRange}-->{p.Valid}"));
+            Body.All.ForEach(p => Console.WriteLine($"{p.Name}: {p.GetValue()} [{p.MinRange}-{p.Creation - 1}] Var:{p.MaxRange}-->{p.Valid}"));
             Console.WriteLine("- Coat:");
-            Coat.All.ForEach(p => Console.WriteLine($"{p.Name}: {p.GetValue()} [{p.MinRange}-{p.Creation-1}] Var:{p.MaxRange}-->{p.Valid}"));
+            Coat.All.ForEach(p => Console.WriteLine($"{p.Name}: {p.GetValue()} [{p.MinRange}-{p.Creation - 1}] Var:{p.MaxRange}-->{p.Valid}"));
             Console.WriteLine("- Stats:");
-            Stats.All.ForEach(p => Console.WriteLine($"{p.Name}: {p.GetValue()} [{p.MinRange}-{p.Creation-1}] Var:{p.MaxRange}-->{p.Valid}"));
+            Stats.All.ForEach(p => Console.WriteLine($"{p.Name}: {p.GetValue()} [{p.MinRange}-{p.Creation - 1}] Var:{p.MaxRange}-->{p.Valid}"));
             Experience.Print();
         }
 
