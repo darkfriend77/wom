@@ -48,11 +48,19 @@ namespace WoMAscii.Tool
                     return ConsoleColor.White;
             }
         }
-
-        public static void Msg(string message)
+        public static void Msg(string[] messages, int fixSize = 0)
+        {
+            foreach (string message in messages)
+            {
+                Msg(message, fixSize);
+            }
+        }
+        public static void Msg(string message, int fixSize = 0, string endStr = "")
         {
             // this is a ¬Rmessage§ red info => message red
             // ¬ last sign           => nextline
+            int length = 0;
+
             if (message.Length == 0)
             {
                 return;
@@ -72,25 +80,32 @@ namespace WoMAscii.Tool
 
                 if (i == 0)
                 {
+                    length += currentStr.Length;
                     Console.Write(currentStr);
                     continue;
                 }
 
                 var consColor = MsgColorMap(currentStr.Substring(0, 1));
                 string[] subStrArray = currentStr.Substring(1).Split('§');
-                string colorStr = subStrArray[0];
+                string colorStr = subStrArray[0].PadRight(subStrArray[0].Length - 1);
+
+                string restStr = subStrArray.Length > 1 && subStrArray[1].Length > 0 ? subStrArray[1].PadRight(subStrArray[1].Length - 1) : "";
 
                 if (colorStr.Length > 0)
                 {
                     Console.ForegroundColor = consColor;
-                    Console.Write(colorStr.PadRight(colorStr.Length - 1));
+                    length += colorStr.Length;
+                    Console.Write(colorStr);
                     Console.ResetColor();
                 }
 
-                if (subStrArray.Length > 1 && subStrArray[1].Length > 0)
-                {
-                    Console.Write(subStrArray[1].PadRight(subStrArray[1].Length - 1));
-                }
+                length += restStr.Length;
+                Console.Write(restStr);
+            }
+
+            if (fixSize > 0 && length < fixSize)
+            {
+                Console.Write("".PadLeft(fixSize - length - endStr.Length, ' ') + endStr);
             }
 
             if (last == '¬')
@@ -103,9 +118,9 @@ namespace WoMAscii.Tool
         public static string GetBar(double value1, double value2, out int hpPerc)
         {
             var rate = value1 / value2;
-            hpPerc = (int) (rate * 100);
-            int count = (int) (15 * rate);
-            return "¬G"+ string.Empty.PadRight(count,'o') + "§" + "¬R"+ string.Empty.PadRight(15-count,'.') + "§";
+            hpPerc = (int)(rate * 100);
+            int count = (int)(15 * rate);
+            return "¬G" + string.Empty.PadRight(count, 'o') + "§" + "¬R" + string.Empty.PadRight(15 - count, '.') + "§";
         }
 
         private static void ColorWriteLine(string value, ConsoleColor foreground = ConsoleColor.White, ConsoleColor background = ConsoleColor.Black)
@@ -130,11 +145,11 @@ namespace WoMAscii.Tool
             }
         }
 
-        public static void PrintSpecial(string[] stringArray)
+        public static void PrintSpecial(string[] stringArray, int fixSize = 0)
         {
             foreach (var str in stringArray)
             {
-                Msg(str);
+                Msg(str, fixSize);
             }
         }
     }

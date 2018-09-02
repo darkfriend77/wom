@@ -394,6 +394,20 @@ namespace WoMInterface.Node
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        public string GetDepositAddress()
+        {
+            var depositAddress = mogwaiService.GetAddressesByAccount("Deposit").FirstOrDefault();
+            if (depositAddress == null)
+            {
+                depositAddress = mogwaiService.GetAccountAddress("Deposit");
+            }
+            return depositAddress;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="mogwaiAddress"></param>
         /// <param name="tryes"></param>
         /// <returns></returns>

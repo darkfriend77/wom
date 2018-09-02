@@ -25,6 +25,8 @@ namespace WoMAscii
         private NoMoreTyping() { }
 
         private List<MogwaiInfo> mogwais;
+        private int pointer = 0;
+        private int oldPointer = 0;
         private int windowPointer = 0;
         private int maxRows = 20;
 
@@ -34,17 +36,24 @@ namespace WoMAscii
 
             try
             {
-                Console.WriteLine($"Press a key to enter into the World of Mogwais! {Blockchain.Instance.GetWalletVersion()}");
+                Console.WriteLine($"Teleport activated to enter into the World of Mogwais!");
+
+                // get deposit address
+                string depositAddress = Blockchain.Instance.GetDepositAddress();
+
+                // current un set funds on the wallet.
+                decimal unsetFunds = Blockchain.Instance.UnspendFunds(depositAddress);
+
+                // amount of mog that need to be moved minimaly
+                int mogAmount = 2;// unsetFunds > 2.0001m ? 2 : 0;
 
                 // response
-                string response = "¬";
+                string response = " ";
 
                 // initialy updating
                 Update();
 
                 // set pointer
-                int pointer = 0;
-                int oldPointer = 0;
                 if (mogwais.Count == 0)
                 {
                     pointer = -1;
@@ -63,10 +72,12 @@ namespace WoMAscii
 
                     Console.Clear();
                     AsciiHelpers.Print(Art.Logo, ConsoleColor.Cyan);
-                    AsciiHelpers.PrintSpecial(new string[] { response });
-                    AsciiHelpers.PrintSpecial(Art.Menu);
+                    AsciiHelpers.Msg(response, 60);
+                    AsciiHelpers.Msg($"¬cDeposit:§ ¬y{depositAddress}§¬");
+                    AsciiHelpers.Msg(Art.Menu($" ¬y{unsetFunds.ToString("###0.0000").PadLeft(9)}§ ¬CMOG§ ¬c[§¬y+{mogAmount}§¬c]§"));
+                    AsciiHelpers.Msg(Art.ColumnHeader);
                     PrintMogwais(pointer);
-                    AsciiHelpers.PrintSpecial(Art.Trailer);
+                    AsciiHelpers.Msg(Art.Trailer);
 
                     while (!Console.KeyAvailable)
                     {
@@ -74,23 +85,40 @@ namespace WoMAscii
                     }
 
                     // reset response
-                    response = "¬";
+                    response = " ";
 
                     // Key is available - read it
                     key = Console.ReadKey(true).Key;
 
-                    if (key == ConsoleKey.DownArrow && pointer < mogwais.Count - 1)
+                    switch (key)
                     {
-                        pointer = pointer + 1;
-                    }
-                    else if (key == ConsoleKey.UpArrow && pointer > 0)
-                    {
-                        pointer--;
-                    }
-                    else if (key == ConsoleKey.C)
-                    {
-                        response = Create();
-                        Update();
+                        case ConsoleKey.PageUp:
+                            mogAmount = mogAmount < 9 ? mogAmount + 1 : mogAmount;
+                            break; ;
+                        case ConsoleKey.PageDown:
+                            mogAmount = mogAmount > 2 ? mogAmount - 1 : mogAmount;
+                            break;
+                        case ConsoleKey.DownArrow:
+                            if (pointer < mogwais.Count - 1)
+                            {
+                                pointer++;
+                            }
+                            break;
+                        case ConsoleKey.UpArrow:
+                            if (pointer > 0)
+                            {
+                                pointer--;
+                            }
+                            break;
+                        case ConsoleKey.C:
+                            response = Create();
+                            Update();
+                            break;
+
+                        case ConsoleKey.B:
+                            response = Bind(mogwais[pointer].key);
+                            Update();
+                            break;
                     }
 
                 } while (key != ConsoleKey.Escape);
@@ -116,11 +144,25 @@ namespace WoMAscii
                 windowPointer = pointer;
             }
 
+            int first = windowPointer;
+            int last = windowPointer + maxRows - 1;
+
             for (int i = windowPointer; i < windowPointer + maxRows; i++)
             {
                 if (mogwais.Count > i)
                 {
-                    AsciiHelpers.PrintSpecial(new string[] { mogwais[i].ToString() });
+                    if (i != 0 && i == first)
+                    {
+                        AsciiHelpers.Msg($"{mogwais[i]}", 102, "+");
+                    }
+                    else if (i < mogwais.Count - 1 && i == last )
+                    {
+                        AsciiHelpers.Msg($"{mogwais[i]}", 102, "+");
+                    }
+                    else
+                    {
+                        AsciiHelpers.Msg($"{mogwais[i]}", 102);
+                    }
                 }
                 else
                 {
@@ -133,12 +175,24 @@ namespace WoMAscii
         {
             if (Blockchain.Instance.NewMogwaiAddress(out string mogwaiAddress))
             {
-                return $"¬GSuccessfuly, created a new address with a valid mogwai connection!§¬";
+                return $"¬GSuccessfuly, created a new address with a valid mogwai connection!§";
             }
             else
             {
-                return $"¬YCouldn't create a new mogwaiaddress, try again!§¬";
+                return $"¬YCouldn't create a new mogwaiaddress, try again!§";
             };
+        }
+
+        private string Bind(string address)
+        {
+            if (Blockchain.Instance.BindMogwai(address))
+            {
+                return $"¬GSuccessfuly, bound a mogwai, please wait till the connection is established.§";
+            }
+            else
+            {
+                return $"¬RCouldn't bind mogwai!§";
+            }
         }
 
         private class MogwaiInfo
@@ -157,13 +211,34 @@ namespace WoMAscii
             }
             public override string ToString()
             {
-                string stateColor = state == BoundState.NONE ? "r" : state == BoundState.WAIT ? "a" : "y";
+
+                string rateMogwaiStr = "...";
+                string levelMogwaiStr = "...";
+                string goldMogwaiStr = "...";
+                if (mogwai != null)
+                {
+                    double rateMogwai = (double)(3 * mogwai.Strength + 3 * mogwai.Dexterity + 2 * mogwai.Constitution + 3 * mogwai.Inteligence + 2 * mogwai.Wisdom + mogwai.Charisma) / 14;
+                    rateMogwaiStr = rateMogwai.ToString("#0.00");
+                    levelMogwaiStr = mogwai.CurrentLevel.ToString();
+
+                }
+                string stateColor = state == BoundState.NONE ? "a" : state == BoundState.WAIT ? "Y" : "y";
                 string stateStr = state.ToString().Substring(0, 1) + state.ToString().Substring(1).ToLower();
                 string mogwaiName = mogwai != null ? $"{mogwai.Name}" : "...";
+                string mCol = mogwai != null ? "y" : "a";
                 string selected = IsSelected ? "==>" : "";
                 string keyColor = IsSelected ? "y" : "a";
                 string fundsColor = funds > 0 ? "y" : "a";
-                return $"¬G{selected.PadRight(3).PadLeft(4)}§ ¬{keyColor}{key}§  ¬{stateColor}{stateStr.PadRight(5)}§  ¬{fundsColor}{string.Format("{0:###0.0000}", funds).PadLeft(10).Substring(0, 10)}§  ¬C{mogwaiName.PadRight(12)}§¬";
+                return 
+                    $"¬G{selected.PadRight(3).PadLeft(4)}§ " +
+                    $"¬{keyColor}{key}§  " +
+                    $"¬{stateColor}{stateStr.PadRight(5)}§  " +
+                    $"¬{fundsColor}{string.Format("{0:###0.0000}", funds).PadLeft(10).PadRight(11).Substring(0, 11)}§  " +
+                    $"¬{mCol}{mogwaiName.PadRight(12)}§  " +
+                    $"¬{mCol}{rateMogwaiStr.PadLeft(7).PadRight(8)}§  " +
+                    $"¬{mCol}{levelMogwaiStr.PadLeft(6).PadRight(7)}§  " +
+                    $"¬{mCol}{goldMogwaiStr.PadLeft(6)}§" +
+                    $"¬";
             }
         }
 
