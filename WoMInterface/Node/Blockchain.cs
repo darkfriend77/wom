@@ -313,7 +313,7 @@ namespace WoMInterface.Node
         /// <param name="burnMogs"></param>
         /// <param name="txFee"></param>
         /// <returns></returns>
-        private bool BurnMogs(string fromaddress, string toaddress, decimal burnMogs, decimal txFee)
+        public bool BurnMogs(string fromaddress, string toaddress, decimal burnMogs, decimal txFee)
         {
             var unspentAmount = UnspendFunds(fromaddress, out List<ListUnspentResponse> listUnspent);
             if (unspentAmount < (burnMogs + txFee))

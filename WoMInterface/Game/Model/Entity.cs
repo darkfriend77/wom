@@ -138,6 +138,9 @@ namespace WoMInterface.Game.Model
         // equipment
         public Equipment Equipment { get; }
 
+        // wealth
+        public Wealth Wealth { get; set; }
+
         // dice
         public virtual Dice Dice { get; set; }
 
@@ -157,6 +160,7 @@ namespace WoMInterface.Game.Model
             // initialize
             HitPointLevelRolls = new List<int>();
             Equipment = new Equipment();
+            Wealth = new Wealth();
             Classes = new List<Classes>();
         }
 

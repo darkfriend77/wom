@@ -30,6 +30,8 @@ namespace WoMAscii
         private int windowPointer = 0;
         private int maxRows = 20;
 
+        private readonly decimal fees = 0.0001m;
+
         public void Start()
         {
             XmlConfigurator.Configure();
@@ -74,7 +76,9 @@ namespace WoMAscii
                     AsciiHelpers.Print(Art.Logo, ConsoleColor.Cyan);
                     AsciiHelpers.Msg(response, 60);
                     AsciiHelpers.Msg($"¬cDeposit:§ ¬y{depositAddress}§¬");
-                    AsciiHelpers.Msg(Art.Menu($" ¬y{unsetFunds.ToString("###0.0000").PadLeft(9)}§ ¬CMOG§ ¬c[§¬y+{mogAmount}§¬c]§"));
+                    string ufStr = unsetFunds.ToString("#####0.00");
+                    string spac = "".PadLeft(9 - ufStr.Length, '_');
+                    AsciiHelpers.Msg(Art.Menu(($"¬c{spac}§¬y{ufStr}§¬c_§¬CMOG§¬c_§¬c[§¬G+{mogAmount}§¬c]_§")));
                     AsciiHelpers.Msg(Art.ColumnHeader);
                     PrintMogwais(pointer);
                     AsciiHelpers.Msg(Art.Trailer);
@@ -110,6 +114,13 @@ namespace WoMAscii
                                 pointer--;
                             }
                             break;
+
+                        case ConsoleKey.S:
+                            if (unsetFunds > mogAmount + fees)
+                            response = Send(depositAddress, mogwais[pointer].key, mogAmount, fees);
+                            Update();
+                            break;
+
                         case ConsoleKey.C:
                             response = Create();
                             Update();
@@ -153,15 +164,15 @@ namespace WoMAscii
                 {
                     if (i != 0 && i == first)
                     {
-                        AsciiHelpers.Msg($"{mogwais[i]}", 102, "+");
+                        AsciiHelpers.Msg($"{mogwais[i]}", 103, "+");
                     }
                     else if (i < mogwais.Count - 1 && i == last )
                     {
-                        AsciiHelpers.Msg($"{mogwais[i]}", 102, "+");
+                        AsciiHelpers.Msg($"{mogwais[i]}", 103, "+");
                     }
                     else
                     {
-                        AsciiHelpers.Msg($"{mogwais[i]}", 102);
+                        AsciiHelpers.Msg($"{mogwais[i]}", 103);
                     }
                 }
                 else
@@ -169,6 +180,18 @@ namespace WoMAscii
                     Console.WriteLine();
                 }
             }
+        }
+
+        private string Send(string fromaddress, string toaddress, decimal burnMogs, decimal fees)
+        {
+            if (Blockchain.Instance.BurnMogs(fromaddress, toaddress, burnMogs, fees))
+            {
+                return $"¬GSuccessfuly, sent ¬y{burnMogs}§ mogs to mogwais address!§";
+            }
+            else
+            {
+                return $"¬YCouldn't create a new mogwaiaddress, try again!§";
+            };
         }
 
         private string Create()
@@ -220,6 +243,7 @@ namespace WoMAscii
                     double rateMogwai = (double)(3 * mogwai.Strength + 3 * mogwai.Dexterity + 2 * mogwai.Constitution + 3 * mogwai.Inteligence + 2 * mogwai.Wisdom + mogwai.Charisma) / 14;
                     rateMogwaiStr = rateMogwai.ToString("#0.00");
                     levelMogwaiStr = mogwai.CurrentLevel.ToString();
+                    goldMogwaiStr = mogwai.Wealth.Gold.ToString();
 
                 }
                 string stateColor = state == BoundState.NONE ? "a" : state == BoundState.WAIT ? "Y" : "y";
@@ -237,7 +261,7 @@ namespace WoMAscii
                     $"¬{mCol}{mogwaiName.PadRight(12)}§  " +
                     $"¬{mCol}{rateMogwaiStr.PadLeft(7).PadRight(8)}§  " +
                     $"¬{mCol}{levelMogwaiStr.PadLeft(6).PadRight(7)}§  " +
-                    $"¬{mCol}{goldMogwaiStr.PadLeft(6)}§" +
+                    $"¬{mCol}{goldMogwaiStr.PadLeft(7).PadRight(8)}§" +
                     $"¬";
             }
         }

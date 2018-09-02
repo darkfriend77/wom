@@ -153,6 +153,7 @@
     <Compile Include="Game\Model\LazyExperience.cs" />
     <Compile Include="Game\Enums\GenderType.cs" />
     <Compile Include="Game\Enums\HealthState.cs" />
+    <Compile Include="Game\Model\Mogwai\Wealth.cs" />
     <Compile Include="Game\Model\Monster\Humanoid.cs" />
     <Compile Include="Game\Model\Monster\Animals.cs" />
     <Compile Include="Game\Model\Monster\Monsters.cs" />
