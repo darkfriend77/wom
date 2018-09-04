@@ -10,9 +10,12 @@ namespace WoMInterface.Game.Model
     /// </summary>
     public abstract class Tile
     {
+        private int d = 0;
+        private Tile p = null;
+
         public readonly Room Parent;
         public readonly Coordinate Coordinate;
-        public readonly Wall[] Sides = new Wall[6];
+        public readonly Wall[] Sides = new Wall[4];
 
         public int Height;
 
@@ -26,35 +29,77 @@ namespace WoMInterface.Game.Model
 
         //public abstract void Interact(Mogwai mog);
 
-        public Wall NorthWestSide
+        public bool IsOccupied { get; set; }
+
+        public Wall GetSide(Direction direction)
         {
-            get => Sides[0];
-            set => Sides[0] = value;
+            return Sides[(int) direction];
         }
-        public Wall NorthSide
+
+        public Tile[] GetShortestPath(Tile destination)
         {
-            get => Sides[1];
-            set => Sides[1] = value;
-        }
-        public Wall NorthEastSide
-        {
-            get => Sides[2];
-            set => Sides[2] = value;
-        }
-        public Wall SouthEastSide
-        {
-            get => Sides[3];
-            set => Sides[3] = value;
-        }
-        public Wall SouthSide
-        {
-            get => Sides[4];
-            set => Sides[4] = value;
-        }
-        public Wall SouthWestSide
-        {
-            get => Sides[5];
-            set => Sides[5] = value;
+            var floor = Parent.Floor;
+            var width = Parent.Width;
+            var length = Parent.Length;
+
+            var list = new List<Tile>(width * length);
+            for (int i = 0; i < length; i++)
+                for (int j = 0; j < width; j++)
+                {
+                    var tile = floor[i, j];
+                    tile.p = null;
+                    tile.d = int.MaxValue;
+                    list.Add(tile);
+                }
+
+            var current = this;
+            d = 0;
+            while (list.Count > 0)
+            {
+                //for (int i = 0; i < 4; i++)
+                //    if (!(current.Sides[i]?.IsBlocked ?? false)&&
+                //        Parent.TryGetTile(Coordinate.Neighbour((Direction) i), out Tile t))
+                //    {
+                //        current = t;
+                //        break;
+                //    }
+
+                var cd = int.MaxValue;
+                foreach (var t in list)
+                {
+                    if (cd <= t.d) continue;
+                    cd = t.d;
+                    current = t;
+                }
+
+                list.Remove(current);
+                if (current == destination)
+                    break;
+
+                foreach (var neighbour in Parent.GetNeighbours(current.Coordinate))
+                {
+                    var alt = current.d + 1;
+                    if (alt < neighbour.d)
+                    {
+                        neighbour.d = alt;
+                        neighbour.p = current;
+                    }
+                }
+            }
+
+            var s = new Stack<Tile>();
+            if (destination.p != null || destination == this)
+            {
+                while (current != null)
+                {
+                    s.Push(current);
+                    current = current.p;
+                }
+
+                return s.ToArray();
+            }
+
+            return new Tile[0];
         }
     }
 

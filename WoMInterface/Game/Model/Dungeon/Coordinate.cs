@@ -1,58 +1,94 @@
 ﻿using System;
 using System.Collections.Generic;
+using static System.Math;
 
 namespace WoMInterface.Game.Model
 {
+    public enum Direction
+    {
+        RIGHT, DOWN, LEFT, UP
+    }
     /// <summary>
-    /// Cubic coordinate implementation of hex grid
+    /// Simple 2D Cartesian coordinate
     /// </summary>
     public struct Coordinate : IEquatable<Coordinate>
     {
-        // flat-top style directions
-        private static readonly Coordinate[] _directions = new Coordinate[]
+        private static readonly Coordinate[] _directions =
         {
-            new Coordinate(0, 1, -1), new Coordinate(1, 0, -1), new Coordinate(1, -1, 0),
-            new Coordinate(0, -1, 1), new Coordinate(-1, 0, 1), new Coordinate(-1, 1, 0)
+            new Coordinate(1, 0), new Coordinate(0, -1), new Coordinate(-1, 0), new Coordinate(0, 1)
         };
-
-        //public int RoomNumber;
+            
         public readonly int X;
         public readonly int Y;
-        public readonly int Z;
 
-        public Coordinate(int x, int y, int z)
+        public Coordinate(int x, int y)
         {
-            if (x + y + z != 0)
-                throw new ArgumentOutOfRangeException("The sum of the coordinates must equal to 0.");
-
             X = x;
             Y = y;
-            Z = z;
         }
 
-        public static int Length(Coordinate coordinate)
+        public int Length => (Abs(X) + Abs(Y));
+
+        public Coordinate Neighbour(Direction direction)
         {
-            return (Math.Abs(coordinate.X) + Math.Abs(coordinate.Y) + Math.Abs(coordinate.Z)) / 2;
+            return this + Direction(direction);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Coordinate && Equals((Coordinate)obj);
+        }
+
+        public bool Equals(Coordinate other)
+        {
+            return X == other.X &&
+                   Y == other.Y;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 1861411795;
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Y.GetHashCode();
+            return hashCode;
         }
 
         public static int Distance(Coordinate a, Coordinate b)
         {
-            return Length(a - b);
+            return (a - b).Length;
+        }
+
+        public static Coordinate Direction(int direction)
+        {
+            if (direction < 0 || direction > 3)
+                throw new ArgumentOutOfRangeException();
+
+            return _directions[direction];
+        }
+
+        public static Coordinate Direction(Direction direction)
+        {
+            return _directions[(int)direction];
+        }
+
+        public override string ToString()
+        {
+            return $"({X},{Y})";
         }
 
         public static Coordinate operator +(Coordinate a, Coordinate b)
         {
-            return new Coordinate(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+            return new Coordinate(a.X + b.X, a.Y + b.Y);
         }
 
         public static Coordinate operator -(Coordinate a, Coordinate b)
         {
-            return new Coordinate(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+            return new Coordinate(a.X - b.X, a.Y - b.Y);
         }
 
         public static Coordinate operator *(Coordinate a, int k)
         {
-            return new Coordinate(a.X * k, a.Y * k, a.Z * k);
+            return new Coordinate(a.X * k, a.Y * k);
         }
 
         public static bool operator ==(Coordinate coordinate1, Coordinate coordinate2)
@@ -63,68 +99,6 @@ namespace WoMInterface.Game.Model
         public static bool operator !=(Coordinate coordinate1, Coordinate coordinate2)
         {
             return !(coordinate1 == coordinate2);
-        }
-
-        public static Coordinate Direction(int direction)
-        {
-            if (direction > 5 || direction < 0)
-                throw new ArgumentOutOfRangeException();
-
-            return _directions[direction];
-        }
-
-        public static Coordinate Round(double x, double y, double z)
-        {
-            int rx = (int) Math.Round(x);
-            int ry = (int) Math.Round(y);
-            int rz = (int) Math.Round(z);
-
-            double xDiff = Math.Abs(rx - x);
-            double yDiff = Math.Abs(ry - y);
-            double zDiff = Math.Abs(rz - z);
-
-            if (xDiff > yDiff && xDiff > zDiff)
-                rx = -ry - rz;
-            else if (yDiff > zDiff)
-                ry = -rx - rz;
-            else
-                rz = -rx - ry;
-           
-            return new Coordinate(rx, ry, rz);
-        }
-
-        public static IEnumerable<Coordinate> GetLine(Coordinate a, Coordinate b)
-        {
-            double Lerp(int x, int y, double t) => x + (y - x) * t;
-
-            int d = Distance(a, b);
-
-            for (int i = 0 ; i < d; i++)
-            {
-                double t = (double)i / d;
-                yield return Round(Lerp(a.X, a.X, t), Lerp(a.Y, b.Y, t), Lerp(a.Z, b.Z, t));
-            }
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Coordinate coordinate && Equals(coordinate);
-        }
-
-        public bool Equals(Coordinate other)
-        {
-            return X == other.X &&
-                   Y == other.Y &&
-                   Z == other.Z;
-        }
-
-        public override int GetHashCode()
-        {
-            var hashCode = -307843816;
-            hashCode = hashCode * -1521134295 + X.GetHashCode();
-            hashCode = hashCode * -1521134295 + Y.GetHashCode();
-            hashCode = hashCode * -1521134295 + Z.GetHashCode();
-            return hashCode;
         }
     }
 }

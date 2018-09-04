@@ -9,57 +9,20 @@ namespace WoMInterface.Game.Model
 {
     public abstract class Room
     {
-        protected class Map
-        {
-            private readonly int _sideLength;
-            private readonly Tile[] _data;
-
-            private readonly Dictionary<Coordinate, Tile> data;
-
-            public Map(Room room, int sideLength)
-            {
-                _sideLength = sideLength;
-                // simplest parallelogram map
-                _data = new Tile[sideLength * sideLength];
-                int d = sideLength / 2;
-                int i = 0;
-                for (int z = -d; z < d; z++)
-                    for (int x = -d; x < d; x++)
-                        _data[i++] = new StoneTile(room, new Coordinate(x, 1 - x - z, z));
-            }
-
-            public Tile this[int index]
-            {
-                get => _data[index];
-                set => _data[index] = value;
-            }
-
-            public bool TryGetTile(Coordinate coordinate, out Tile tile)
-            {
-                int d = _sideLength / 2;
-                if (Math.Abs(coordinate.X) > d || Math.Abs(coordinate.Z) > d || Math.Abs(coordinate.Y) >= _sideLength)
-                {
-                    tile = null;
-                    return false;
-                }
-
-                tile = _data[5 * (coordinate.Z + d) + coordinate.X + d];
-                return true;
-            }
-        }
-
         public Dungeon Parent;
 
         public List<Corridor> OutgoingDoors;
 
         public List<Corridor> IncomingDoors;
 
-        public int Level { get; protected set; }
+        public Tile[,] Floor { get; protected set; }
 
-        public int MaxWidth { get; protected set; }
+        public int Level { get; protected set; }
+        public int Width { get; protected set; }
+        public int Length { get; protected set; }
+
 
         //public Tile[,] Floor { get; protected set; }
-        protected Map _map;
 
         protected readonly bool IsHidden;
 
@@ -82,20 +45,30 @@ namespace WoMInterface.Game.Model
 
         public bool TryGetTile(Coordinate coord, out Tile tile)
         {
-            return _map.TryGetTile(coord, out tile);
+            if (coord.X >= Width || coord.Y >= Length || coord.X < 0 || coord.Y < 0)
+            {
+                tile = null;
+                return false;
+            }
+
+            tile = Floor[coord.X, coord.Y];
+            return true;
         }
 
         public IEnumerable<Tile> GetNeighbours(Coordinate coordinate)
         {
             if (!TryGetTile(coordinate, out Tile tile)) yield break;
-            for (int i = 0; i < 6; i++)
-                if (TryGetTile(tile.Coordinate + Coordinate.Direction(i), out Tile neighbour))
+            for (int i = 0; i < 4; i++)
+                if (TryGetTile(tile.Coordinate.Neighbour((Direction)i), out Tile neighbour))
                     yield return neighbour;
         }
 
         public abstract bool Enter();
 
-        public abstract void Initialise(Mogwai mogwai);
+        public virtual void Initialise(Mogwai mogwai)
+        {
+
+        }
 
         // create pointers
         public static void Connect(Room a, Room b)
@@ -179,27 +152,49 @@ namespace WoMInterface.Game.Model
 
     public class SimpleRoom : MonsterRoom
     {
-        private readonly Dungeoneer _mog;
-        private readonly Dungeoneer[] _mobs;
+        public readonly Dungeoneer _mog;
+        public readonly Dungeoneer[] _mobs;
 
         public SimpleRoom(Dungeon parent, Mogwai mogwai) : base(parent)
         {
-            const int maxWidth = 5;
+            const int length = 5;
 
-            //var floor = Floor;
+            Width = length;
+            Length = length;
+            var floor = new Tile[length, length];
 
-            _map = new Map(this, maxWidth);
+            // Initialise Tiles
+            for (int i = 0; i < length; i++)
+            for (int j = 0; j < length; j++)
+                floor[i, j] = new StoneTile(this, new Coordinate(i, j));
 
             // Initialise Dungeoneers
-            _mog = new Dungeoneer(_fight.Heroes[0]);
-            _mog.CurrentTile = _map[0];
+            //_mog = new Dungeoneer(_fight.Heroes[0]);
+            _mog = new Dungeoneer(null);
+            _mog.CurrentTile = floor[length / 2, 0];
 
-            var monsters = _fight.Monsters;
+            //var monsters = _fight.Monsters;
+            Monster[] monsters = new Monster[] { Monsters.Rat };
             _mobs = monsters.Select(p => new Dungeoneer(p)).ToArray();
-            for (int i = maxWidth * maxWidth - 1, j = _mobs.Length; j > 0; i++, j--)
+
+            for (int i = 0; i < _mobs.Length; i++)
             {
-                _mobs[j].CurrentTile = _map[i];
+                while (true)
+                {
+                    //var x = parent.DungeonDice.Roll(length, -1);
+                    //var y = parent.DungeonDice.Roll(length, -1);
+                    var x = 4;
+                    var y = 4;
+                    Tile tile = floor[x, y];
+                    if (!tile.IsOccupied)
+                    {
+                        _mobs[i].CurrentTile = tile;
+                        break;
+                    }
+                }
             }
+
+            Floor = floor;
         }
 
         public override bool Enter()
