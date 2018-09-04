@@ -13,6 +13,8 @@ namespace WoMInterface.Game.Model
     /// </summary>
     public class Dungeoneer
     {
+        private Tile _currentTile;
+
         public readonly Entity Entity;
         public readonly bool IsHero;
 
@@ -26,11 +28,20 @@ namespace WoMInterface.Game.Model
 
         public Dungeon CurrentDungeon => CurrentTile.Parent.Parent;
         public Room CurrentRoom => CurrentTile.Parent;
-        public Tile CurrentTile { get; set; }
 
-        public bool TryMoveTo(int direction)
+        public Tile CurrentTile
         {
-            if (CurrentTile.Sides[direction]?.IsBlocked ?? false)
+            get => _currentTile;
+            set
+            {
+                _currentTile = value;
+                value.IsOccupied = true;
+            }
+        }
+
+        public bool TryMoveTo(Direction direction)
+        {
+            if (CurrentTile.Sides[(int)direction]?.IsBlocked ?? false)
                 return false;
 
             if (CurrentRoom.TryGetTile(CurrentTile.Coordinate + Coordinate.Direction(direction), out Tile destination))
@@ -40,6 +51,12 @@ namespace WoMInterface.Game.Model
             }
 
             return false;
+        }
+
+        // simple implementation of Dijkstra's algorithm
+        public void GetShortestPath(Tile destination)
+        {
+            
         }
     }
 }

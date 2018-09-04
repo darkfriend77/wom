@@ -49,7 +49,11 @@ namespace WoMInterface.Game.Model
         
         #endregion
 
+        // base speed
         public int BaseSpeed { get; set; }
+
+        // calculate encumbarance and stuff like that ...
+        public int Speed => BaseSpeed;
 
         public int NaturalArmor { get; set; }
         // armorclass = 10 + armor bonus + shield bonus + dex modifier + size modifier + natural armor + deflection + misc modifier
