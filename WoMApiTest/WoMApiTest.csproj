@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cryptography.ECDSA, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cryptography.ECDSA.Secp256K1.1.1.2\lib\netstandard2.0\Cryptography.ECDSA.dll</HintPath>
-    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
@@ -90,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Block\Block.cs" />
+    <Compile Include="Node\MogwaiKeys.cs" />
     <Compile Include="Node\Wallet.cs" />
     <Compile Include="Node\Blockchain.cs" />
     <Compile Include="Program.cs" />

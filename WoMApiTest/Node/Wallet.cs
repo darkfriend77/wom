@@ -9,7 +9,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using WoMApiTest.Tool;
 
 namespace WoMApiTest.Model.Node
 {
@@ -19,67 +18,12 @@ namespace WoMApiTest.Model.Node
 
         public byte[] chainCode;
 
-        public uint seed = 0;
-
         public Dictionary<string, uint> EncryptedSecrets = new Dictionary<string, uint>();
 
         public WalletFile(string wifKey, byte[] chainCode)
         {
             this.wifKey = wifKey;
             this.chainCode = chainCode;
-        }
-
-    }
-
-    public class MogwaiKeys
-    {
-        private readonly ExtKey extkey;
-
-        private readonly Network network;
-
-        private readonly PubKey pubKey;
-
-        private readonly PubKey mirrorPubKey;
-
-        public string Address => pubKey.GetAddress(network).ToString();
-
-        public string MirrorAddress => mirrorPubKey?.GetAddress(network).ToString();
-
-        public bool HasMirrorAddress => mirrorPubKey != null;
-
-        public MogwaiKeys(ExtKey extkey, Network network)
-        {
-            this.extkey = extkey;
-            this.network = network;
-            this.pubKey = extkey.PrivateKey.PubKey;
-            Console.WriteLine(pubKey);
-            if (TryMirrorPubKey(extkey.PrivateKey.PubKey, out PubKey mirrorPubKey))
-            {
-                Console.WriteLine(mirrorPubKey);
-                this.mirrorPubKey = mirrorPubKey;
-            }
-        }
-
-        private bool TryMirrorPubKey(PubKey pubKey, out PubKey mirrorPubKey)
-        {
-            var pubKeyStr = Helpers.ByteArrayToString(pubKey.ToBytes());
-            var mirrorPubKeyStr =
-                   pubKeyStr.Substring(0, 8)
-                 + pubKeyStr.Substring(8, 2)
-                 + Helpers.ReverseString(pubKeyStr.Substring(10, 54))
-                 + pubKeyStr.Substring(64, 2);
-            var mirrorPubKeyBytes = Helpers.StringToByteArray(mirrorPubKeyStr);
-            try
-            {
-                mirrorPubKey = new PubKey(mirrorPubKeyBytes, false);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                //Console.WriteLine(ex.InnerException);
-                mirrorPubKey = new PubKey(mirrorPubKeyBytes, true);
-                return true;
-            }
         }
 
     }
@@ -107,9 +51,17 @@ namespace WoMApiTest.Model.Node
             }
         }
 
+        public Dictionary<string, MogwaiKeys> MogwaiKeyDict { get; set; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="path"></param>
         public MogwaiWallet(string password, string path)
         {
             this.path = path;
+            MogwaiKeyDict = new Dictionary<string, MogwaiKeys>();
 
             if (!TryReadFile(path, out walletFile))
             {
@@ -126,6 +78,55 @@ namespace WoMApiTest.Model.Node
                 var masterKey = Key.Parse(walletFile.wifKey, password, network);
                 extKey = new ExtKey(masterKey, walletFile.chainCode);
             }
+
+            // finally load all mogwaikeys
+            LoadMogwaiKeys();
+        }
+
+        public void LoadMogwaiKeys()
+        {
+            foreach ( var seed in walletFile.EncryptedSecrets.Values)
+            {
+                var mogwaiKey = GetMogwaiKeys(seed);
+                if (!MogwaiKeyDict.ContainsKey(mogwaiKey.Address))
+                {
+                    MogwaiKeyDict[mogwaiKey.Address] = mogwaiKey;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mogwaiKeys"></param>
+        /// <param name="tryes"></param>
+        /// <returns></returns>
+        public bool GetNewMogwaiKey(out MogwaiKeys mogwaiKeys, int tryes = 10)
+        {
+            mogwaiKeys = null;
+            uint seed = 1000;
+            if (walletFile.EncryptedSecrets.Values.Count > 0)
+            {
+                seed = walletFile.EncryptedSecrets.Values.Max() + 1;
+            }
+
+            for (uint i = seed; i < seed + tryes; i++)
+            {
+                var mogwayKeysTemp = GetMogwaiKeys(i);
+                if (mogwayKeysTemp.HasMirrorAddress)
+                {
+                    var wif = mogwayKeysTemp.GetEncryptedSecretWif();
+                    if (!walletFile.EncryptedSecrets.ContainsKey(wif))
+                    {
+                        walletFile.EncryptedSecrets[wif] = i;
+                        mogwaiKeys = mogwayKeysTemp;
+                        Persist(path, walletFile);
+                        return true;
+                    }
+ 
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -134,19 +135,10 @@ namespace WoMApiTest.Model.Node
         /// <param name="seed"></param>
         /// <param name="persist"></param>
         /// <returns></returns>
-        public MogwaiKeys GetMogwaiKeys(uint seed, bool persist = false)
+        public MogwaiKeys GetMogwaiKeys(uint seed)
         {
             var extKeyDerived = extKey.Derive(seed);
             var wif = extKey.PrivateKey.GetWif(network);
-            if (persist)
-            {
-                var encSecretWif = extKey.PrivateKey.GetEncryptedBitcoinSecret(extKey.ToString(network), network).ToWif();
-                if (!walletFile.EncryptedSecrets.ContainsKey(encSecretWif))
-                {
-                    walletFile.EncryptedSecrets[encSecretWif] = seed;
-                }
-                Persist(path, walletFile);
-            }
             return new MogwaiKeys(extKeyDerived, network);
         }
 

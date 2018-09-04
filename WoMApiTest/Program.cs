@@ -29,11 +29,22 @@ namespace WoMApiTest
             //  "ismiraddrvalid": true,
             //  "miraddress": "MQN7moivGfWPiwUfCX1PzfqqYN29gKsgEb"
 
-            MogwaiWallet wallet = new MogwaiWallet("1234", "eeee.dat");
-            Console.WriteLine(wallet.MnemonicWords);
-            var mogwaiKeys = wallet.GetMogwaiKeys(1);
-            Console.WriteLine(mogwaiKeys.Address);
-            Console.WriteLine(mogwaiKeys.MirrorAddress);
+            MogwaiWallet wallet = new MogwaiWallet("1234", "ttttete.dat");
+
+            foreach(var mogwaiKey in wallet.MogwaiKeyDict.Values)
+            {
+                Console.WriteLine($"{mogwaiKey.Address},{mogwaiKey.MirrorAddress}");
+            }
+
+            //Console.WriteLine(wallet.MnemonicWords);
+            //MD9C1fPqFtF5Xqx66fes3Ro1GgCFSht2zC
+            //var mogwaiKeys = wallet.GetMogwaiKeys(1001);
+            //if (wallet.GetNewMogwaiKey(out MogwaiKeys mogwaiKeys))
+            //{
+            //    Console.WriteLine(mogwaiKeys.Address);
+            //    Console.WriteLine(mogwaiKeys.HasMirrorAddress ? mogwaiKeys.MirrorAddress : "no");
+
+            //}
             Console.ReadKey();
 
         }
