@@ -65,7 +65,7 @@ namespace WoMInterface.Game.Model
     /// </summary>
     public class SimpleDungeon : Dungeon
     {
-        public SimpleDungeon() : base(null, null)
+        public SimpleDungeon(Shift shift) : base(null, null)
         {
 
         }
