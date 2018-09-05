@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WoMApiTest.Node;
+using WoMApi.Node;
 using NBitcoin;
-using WoMApiTest.Model.Node;
-using WoMApiTest.Tool;
+using WoMApi.Model.Node;
+using WoMApi.Tool;
 
-namespace WoMApiTest
+namespace WoMApi
 {
     class Program
     {

@@ -7,9 +7,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using WoMApiTest.Model.Node;
+using WoMApi.Model.Node;
 
-namespace WoMApiTest.Node
+namespace WoMApi.Node
 {
     public class Blockchain
     {
@@ -24,7 +24,6 @@ namespace WoMApiTest.Node
         private Blockchain()
         {
             client = new RestClient(ConfigurationManager.AppSettings["apiUrl"]);
-
         }
 
         public IRestResponse<Block> GetBlock(int value)

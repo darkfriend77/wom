@@ -1,4 +1,4 @@
-﻿namespace WoMApiTest
+﻿namespace WoMApi
 {
     public class Vout
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WoMApiTest
+namespace WoMApi
 {
     public class Block
     {

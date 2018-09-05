@@ -1,8 +1,8 @@
 ﻿using NBitcoin;
 using System;
-using WoMApiTest.Tool;
+using WoMApi.Tool;
 
-namespace WoMApiTest.Model.Node
+namespace WoMApi.Model.Node
 {
     public class MogwaiKeys
     {

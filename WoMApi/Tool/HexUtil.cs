@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WoMApiTest.Tool
+namespace WoMApi.Tool
 {
     public class Helpers
     {
