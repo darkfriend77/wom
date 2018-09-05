@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMAscii", "WoMAscii\WoMAsc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMApiTest", "WoMApiTest\WoMApiTest.csproj", "{4DD747DB-DC90-478F-8911-45882F910A86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SadMogwai", "SadMogwai\SadMogwai.csproj", "{EDA28C2D-D43A-4CEF-A341-5687A97EE63C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{4DD747DB-DC90-478F-8911-45882F910A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DD747DB-DC90-478F-8911-45882F910A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DD747DB-DC90-478F-8911-45882F910A86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDA28C2D-D43A-4CEF-A341-5687A97EE63C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDA28C2D-D43A-4CEF-A341-5687A97EE63C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDA28C2D-D43A-4CEF-A341-5687A97EE63C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDA28C2D-D43A-4CEF-A341-5687A97EE63C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
