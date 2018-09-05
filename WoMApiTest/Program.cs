@@ -16,6 +16,23 @@ namespace WoMApiTest
         static void Main(string[] args)
         {
 
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var response = Blockchain.Instance.GetBalance("MFTHxujEGC7AHNBMCWQCuXZgVurWjLKc5e");
+            Console.WriteLine($"{response}");
+
+
+            sw.Stop();
+
+            Console.WriteLine("Elapsed={0}", sw.Elapsed);
+            Console.ReadKey();
+
+        }
+
+        public static void TestWallet()
+        {
             //  "isvalid": true,
             //  "address": "MQ6JnKWAiDkN2eo6c19647RBRzUecryRdP",
             //  "scriptPubKey": "76a914b19db9a389dc6f62c2a1809ea3cdcd4c3a91c68988ac",
@@ -29,12 +46,7 @@ namespace WoMApiTest
             //  "ismiraddrvalid": true,
             //  "miraddress": "MQN7moivGfWPiwUfCX1PzfqqYN29gKsgEb"
 
-            MogwaiWallet wallet = new MogwaiWallet("1234", "ttttete.dat");
 
-            foreach(var mogwaiKey in wallet.MogwaiKeyDict.Values)
-            {
-                Console.WriteLine($"{mogwaiKey.Address},{mogwaiKey.MirrorAddress}");
-            }
 
             //Console.WriteLine(wallet.MnemonicWords);
             //MD9C1fPqFtF5Xqx66fes3Ro1GgCFSht2zC
@@ -45,8 +57,12 @@ namespace WoMApiTest
             //    Console.WriteLine(mogwaiKeys.HasMirrorAddress ? mogwaiKeys.MirrorAddress : "no");
 
             //}
-            Console.ReadKey();
+            MogwaiWallet wallet = new MogwaiWallet("1234", "ttttete.dat");
 
+            foreach (var mogwaiKey in wallet.MogwaiKeyDict.Values)
+            {
+                Console.WriteLine($"{mogwaiKey.Address},{mogwaiKey.MirrorAddress}");
+            }
         }
 
         public static void TestPrivateKey()

@@ -15,8 +15,6 @@ namespace WoMApiTest.Node
     {
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private MogwaiWallet wallet;
-
         private static Blockchain instance;
 
         public static Blockchain Instance => instance ?? (instance = new Blockchain());
@@ -29,13 +27,6 @@ namespace WoMApiTest.Node
 
         }
 
-        public void Unlock(string password, string walletFile = null)
-        {
-            string path = walletFile ?? ConfigurationManager.AppSettings["walletFile"];
-
-            wallet = new MogwaiWallet(password, path);
-        }
-
         public IRestResponse<Block> GetBlock(int value)
         {
             var request = new RestRequest("getblock/{id}", Method.GET);
@@ -44,19 +35,13 @@ namespace WoMApiTest.Node
             return blockResponse;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="mogwaiAddress"></param>
-        /// <param name="tryes"></param>
-        /// <returns></returns>
-        public bool CreateMogwaiAddress(out string mogwaiAddress, int tryes = 10)
+        public decimal GetBalance(string address)
         {
-            mogwaiAddress = string.Empty;
-
-            //wallet.Secret.PubKey.Derivate();
-
-            return true;
+            var request = new RestRequest("getbalance/{address}", Method.GET);
+            request.AddUrlSegment("address", address);
+            IRestResponse<decimal> blockResponse = client.Execute<decimal>(request);
+            return blockResponse.Data;
         }
+
     }
 }

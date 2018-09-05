@@ -3,14 +3,18 @@ using SadConsole;
 using Console = SadConsole.Console;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SadMogwai.Consoles;
+using SadMogwai.Art;
 
 namespace SadMogwai
 {
     class Program
     {
 
-        public const int Width = 80;
-        public const int Height = 25;
+        public const int Width = 140;
+        public const int Height = 40;
+
+        private static Console _selectionConsole;
 
         static void Main(string[] args)
         {
@@ -38,9 +42,9 @@ namespace SadMogwai
             // Called each logic update.
 
             // As an example, we'll use the F5 key to make the game full screen
-            if (SadConsole.Global.KeyboardState.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.F5))
+            if (Global.KeyboardState.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.F5))
             {
-                SadConsole.Settings.ToggleFullScreen();
+                Settings.ToggleFullScreen();
             }
         }
 
@@ -48,13 +52,39 @@ namespace SadMogwai
         {
             // Any custom loading and prep. We will use a sample console for now
 
-            Console startingConsole = new Console(Width, Height);
-            startingConsole.FillWithRandomGarbage();
-            startingConsole.Fill(new Rectangle(3, 3, 27, 5), null, Color.Black, 0, SpriteEffects.None);
-            startingConsole.Print(6, 5, "Hello from SadConsole", ColorAnsi.CyanBright);
+            //Console startingConsole = new Console(Width, Height);
+            //startingConsole.FillWithRandomGarbage();
+            //startingConsole.Fill(new Rectangle(3, 3, 27, 5), null, Color.Black, 0, SpriteEffects.None);
+            //startingConsole.Print(6, 5, "Hello from SadConsole", ColorAnsi.CyanBright);
+            var welcome = new MogwaiConsole("Welcome", "Mogwaicoin Team 2018", 110, 6)
+            {
+                Position = new Point(1, 1)
+            };
+            for (int i = 0; i < Ascii.Logo.Length; i++)
+            {
+                string str = Ascii.Logo[i];
+                welcome.Print(4, i, str, Color.Cyan, Color.Black);
+            }
+            
+            _selectionConsole = new SelectionConsole("Selection","", 110, 25)
+            {
+                Position = new Point(1, 9)
+            };
+            var info = new MogwaiConsole("Info","", 24, 38)
+            {
+                Position = new Point(114, 1)
+            };
+
+            var command = new MogwaiConsole("Command","", 110, 3)
+            {
+                Position = new Point(1, 36)
+            };
 
             // Set our new console as the thing to render and process
-            SadConsole.Global.CurrentScreen = startingConsole;
+            Global.CurrentScreen.Children.Add(welcome);
+            Global.CurrentScreen.Children.Add(_selectionConsole);
+            Global.CurrentScreen.Children.Add(info);
+            Global.CurrentScreen.Children.Add(command);
         }
     }
 }

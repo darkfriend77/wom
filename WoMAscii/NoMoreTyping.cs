@@ -56,17 +56,10 @@ namespace WoMAscii
                 // initialy updating
                 Update();
 
-                // set pointer
-                if (mogwais.Count == 0)
-                {
-                    pointer = -1;
-                    oldPointer = -1;
-                }
-
                 ConsoleKey key;
                 do
                 {
-                    if (pointer > -1)
+                    if (mogwais.Count > 0)
                     {
                         mogwais[oldPointer].IsSelected = false;
                         mogwais[pointer].IsSelected = true;
@@ -195,7 +188,7 @@ namespace WoMAscii
             {
                 windowPointer = pointer - maxRows + 1;
             }
-            else if (pointer < windowPointer)
+            else if (pointer > -1 && pointer < windowPointer)
             {
                 windowPointer = pointer;
             }
