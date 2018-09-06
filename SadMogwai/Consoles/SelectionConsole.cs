@@ -21,7 +21,9 @@ namespace SadMogwai.Consoles
         {
             pointer = 0;
             oldPointer = 0;
-            FillRow(0, 0, 110, 240);
+
+            Print(1, 0, "[c:sg 240:108]".PadRight(122), Color.DarkCyan);
+            //FillRow(0, 0, 110, 240);
 
             SetGlyph(5, 0, 185, Color.DarkCyan);
             Print( 5, 0, " Address ", Color.Cyan);
