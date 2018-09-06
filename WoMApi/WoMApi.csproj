@@ -103,5 +103,11 @@
   <ItemGroup>
     <Folder Include="Model\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WoMInterface\WoMInterface.csproj">
+      <Project>{1d70a22e-64ec-45db-bcc3-c1f054bc9eca}</Project>
+      <Name>WoMInterface</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

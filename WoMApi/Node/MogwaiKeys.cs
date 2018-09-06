@@ -1,6 +1,7 @@
 ﻿using NBitcoin;
 using System;
 using WoMApi.Tool;
+using WoMInterface.Game.Model;
 
 namespace WoMApi.Model.Node
 {
@@ -19,6 +20,8 @@ namespace WoMApi.Model.Node
         public string MirrorAddress => mirrorPubKey?.GetAddress(network).ToString();
 
         public bool HasMirrorAddress => mirrorPubKey != null;
+
+        public Mogwai Mogwai { get; set; }
 
         public MogwaiKeys(ExtKey extkey, Network network)
         {

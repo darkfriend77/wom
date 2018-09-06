@@ -60,15 +60,10 @@ namespace SadMogwai
         {
             // Any custom loading and prep. We will use a sample console for now
 
-            //Console startingConsole = new Console(Width, Height);
-            //startingConsole.FillWithRandomGarbage();
-            //startingConsole.Fill(new Rectangle(3, 3, 27, 5), null, Color.Black, 0, SpriteEffects.None);
-            //startingConsole.Print(6, 5, "Hello from SadConsole", ColorAnsi.CyanBright);
-
-            var audioFile = new AudioFileReader("mogwaimusic.mp3");
-            _outputDevice = new WaveOutEvent();
-            _outputDevice.Init(audioFile);
-            _outputDevice.Play();
+            //var audioFile = new AudioFileReader("mogwaimusic.mp3");
+            //_outputDevice = new WaveOutEvent();
+            //_outputDevice.Init(audioFile);
+            //_outputDevice.Play();
 
             _welcome = new MogwaiConsole("Welcome", "Mogwaicoin Team 2018", 110, 6)
             {
@@ -93,13 +88,18 @@ namespace SadMogwai
             {
                 Position = new Point(1, 36)
             };
-            _splashScreen = new SplashScreen(140, 30);
-            _splashScreen.IsVisible = true;
-            _splashScreen.SplashCompleted += SplashScreenCompleted;
-            Global.CurrentScreen.Children.Add(_splashScreen);
+
+
+            //_splashScreen = new SplashScreen(140, 30);
+            //_splashScreen.IsVisible = true;
+            //_splashScreen.SplashCompleted += SplashScreenCompleted;
+            //Global.CurrentScreen.Children.Add(_splashScreen);
 
             // Set our new console as the thing to render and process
-
+            Global.CurrentScreen.Children.Add(_welcome);
+            Global.CurrentScreen.Children.Add(_selectionConsole);
+            Global.CurrentScreen.Children.Add(_info);
+            Global.CurrentScreen.Children.Add(_command);
         }
 
         private static void SplashScreenCompleted()
