@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp2.1</TargetFramework>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ShaderOutputPath>$(BaseIntermediateOutputPath)Shaders</ShaderOutputPath>
+		<ShaderContentIncludePath>Shaders</ShaderContentIncludePath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Asset Include="assets\spnza_bricks_a_diff.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\veldrid\AssetPrimitives\AssetPrimitives.csproj" />
+		<ProjectReference Include="..\veldrid\AssetProcessor\AssetProcessor.csproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+		</ProjectReference>
+		<ProjectReference Include="..\veldrid\SampleBase\SampleBase.csproj" />
+		<PackageReference Include="ShaderGen.Primitives" Version="1.2.0-beta2" />
+		<PackageReference Include="ShaderGen.Build" Version="1.2.0-beta2" PrivateAssets="All" />
+		<PackageReference Include="Veldrid.ImGui" Version="4.4.0" />
+	</ItemGroup>
+
+	<Target Name="IncludeGeneratedShaderEmbeddedResource" AfterTargets="AssignTargetPaths" Condition="'$(ShaderContentIncludePath)' != ''">
+		<ItemGroup>
+			<EmbeddedResource Include="@(GeneratedShader)">
+				<LogicalName>%(FileName)%(Extension)</LogicalName>
+			</EmbeddedResource>
+		</ItemGroup>
+	</Target>
+</Project>
