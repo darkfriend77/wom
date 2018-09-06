@@ -1,0 +1,1 @@
+For details about this projects see: https://github.com/mellinoe/veldrid-samples
