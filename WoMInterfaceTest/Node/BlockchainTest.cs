@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WoMInterface.Game.Model;
 
 namespace WoMInterface.Node.Tests
 {
@@ -30,7 +31,6 @@ namespace WoMInterface.Node.Tests
             Assert.AreEqual("000004a3418bf6f7a085b0a489d56eea4fbc094be8ec48ad7ec11621a4dd7431", value31);
             Assert.IsTrue(testDic3.TryGetValue(2, out string value32));
             Assert.AreEqual("00000c6aa9af627b13ecba115a82e61b1188f97ca1f446b1aae16c90748038e4", value32);
-
 
         }
     }

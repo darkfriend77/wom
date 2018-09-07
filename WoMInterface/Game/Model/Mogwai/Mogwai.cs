@@ -21,7 +21,7 @@ namespace WoMInterface.Game.Model
 
         private static Shift currentShift;
 
-        private Dictionary<double, Shift> Shifts { get; }
+        public Dictionary<double, Shift> Shifts { get; }
 
         public MogwaiState MogwaiState { get; set; }
 
@@ -103,8 +103,15 @@ namespace WoMInterface.Game.Model
         /// 
         /// </summary>
         /// <param name="blockHeight"></param>
-        public void Evolve(out GameLog history)
+        public bool Evolve(out GameLog history)
         {
+            // any shift left?
+            if (!Shifts.ContainsKey(Pointer + 1))
+            {
+                history = null;
+                return false;
+            }
+
             // increase pointer to next block height
             Pointer++;
 
@@ -125,7 +132,7 @@ namespace WoMInterface.Game.Model
             if (Adventure != null && Adventure.IsActive)
             {
                 Adventure.NextStep(this, currentShift);
-                return;
+                return true;
             }
 
             Adventure = null;
@@ -157,6 +164,7 @@ namespace WoMInterface.Game.Model
             // no more shifts to proccess, no more logging possible to the game log
             currentShift = null;
 
+            return true;
         }
 
         /// <summary>

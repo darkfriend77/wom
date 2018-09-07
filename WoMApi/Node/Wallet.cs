@@ -9,8 +9,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WoMApi.Tool;
 
-namespace WoMApi.Model.Node
+namespace WoMApi.Node
 {
     public class WalletFile
     {
@@ -63,7 +64,7 @@ namespace WoMApi.Model.Node
             this.path = path;
             MogwaiKeyDict = new Dictionary<string, MogwaiKeys>();
 
-            if (!TryReadFile(path, out walletFile))
+            if (!Caching.TryReadFile(path, out walletFile))
             {
                 mnemo = new Mnemonic(Wordlist.English, WordCount.Twelve);
                 extKey = mnemo.DeriveExtKey(password);
@@ -71,7 +72,7 @@ namespace WoMApi.Model.Node
                 var chainCode = extKey.ChainCode;
                 var encSecretWif = extKey.PrivateKey.GetEncryptedBitcoinSecret(password, network).ToWif();
                 walletFile = new WalletFile(encSecretWif, chainCode);
-                Persist(path, walletFile);
+                Caching.Persist(path, walletFile);
             }
             else
             {
@@ -120,7 +121,7 @@ namespace WoMApi.Model.Node
                     {
                         walletFile.EncryptedSecrets[wif] = i;
                         mogwaiKeys = mogwayKeysTemp;
-                        Persist(path, walletFile);
+                        Caching.Persist(path, walletFile);
                         return true;
                     }
  
@@ -140,55 +141,6 @@ namespace WoMApi.Model.Node
             var extKeyDerived = extKey.Derive(seed);
             var wif = extKey.PrivateKey.GetWif(network);
             return new MogwaiKeys(extKeyDerived, network);
-        }
-
-        public void Write()
-        {
-            Persist(path, walletFile);
-        }
-
-        private bool TryReadFile<T>(string path, out T obj)
-        {
-            obj = default(T);
-
-            if (!File.Exists(path))
-            {
-                return false;
-            }
-
-            try
-            {
-                var objDecrypted = Decrypt(File.ReadAllText(path));
-                obj = JsonConvert.DeserializeObject<T>(objDecrypted);
-                return true;
-            }
-            catch (Exception e)
-            {
-                _log.Error($"TryDBFile[{obj.GetType()}]: {e}");
-                return false;
-            }
-        }
-
-        private void IsValidPubKey()
-        {
-            //TODO
-            //Cryptography.ECDSA.Secp256K1Manager.IsCanonical()
-        }
-
-        private void Persist<T>(string path, T obj)
-        {
-            string objEncrypted = Encrypt(JsonConvert.SerializeObject(obj));
-            File.WriteAllText(path, objEncrypted);
-        }
-
-        private string Encrypt(string str)
-        {
-            return str;
-        }
-
-        private string Decrypt(string str)
-        {
-            return str;
         }
     }
 }
