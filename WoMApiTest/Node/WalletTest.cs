@@ -23,5 +23,27 @@ namespace WoMApi.Node
             Assert.IsFalse(wallet.IsCreated);
             Assert.IsFalse(wallet.IsUnlocked);
         }
+
+        [TestMethod]
+        public void WalletUnlock()
+        {
+            MogwaiWallet wallet = new MogwaiWallet("test.dat");
+            Assert.IsTrue(wallet.IsCreated);
+            Assert.IsFalse(wallet.IsUnlocked);
+            wallet.Unlock("1234");
+            Assert.IsTrue(wallet.IsUnlocked);
+
+        }
+
+        [TestMethod]
+        public void WalletDeposit()
+        {
+            MogwaiWallet wallet = new MogwaiWallet("test.dat");
+            Assert.IsNull(wallet.Deposit);
+            wallet.Unlock("1234");
+            Assert.IsNotNull(wallet.Deposit);
+            Assert.AreEqual("MBAdzUJU1zyUJLfiUDuvU8zWjenxzi7ZF6", wallet.Deposit.Address);
+
+        }
     }
 }

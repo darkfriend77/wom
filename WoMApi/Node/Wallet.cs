@@ -58,6 +58,15 @@ namespace WoMApi.Node
 
         public bool IsCreated => walletFile != null;
 
+        private MogwaiKeys depositKeys;
+        public MogwaiKeys Deposit
+        {
+            get
+            {
+                return depositKeys ?? (depositKeys = GetMogwaiKeys(0));
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -68,6 +77,18 @@ namespace WoMApi.Node
             if (!Caching.TryReadFile(path, out walletFile))
             {
             } 
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public MogwaiWallet(string path)
+        {
+            this.path = path;
+
+            if (!Caching.TryReadFile(path, out walletFile))
+            {
+            }
         }
 
         /// <summary>
@@ -125,13 +146,13 @@ namespace WoMApi.Node
             var masterKey = Key.Parse(walletFile.wifKey, password, network);
             extKey = new ExtKey(masterKey, walletFile.chainCode);
             
-            // finally load all mogwaikeys
-            LoadMogwaiKeys();
+            // finally load all keys
+            LoadKeys();
 
             return true;
         }
 
-        private void LoadMogwaiKeys()
+        private void LoadKeys()
         {
             foreach ( var seed in walletFile.EncryptedSecrets.Values)
             {
@@ -174,6 +195,9 @@ namespace WoMApi.Node
                     {
                         walletFile.EncryptedSecrets[wif] = i;
                         mogwaiKeys = mogwayKeysTemp;
+                        // add to the current mogwai keys
+                        MogwaiKeyDict[mogwaiKeys.Address] = mogwaiKeys;
+                        // persist to not loose
                         Caching.Persist(path, walletFile);
                         return true;
                     }
@@ -191,6 +215,11 @@ namespace WoMApi.Node
         /// <returns></returns>
         private MogwaiKeys GetMogwaiKeys(uint seed)
         {
+            if (!IsUnlocked)
+            {
+                return null;
+            }
+
             var extKeyDerived = extKey.Derive(seed);
             var wif = extKey.PrivateKey.GetWif(network);
             return new MogwaiKeys(extKeyDerived, network);
