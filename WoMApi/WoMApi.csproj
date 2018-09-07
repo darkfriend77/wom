@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Block\Block.cs" />
+    <Compile Include="Block\BlockHash.cs" />
     <Compile Include="Block\ScriptPubKey.cs" />
     <Compile Include="Block\Tx.cs" />
     <Compile Include="Block\TxDetail.cs" />

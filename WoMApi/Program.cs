@@ -19,8 +19,9 @@ namespace WoMApi
 
             //TestRawTransaction();
             //var shifts = Blockchain.Instance.GetShifts("MNtnWbBjUhRvNnd9YxM2mnxeLPNkxb4Fio", out bool openShifts);
-
+            Console.WriteLine("Started .... caching ...");
             var test = Blockchain.Instance.GetBlock("00000000077d796dabe050ee7d80c4e329b601e263c3e522d3abf2fbf9a9263f");
+            Console.WriteLine("Ended.");
             Console.WriteLine(test);
             Console.ReadKey();
         }

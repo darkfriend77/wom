@@ -59,10 +59,20 @@ namespace WoMApi.Node
         [TestMethod]
         public void ListTransaction()
         {
-            var blockResponse = Blockchain.Instance.ListTransaction("MJHYMxu2kyR1Bi4pYwktbeCM7yjZyVxt2i");
+            var blockResponse = Blockchain.Instance.ListTransactions("MJHYMxu2kyR1Bi4pYwktbeCM7yjZyVxt2i");
             Assert.AreEqual(3, blockResponse.Count);
             Assert.AreEqual("MJHYMxu2kyR1Bi4pYwktbeCM7yjZyVxt2i", blockResponse[0].Address);
             Assert.AreEqual("00000000759514788f612f69606edd5751d517c39880f72b03772e26827671c4", blockResponse[0].Blockhash);
+            Assert.AreEqual("receive", blockResponse[0].Category);
+        }
+
+        [TestMethod]
+        public void ListMirrorTransaction()
+        {
+            var blockResponse = Blockchain.Instance.ListMirrorTransactions("MEYUySQDPzgbTuZSjGfPVikgHtDJZHL8WE");
+            Assert.AreEqual(4, blockResponse.Count);
+            Assert.AreEqual("41317", blockResponse[0].Height);
+            Assert.AreEqual("000000003f6f8fa173c4d2ddaa07911b06fb41a72744dc646de29377fc04b19e", blockResponse[0].Blockhash);
             Assert.AreEqual("receive", blockResponse[0].Category);
         }
 

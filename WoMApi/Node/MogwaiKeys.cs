@@ -58,7 +58,7 @@ namespace WoMApi.Node
                 mirrorPubKey = new PubKey(mirrorPubKeyBytes, false);
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Console.WriteLine(ex.InnerException);
                 mirrorPubKey = new PubKey(mirrorPubKeyBytes, true);

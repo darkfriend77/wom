@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using WoMApi.Block;
+using WoMApi.Tool;
 using WoMInterface.Game.Interaction;
 using WoMInterface.Tool;
 
@@ -23,20 +25,44 @@ namespace WoMApi.Node
 
         private RestClient client;
 
-        public static Blockchain Instance => instance ?? (instance = new Blockchain());
+        private Dictionary<int, string> blockHashDict;
 
-        public Dictionary<int, string> BlockHashDict { get; }
+        private readonly string blockhashesFile;
+
+        public static Blockchain Instance => instance ?? (instance = new Blockchain());
 
         private Blockchain()
         {
-            client = new RestClient("https://cristof.crabdance.com/mogwai/");
+            client = new RestClient(ConfigurationManager.AppSettings["apiUrl"]);
 
-            BlockHashDict = new Dictionary<int, string>();
+            blockhashesFile = ConfigurationManager.AppSettings["blockhashesFile"];
+            if (Caching.TryReadFile(blockhashesFile, out blockHashDict) && blockHashDict.Count > 0)
+            {
+                CacheBlockhashes(blockHashDict.Keys.Max());
+            }
+            else
+            {
+                blockHashDict = new Dictionary<int, string>();
+                CacheBlockhashes(0);
+            }
+ 
         }
 
-        public void GetBlockHashCache(int height)
+        public void CacheBlockhashes(int fromHeight)
         {
-            
+            int maxBlockCount = GetBlockCount();
+            for(int i = 0; i < maxBlockCount; i++)
+            {
+                blockHashDict[i] = GetBlockHash(i);
+                if (i % 200 == 0)
+                {
+                    Console.WriteLine($"{i}/{maxBlockCount}");
+                    Caching.Persist(blockhashesFile, blockHashDict);
+                    _log.Debug($"persisted all blocks till height {maxBlockCount}.");
+                }
+            }
+            Caching.Persist(blockhashesFile, blockHashDict);
+            _log.Debug($"persisted all blocks!");
         }
 
         public Block GetBlock(string hash)
@@ -44,6 +70,15 @@ namespace WoMApi.Node
             var request = new RestRequest("getblock/{hash}", Method.GET);
             request.AddUrlSegment("hash", hash);
             IRestResponse<Block> blockResponse = client.Execute<Block>(request);
+            return blockResponse.Data;
+        }
+
+        public List<BlockhashPair> GetBlockHashes(int fromBlock, int toBlock)
+        {
+            var request = new RestRequest("getblockhashes/{fromBlock}/{toBlock}", Method.GET);
+            request.AddUrlSegment("fromBlock", fromBlock);
+            request.AddUrlSegment("toBlock", toBlock);
+            IRestResponse<List<BlockhashPair>> blockResponse = client.Execute<List<BlockhashPair>>(request);
             return blockResponse.Data;
         }
 
@@ -55,10 +90,10 @@ namespace WoMApi.Node
             return blockResponse.Content;
         }
 
-        public double GetBlockCount()
+        public int GetBlockCount()
         {
             var request = new RestRequest("getblockcount", Method.GET);
-            IRestResponse<double> blockResponse = client.Execute<double>(request);
+            IRestResponse<int> blockResponse = client.Execute<int>(request);
             return blockResponse.Data;
         }
 
@@ -88,14 +123,22 @@ namespace WoMApi.Node
             return blockResponse.Content;
         }
 
-        public List<TxDetail> ListTransaction(string address)
+        public List<TxDetail> ListTransactions(string address)
         {
             //:height/:numblocks
             var request = new RestRequest("listtransactions/{address}", Method.GET);
             request.AddUrlSegment("address", address);
             IRestResponse<List<TxDetail>> blockResponse = client.Execute<List<TxDetail>>(request);
             return blockResponse.Data;
+        }
 
+        public List<TxDetail> ListMirrorTransactions(string address)
+        {
+            //:height/:numblocks
+            var request = new RestRequest("listmirrtransactions/{address}", Method.GET);
+            request.AddUrlSegment("address", address);
+            IRestResponse<List<TxDetail>> blockResponse = client.Execute<List<TxDetail>>(request);
+            return blockResponse.Data;
         }
 
         public bool BurnMogs(MogwaiKeys mogwaiKey, string toaddress, decimal burnMogs, decimal txFee)
@@ -125,7 +168,7 @@ namespace WoMApi.Node
         {
             var result = new Dictionary<double, Shift>();
         
-            List<TxDetail> allTxs = ListTransaction(mirroraddress);
+            List<TxDetail> allTxs = ListTransactions(mirroraddress);
 
             var incUnconfTx = allTxs.Where(p => p.Address == mirroraddress && p.Category == "send").OrderBy(p => p.Blocktime).ThenBy(p => p.Blockindex).ToList();
             var validTx = incUnconfTx.Where(p => p.Confirmations > 0).ToList();
