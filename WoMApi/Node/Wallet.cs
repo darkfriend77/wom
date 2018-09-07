@@ -52,7 +52,23 @@ namespace WoMApi.Node
             }
         }
 
-        public Dictionary<string, MogwaiKeys> MogwaiKeyDict { get; set; }
+        public Dictionary<string, MogwaiKeys> MogwaiKeyDict { get; set; } = new Dictionary<string, MogwaiKeys>();
+
+        public bool IsUnlocked => extKey != null;
+
+        public bool IsCreated => walletFile != null;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public MogwaiWallet()
+        {
+            this.path = ConfigurationManager.AppSettings["walletFile"];
+
+            if (!Caching.TryReadFile(path, out walletFile))
+            {
+            } 
+        }
 
         /// <summary>
         /// Constructor
@@ -62,29 +78,60 @@ namespace WoMApi.Node
         public MogwaiWallet(string password, string path)
         {
             this.path = path;
-            MogwaiKeyDict = new Dictionary<string, MogwaiKeys>();
 
             if (!Caching.TryReadFile(path, out walletFile))
             {
-                mnemo = new Mnemonic(Wordlist.English, WordCount.Twelve);
-                extKey = mnemo.DeriveExtKey(password);
-                //extKey = new ExtKey();
-                var chainCode = extKey.ChainCode;
-                var encSecretWif = extKey.PrivateKey.GetEncryptedBitcoinSecret(password, network).ToWif();
-                walletFile = new WalletFile(encSecretWif, chainCode);
-                Caching.Persist(path, walletFile);
+                Create(password);
             }
             else
             {
-                var masterKey = Key.Parse(walletFile.wifKey, password, network);
-                extKey = new ExtKey(masterKey, walletFile.chainCode);
+                Unlock(password);
             }
-
-            // finally load all mogwaikeys
-            LoadMogwaiKeys();
         }
 
-        public void LoadMogwaiKeys()
+        /// <summary>
+        /// Create a new wallet with mnemoic
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public bool Create(string password)
+        {
+            if (IsCreated)
+            {
+                return true;
+            }
+
+            mnemo = new Mnemonic(Wordlist.English, WordCount.Twelve);
+            extKey = mnemo.DeriveExtKey(password);
+            var chainCode = extKey.ChainCode;
+            var encSecretWif = extKey.PrivateKey.GetEncryptedBitcoinSecret(password, network).ToWif();
+            walletFile = new WalletFile(encSecretWif, chainCode);
+            Caching.Persist(path, walletFile);
+            return true;
+        }
+
+        /// <summary>
+        /// Unlock a locked wallet.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public bool Unlock(string password)
+        {
+            if (IsUnlocked || !IsCreated)
+            {
+                return IsUnlocked && IsCreated;
+            }
+
+            var masterKey = Key.Parse(walletFile.wifKey, password, network);
+            extKey = new ExtKey(masterKey, walletFile.chainCode);
+            
+            // finally load all mogwaikeys
+            LoadMogwaiKeys();
+
+            return true;
+        }
+
+        private void LoadMogwaiKeys()
         {
             foreach ( var seed in walletFile.EncryptedSecrets.Values)
             {
@@ -105,6 +152,12 @@ namespace WoMApi.Node
         public bool GetNewMogwaiKey(out MogwaiKeys mogwaiKeys, int tryes = 10)
         {
             mogwaiKeys = null;
+
+            if (!IsUnlocked)
+            {
+                return false; ;
+            }
+
             uint seed = 1000;
             if (walletFile.EncryptedSecrets.Values.Count > 0)
             {
@@ -143,4 +196,5 @@ namespace WoMApi.Node
             return new MogwaiKeys(extKeyDerived, network);
         }
     }
+
 }

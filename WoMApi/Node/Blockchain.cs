@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
-using WoMApi.Block;
 using WoMApi.Tool;
 using WoMInterface.Game.Interaction;
 using WoMInterface.Tool;
@@ -36,29 +35,37 @@ namespace WoMApi.Node
             client = new RestClient(ConfigurationManager.AppSettings["apiUrl"]);
 
             blockhashesFile = ConfigurationManager.AppSettings["blockhashesFile"];
-            if (Caching.TryReadFile(blockhashesFile, out blockHashDict) && blockHashDict.Count > 0)
-            {
-                CacheBlockhashes(blockHashDict.Keys.Max());
-            }
-            else
+
+            if (!Caching.TryReadFile(blockhashesFile, out blockHashDict))
             {
                 blockHashDict = new Dictionary<int, string>();
-                CacheBlockhashes(0);
             }
- 
+
+            UpdatedCache();
         }
 
-        public void CacheBlockhashes(int fromHeight)
+        public void UpdatedCache()
+        {
+            CacheBlockhashes();
+        }
+
+        private void CacheBlockhashes()
         {
             int maxBlockCount = GetBlockCount();
-            for(int i = 0; i < maxBlockCount; i++)
+            var fromHeight = blockHashDict.Keys.Count > 0 ? blockHashDict.Keys.Max() : 0;
+            int bulkSize = 500;
+            List<BlockhashPair> list;
+            int count = 0; ;
+            for (int i = fromHeight; i < maxBlockCount; i++)
             {
-                blockHashDict[i] = GetBlockHash(i);
-                if (i % 200 == 0)
+                count++;
+                if (count % bulkSize == 0 || i == maxBlockCount - 1)
                 {
-                    Console.WriteLine($"{i}/{maxBlockCount}");
-                    Caching.Persist(blockhashesFile, blockHashDict);
-                    _log.Debug($"persisted all blocks till height {maxBlockCount}.");
+                    var currentMax = blockHashDict.Keys.Count > 0 ? blockHashDict.Keys.Max() : 0;
+                    list = GetBlockHashes(currentMax, count);
+                    list.ForEach(p => blockHashDict[int.Parse(p.Block)] = p.Hash);
+                    _log.Debug($"cached from {fromHeight} {count} blockhashes...");
+                    count = 0;
                 }
             }
             Caching.Persist(blockhashesFile, blockHashDict);
@@ -73,11 +80,11 @@ namespace WoMApi.Node
             return blockResponse.Data;
         }
 
-        public List<BlockhashPair> GetBlockHashes(int fromBlock, int toBlock)
+        public List<BlockhashPair> GetBlockHashes(int fromBlock, int count)
         {
-            var request = new RestRequest("getblockhashes/{fromBlock}/{toBlock}", Method.GET);
+            var request = new RestRequest("getblockhashes/{fromBlock}/{count}", Method.GET);
             request.AddUrlSegment("fromBlock", fromBlock);
-            request.AddUrlSegment("toBlock", toBlock);
+            request.AddUrlSegment("count", count);
             IRestResponse<List<BlockhashPair>> blockResponse = client.Execute<List<BlockhashPair>>(request);
             return blockResponse.Data;
         }
@@ -164,57 +171,52 @@ namespace WoMApi.Node
             return true;
         }
 
-        public Dictionary<double, Shift> GetShifts(string mirroraddress, out bool openShifts)
+        public Dictionary<double, Shift> GetShifts(string mirroraddress)
         {
             var result = new Dictionary<double, Shift>();
         
-            List<TxDetail> allTxs = ListTransactions(mirroraddress);
+            List<TxDetail> allTxs = ListMirrorTransactions(mirroraddress);
 
-            var incUnconfTx = allTxs.Where(p => p.Address == mirroraddress && p.Category == "send").OrderBy(p => p.Blocktime).ThenBy(p => p.Blockindex).ToList();
-            var validTx = incUnconfTx.Where(p => p.Confirmations > 0).ToList();
-            openShifts = incUnconfTx.Count() > validTx.Count();
+            var validTx = allTxs.OrderBy(p => p.Blocktime).ThenBy(p => p.Blockindex).ToList();
 
             var pubMogAddressHex = HexHashUtil.ByteArrayToString(Base58Encoding.Decode(mirroraddress));
 
             bool creation = false;
             int lastBlockHeight = 0;
-            //foreach (var tx in validTx)
-            //{
-            //    decimal amount = Math.Abs(tx.Amount);
-            //    if (!creation && amount < mogwaiCost)
-            //        continue;
+            foreach (var tx in validTx)
+            {
+                decimal amount = Math.Abs(tx.Amount);
+                if (!creation && amount < mogwaiCost)
+                    continue;
 
-            //    creation = true;
+                creation = true;
 
-            //    var block = GetBlock(tx.Blockhash);
+                var block = GetBlock(tx.Blockhash);
 
-            //    if (lastBlockHeight != 0 && lastBlockHeight + 1 < block.Height)
-            //    {
-            //        // add small shifts
-            //        //if (TryGetBlockHashes(lastBlockHeight + 1, block.Height, null, out Dictionary<int, string> blockHashes))
-            //        //{
-            //        //    foreach (var blockHash in blockHashes)
-            //        //    {
-            //        //        result.Add(blockHash.Key, new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
-            //        //    }
-            //        //}
-            //    }
+                if (lastBlockHeight != 0 && lastBlockHeight + 1 < block.Height)
+                {
+                    // add small shifts
+                    for(int i = lastBlockHeight + 1; i < block.Height; i++)
+                    {
+                        result.Add(i, new Shift(result.Count(), pubMogAddressHex, i, blockHashDict[i]));
+                    }
+                }
 
-            //    lastBlockHeight = block.Height;
+                lastBlockHeight = block.Height;
 
-            //    result.Add(block.Height, new Shift(result.Count(), tx.Blocktime, pubMogAddressHex, block.Height, tx.Blockhash, tx.Blockindex, tx.Txid, amount, Math.Abs(tx.Fee + txFee)));
-            //}
+                result.Add(block.Height, new Shift(result.Count(), tx.Blocktime, pubMogAddressHex, block.Height, tx.Blockhash, tx.Blockindex, tx.Txid, amount, Math.Abs(tx.Fee + txFee)));
+            }
 
-            //// add small shifts
-            //if (creation && TryGetBlockHashes(lastBlockHeight + 1, (int)mogwaiService.GetBlockCount(), null, out Dictionary<int, string> finalBlockHashes))
-            //{
-            //    foreach (var blockHash in finalBlockHashes)
-            //    {
-            //        result.Add(blockHash.Key, new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
-            //    }
-            //}
+            // add small shifts
+            if (creation)
+            {
+                for (int i = lastBlockHeight + 1; i < blockHashDict.Keys.Max(); i++)
+                {
+                    result.Add(i, new Shift(result.Count(), pubMogAddressHex, i, blockHashDict[i]));
+                }
+            }
 
-        //    //result.ForEach(p => Console.WriteLine(p.ToString()));
+            //result.ForEach(p => Console.WriteLine(p.ToString()));
             return result;
         }
 

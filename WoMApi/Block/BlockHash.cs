@@ -8,7 +8,7 @@ namespace WoMApi
 {
     public class BlockhashPair
     {
-        public string Height { get; set; }
-        public string Blockhash { get; set; }
+        public string Block { get; set; }
+        public string Hash { get; set; }
     }
 }
