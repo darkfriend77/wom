@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace WoMApi.Model.Node
+namespace WoMApi.Node
 {
     [TestClass]
     public class Wallet

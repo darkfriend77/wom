@@ -165,7 +165,7 @@
     <Compile Include="Game\Interaction\Shift.cs" />
     <Compile Include="Game\Model\Stats.cs" />
     <Compile Include="Game\Model\Equipment\Weapon.cs" />
-    <Compile Include="main.cs" />
+    <Compile Include="Programm.cs" />
     <Compile Include="Tool\CachingService.cs" />
     <Compile Include="Tool\ArrayHelpers.cs" />
     <Compile Include="Tool\Base58Encoding.cs" />
@@ -180,7 +180,7 @@
     <Compile Include="Tool\Test.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="app.config" />
     <None Include="mogwai.conf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

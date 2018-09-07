@@ -1,34 +1,23 @@
-﻿using RestSharp;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WoMApi.Node;
 using NBitcoin;
-using WoMApi.Model.Node;
-using WoMApi.Tool;
+using log4net.Config;
+using System.Linq;
+using log4net;
+using System.Reflection;
 
 namespace WoMApi
 {
     class Program
     {
+        private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         static void Main(string[] args)
         {
+            XmlConfigurator.Configure();
 
-
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            var response = Blockchain.Instance.GetBalance("MFTHxujEGC7AHNBMCWQCuXZgVurWjLKc5e");
-            Console.WriteLine($"{response}");
-
-
-            sw.Stop();
-
-            Console.WriteLine("Elapsed={0}", sw.Elapsed);
-            Console.ReadKey();
-
+            TestRawTransaction();
         }
 
         public static void TestWallet()
@@ -114,13 +103,13 @@ namespace WoMApi
             for (int i = 0; i < 100; i++)
             {
                 var blockResponse = Blockchain.Instance.GetBlock(i);
-                if (blockResponse.Data != null)
+                if (blockResponse != null)
                 {
-                    Console.WriteLine($"{i}: {blockResponse.Data.Hash}");
+                    Console.WriteLine($"{i}: {blockResponse.Hash}");
                 }
                 else
                 {
-                    Console.WriteLine($"{blockResponse.Content}");
+                    //Console.WriteLine($"{blockResponse.Content}");
                 }
             }
             sw.Stop();
@@ -128,6 +117,29 @@ namespace WoMApi
             Console.WriteLine("Elapsed={0}", sw.Elapsed);
             Console.ReadKey();
 
+        }
+
+        public static void TestRawTransaction()
+        {
+            MogwaiWallet wallet = new MogwaiWallet("1234", "test.dat");
+
+            var mogwaiKeys0 = wallet.MogwaiKeyDict["MWG1HtzRAjZMxQDzeoFoHQbzDygGR13aWG"];
+
+            var mogwaiKeys1 = wallet.MogwaiKeyDict["MNtnWbBjUhRvNnd9YxM2mnxeLPNkxb4Fio"];
+
+            var blockResponse0 = Blockchain.Instance.GetBalance("MWG1HtzRAjZMxQDzeoFoHQbzDygGR13aWG");
+
+            var blockResponse1 = Blockchain.Instance.GetBalance("MNtnWbBjUhRvNnd9YxM2mnxeLPNkxb4Fio");
+
+            var unspentTxList = Blockchain.Instance.GetUnspent(6, 9999999, mogwaiKeys0.Address);
+            var unspentAmount = unspentTxList.Sum(p => p.Amount);
+
+            // create transaction
+            Transaction tx = mogwaiKeys0.CreateTransaction(unspentTxList, unspentAmount, mogwaiKeys1.Address, 1.0m, 0.00001m);
+
+            //var blockResponse = Blockchain.Instance.SendRawTransaction(tx.ToHex());
+            //Console.WriteLine(blockResponse);
+            //Console.ReadKey();
         }
     }
 }
