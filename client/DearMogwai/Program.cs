@@ -1,7 +1,4 @@
-﻿using SampleBase;
-using Veldrid;
-using Veldrid.Sdl2;
-using Veldrid.StartupUtilities;
+﻿using DearMogwai.Application;
 
 namespace DearMogwai
 {
@@ -9,9 +6,8 @@ namespace DearMogwai
     {
         static void Main(string[] args)
         {
-            VeldridStartupWindow window = new VeldridStartupWindow("DearMogwai");
-            Application.DearMogwai app = new Application.DearMogwai(window);
-            window.Run();
+            MogwaiEngine app = new MogwaiEngine();
+            app.Run();
         }
     }
 }

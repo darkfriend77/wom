@@ -36,6 +36,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "veldrid", "veldrid", "{D9EE
 		client\veldrid\README.md = client\veldrid\README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DearMogwai.API", "client\DearMogwai.API\DearMogwai.API.csproj", "{7DCA87CF-28F2-4E45-B6A4-E4DC29A7796D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,10 @@ Global
 		{FDF88E7A-1A17-4F80-90B4-54D26D21435E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDF88E7A-1A17-4F80-90B4-54D26D21435E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDF88E7A-1A17-4F80-90B4-54D26D21435E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DCA87CF-28F2-4E45-B6A4-E4DC29A7796D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DCA87CF-28F2-4E45-B6A4-E4DC29A7796D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DCA87CF-28F2-4E45-B6A4-E4DC29A7796D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DCA87CF-28F2-4E45-B6A4-E4DC29A7796D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +99,7 @@ Global
 		{D0303528-ABB6-415A-8AA2-BCF9651544A3} = {EDFBA065-B20B-48C7-A47B-607D60901E2E}
 		{FDF88E7A-1A17-4F80-90B4-54D26D21435E} = {D9EE13D3-9A32-4EF1-8899-67AD3BB30A8E}
 		{D9EE13D3-9A32-4EF1-8899-67AD3BB30A8E} = {EDFBA065-B20B-48C7-A47B-607D60901E2E}
+		{7DCA87CF-28F2-4E45-B6A4-E4DC29A7796D} = {EDFBA065-B20B-48C7-A47B-607D60901E2E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A1246380-43E4-4710-99A7-F7524458155E}
