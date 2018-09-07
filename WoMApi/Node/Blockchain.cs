@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using WoMInterface.Game.Interaction;
+using WoMInterface.Tool;
 
 namespace WoMApi.Node
 {
@@ -14,22 +15,50 @@ namespace WoMApi.Node
     {
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private const decimal mogwaiCost = 1.0m;
+
+        private const decimal txFee = 0.0001m;
+
         private static Blockchain instance;
+
+        private RestClient client;
 
         public static Blockchain Instance => instance ?? (instance = new Blockchain());
 
-        private RestClient client;
+        public Dictionary<int, string> BlockHashDict { get; }
 
         private Blockchain()
         {
             client = new RestClient("https://cristof.crabdance.com/mogwai/");
+
+            BlockHashDict = new Dictionary<int, string>();
         }
 
-        public Block GetBlock(int value)
+        public void GetBlockHashCache(int height)
         {
-            var request = new RestRequest("getblock/{id}", Method.GET);
-            request.AddUrlSegment("id", value.ToString());
+            
+        }
+
+        public Block GetBlock(string hash)
+        {
+            var request = new RestRequest("getblock/{hash}", Method.GET);
+            request.AddUrlSegment("hash", hash);
             IRestResponse<Block> blockResponse = client.Execute<Block>(request);
+            return blockResponse.Data;
+        }
+
+        public string GetBlockHash(int height)
+        {
+            var request = new RestRequest("getblockhash/{height}", Method.GET);
+            request.AddUrlSegment("height", height);
+            IRestResponse blockResponse = client.Execute(request);
+            return blockResponse.Content;
+        }
+
+        public double GetBlockCount()
+        {
+            var request = new RestRequest("getblockcount", Method.GET);
+            IRestResponse<double> blockResponse = client.Execute<double>(request);
             return blockResponse.Data;
         }
 
@@ -92,65 +121,55 @@ namespace WoMApi.Node
             return true;
         }
 
-        private Dictionary<double, Shift> GetShifts(string mogwaiAddress, out bool openShifts)
+        public Dictionary<double, Shift> GetShifts(string mirroraddress, out bool openShifts)
         {
             var result = new Dictionary<double, Shift>();
-            openShifts = true;
-        //    var allTxs = new List<ListTransactionsResponse>();
+        
+            List<TxDetail> allTxs = ListTransaction(mirroraddress);
 
-        //    List<ListTransactionsResponse> listTxs = null;
-        //    int index = 0;
-        //    int chunkSize = 50;
-        //    while (listTxs == null || listTxs.Count > 0)
-        //    {
-        //        listTxs = mogwaiService.ListTransactions("", chunkSize, index);
-        //        allTxs.AddRange(listTxs);
-        //        index += chunkSize;
-        //    }
+            var incUnconfTx = allTxs.Where(p => p.Address == mirroraddress && p.Category == "send").OrderBy(p => p.Blocktime).ThenBy(p => p.Blockindex).ToList();
+            var validTx = incUnconfTx.Where(p => p.Confirmations > 0).ToList();
+            openShifts = incUnconfTx.Count() > validTx.Count();
 
-        //    var incUnconfTx = allTxs.Where(p => p.Address == mogwaiAddress && p.Category == "send").OrderBy(p => p.Time).ThenBy(p => p.BlockIndex);
-        //    var validTx = incUnconfTx.Where(p => p.Confirmations > 0);
-        //    openShifts = incUnconfTx.Count() > validTx.Count();
+            var pubMogAddressHex = HexHashUtil.ByteArrayToString(Base58Encoding.Decode(mirroraddress));
 
-        //    var pubMogAddressHex = HexHashUtil.ByteArrayToString(Base58Encoding.Decode(mogwaiAddress));
+            bool creation = false;
+            int lastBlockHeight = 0;
+            //foreach (var tx in validTx)
+            //{
+            //    decimal amount = Math.Abs(tx.Amount);
+            //    if (!creation && amount < mogwaiCost)
+            //        continue;
 
-        //    bool creation = false;
-        //    int lastBlockHeight = 0;
-        //    foreach (var tx in validTx)
-        //    {
-        //        decimal amount = Math.Abs(tx.Amount);
-        //        if (!creation && amount < mogwaiCost)
-        //            continue;
+            //    creation = true;
 
-        //        creation = true;
+            //    var block = GetBlock(tx.Blockhash);
 
-        //        var block = mogwaiService.GetBlock(tx.BlockHash);
+            //    if (lastBlockHeight != 0 && lastBlockHeight + 1 < block.Height)
+            //    {
+            //        // add small shifts
+            //        //if (TryGetBlockHashes(lastBlockHeight + 1, block.Height, null, out Dictionary<int, string> blockHashes))
+            //        //{
+            //        //    foreach (var blockHash in blockHashes)
+            //        //    {
+            //        //        result.Add(blockHash.Key, new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
+            //        //    }
+            //        //}
+            //    }
 
-        //        if (lastBlockHeight != 0 && lastBlockHeight + 1 < block.Height)
-        //        {
-        //            // add small shifts
-        //            if (TryGetBlockHashes(lastBlockHeight + 1, block.Height, null, out Dictionary<int, string> blockHashes))
-        //            {
-        //                foreach (var blockHash in blockHashes)
-        //                {
-        //                    result.Add(blockHash.Key, new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
-        //                }
-        //            }
-        //        }
+            //    lastBlockHeight = block.Height;
 
-        //        lastBlockHeight = block.Height;
+            //    result.Add(block.Height, new Shift(result.Count(), tx.Blocktime, pubMogAddressHex, block.Height, tx.Blockhash, tx.Blockindex, tx.Txid, amount, Math.Abs(tx.Fee + txFee)));
+            //}
 
-        //        result.Add(block.Height, new Shift(result.Count(), tx.Time, pubMogAddressHex, block.Height, tx.BlockHash, tx.BlockIndex, tx.TxId, amount, Math.Abs(tx.Fee + txFee)));
-        //    }
-
-        //    // add small shifts
-        //    if (creation && TryGetBlockHashes(lastBlockHeight + 1, (int)mogwaiService.GetBlockCount(), null, out Dictionary<int, string> finalBlockHashes))
-        //    {
-        //        foreach (var blockHash in finalBlockHashes)
-        //        {
-        //            result.Add(blockHash.Key, new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
-        //        }
-        //    }
+            //// add small shifts
+            //if (creation && TryGetBlockHashes(lastBlockHeight + 1, (int)mogwaiService.GetBlockCount(), null, out Dictionary<int, string> finalBlockHashes))
+            //{
+            //    foreach (var blockHash in finalBlockHashes)
+            //    {
+            //        result.Add(blockHash.Key, new Shift(result.Count(), pubMogAddressHex, blockHash.Key, blockHash.Value));
+            //    }
+            //}
 
         //    //result.ForEach(p => Console.WriteLine(p.ToString()));
             return result;

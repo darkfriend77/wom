@@ -10,7 +10,7 @@ namespace WoMApi
         public int Height { get; set; }
         public int Version { get; set; }
         public string Merkleroot { get; set; }
-        public List<Tx> Tx { get; set; }
+        public List<string> Tx { get; set; }
         public int Time { get; set; }
         public int Mediantime { get; set; }
         public long Nonce { get; set; }

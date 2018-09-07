@@ -17,7 +17,12 @@ namespace WoMApi
         {
             XmlConfigurator.Configure();
 
-            TestRawTransaction();
+            //TestRawTransaction();
+            //var shifts = Blockchain.Instance.GetShifts("MNtnWbBjUhRvNnd9YxM2mnxeLPNkxb4Fio", out bool openShifts);
+
+            var test = Blockchain.Instance.GetBlock("00000000077d796dabe050ee7d80c4e329b601e263c3e522d3abf2fbf9a9263f");
+            Console.WriteLine(test);
+            Console.ReadKey();
         }
 
         public static void TestWallet()
@@ -102,10 +107,10 @@ namespace WoMApi
             sw.Start();
             for (int i = 0; i < 100; i++)
             {
-                var blockResponse = Blockchain.Instance.GetBlock(i);
+                var blockResponse = Blockchain.Instance.GetBlockHash(i);
                 if (blockResponse != null)
                 {
-                    Console.WriteLine($"{i}: {blockResponse.Hash}");
+                    Console.WriteLine($"{i}: {blockResponse}");
                 }
                 else
                 {
