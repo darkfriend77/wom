@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WoMInterface.Game.Enums;
 using WoMInterface.Game.Random;
 using WoMInterface.Tool;
+using Newtonsoft.Json;
 
 namespace WoMInterface.Game.Interaction
 {
@@ -26,13 +27,17 @@ namespace WoMInterface.Game.Interaction
         public bool IsSmallShift => Interaction == null;
 
         private Dice mogwaiDice;
+        [JsonIgnore]
         public Dice MogwaiDice => mogwaiDice ?? (mogwaiDice = new Dice(this));
 
+        [JsonIgnore]
         public Interaction Interaction { get; }
-
+        
+        [JsonIgnore]
         public GameLog History { get; } = new GameLog();
 
-        public Shift(double index, double time, string adHex, int height, string bkHex, double bkIndex, string txHex, decimal amount, decimal fee )
+        [JsonConstructor]
+        public Shift(double index, double time, string adHex, int height, string bkHex, double bkIndex, string txHex, decimal amount, decimal fee)
         {
             Index = index;
             Time = time;

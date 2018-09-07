@@ -201,6 +201,16 @@ namespace WoMInterface.Game.Model
             CurrentHitPoints = MaxHitPoints;
         }
 
+
+        public void EnterSimpleDungeon()
+        {
+            var dungeon = new SimpleDungeon(this, currentShift);
+            Pointer++;
+            currentShift = Shifts[Pointer];
+
+            dungeon.Enter();
+        }
+
         public void Print()
         {
             Shift shift = Shifts[0];

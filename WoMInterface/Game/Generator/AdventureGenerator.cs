@@ -14,17 +14,17 @@ namespace WoMInterface.Game.Generator
             switch (adventureAction.AdventureType)
             {
                 case Enums.AdventureType.TEST_ROOM:
-                    return CreateTestRoom(adventureAction.ChallengeRating);
+                    //return CreateTestRoom(adventureAction.ChallengeRating);
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private static TestRoom CreateTestRoom(int challengeRatingt)
-        {
-            SimpleCombat simpleFight = new SimpleCombat(new List<Monster> {Monsters.Rat, Monsters.Rat});
-            TestRoom testRoom = new TestRoom(simpleFight);
-            return testRoom;
-        }
+        //private static TestRoom CreateTestRoom(int challengeRatingt)
+        //{
+        //    SimpleCombat simpleFight = new SimpleCombat(new SimpleRoom(null, null), new List<Monster> {Monsters.Rat, Monsters.Rat});
+        //    TestRoom testRoom = new TestRoom(simpleFight);
+        //    return testRoom;
+        //}
     }
 }
