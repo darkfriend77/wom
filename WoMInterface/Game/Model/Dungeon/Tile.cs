@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 namespace WoMInterface.Game.Model
 {
     /// <summary>
-    /// Represents the basic hex tile.
+    /// Represents the basic square tile.
     /// </summary>
     public abstract class Tile
     {
-        private int d = 0;
-        private Tile p = null;
+        // for algorithms
+        private int _d;
+        private Tile _p;
 
         public readonly Room Parent;
         public readonly Coordinate Coordinate;
         public readonly Wall[] Sides = new Wall[4];
+       
 
         public int Height;
 
@@ -24,6 +26,8 @@ namespace WoMInterface.Game.Model
             Parent = parent;
             Coordinate = coordinate;
         }
+
+        public abstract bool IsReachable { get; }
 
         public abstract bool IsSolid { get; }
 
@@ -36,6 +40,9 @@ namespace WoMInterface.Game.Model
             return Sides[(int) direction];
         }
 
+        /// <summary>
+        /// Get tiles comprising the shortest route including this tile and excluding the destination tile.
+        /// </summary>
         public Tile[] GetShortestPath(Tile destination)
         {
             var floor = Parent.Floor;
@@ -47,53 +54,55 @@ namespace WoMInterface.Game.Model
                 for (int j = 0; j < width; j++)
                 {
                     var tile = floor[i, j];
-                    tile.p = null;
-                    tile.d = int.MaxValue;
+                    tile._p = null;
+                    tile._d = int.MaxValue;
                     list.Add(tile);
                 }
 
             var current = this;
-            d = 0;
+            _d = 0;
             while (list.Count > 0)
             {
-                //for (int i = 0; i < 4; i++)
-                //    if (!(current.Sides[i]?.IsBlocked ?? false)&&
-                //        Parent.TryGetTile(Coordinate.Neighbour((Direction) i), out Tile t))
-                //    {
-                //        current = t;
-                //        break;
-                //    }
-
                 var cd = int.MaxValue;
+                current = null;
                 foreach (var t in list)
                 {
-                    if (cd <= t.d) continue;
-                    cd = t.d;
+                    if (cd <= t._d) continue;
+                    cd = t._d;
                     current = t;
                 }
 
+                if (current == null)
+                    throw new System.Exception();
+
                 list.Remove(current);
+
                 if (current == destination)
                     break;
 
-                foreach (var neighbour in Parent.GetNeighbours(current.Coordinate))
+                for (int i = 0; i < 4; i++)
                 {
-                    var alt = current.d + 1;
-                    if (alt < neighbour.d)
+                    if (!(current.Sides[i]?.IsBlocked ?? false) &&
+                        Parent.TryGetTile(current.Coordinate.Neighbour((Direction) i), out Tile t) /*&& (t.IsReachable || t != destination)*/)
                     {
-                        neighbour.d = alt;
-                        neighbour.p = current;
+                        var alt = current._d + 1;
+                        if (alt < t._d)
+                        {
+                            t._d = alt;
+                            t._p = current;
+                        }
                     }
                 }
             }
 
             var s = new Stack<Tile>();
-            if (destination.p != null || destination == this)
+            current = current._p;
+            if (destination._p != null || destination == this)
             {
-                while (current != null)
+                while (current != null && current != this)
                 {
                     s.Push(current);
-                    current = current.p;
+                    current = current._p;
                 }
 
                 return s.ToArray();
@@ -101,11 +110,17 @@ namespace WoMInterface.Game.Model
 
             return new Tile[0];
         }
+
+        public override string ToString()
+        {
+            return $"[{Coordinate}]";
+        }
     }
 
     public class StoneTile : Tile
     {
         public override bool IsSolid => true;
+        public override bool IsReachable => !IsOccupied;
 
         public StoneTile(Room parent, Coordinate coordinate) : base(parent, coordinate)
         {
@@ -115,6 +130,7 @@ namespace WoMInterface.Game.Model
     public class WaterTile : Tile
     {
         public override bool IsSolid => false;
+        public override bool IsReachable => false;
 
         public WaterTile(Room parent, Coordinate coordinate) : base(parent, coordinate)
         {

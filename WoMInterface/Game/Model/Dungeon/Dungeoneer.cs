@@ -39,6 +39,12 @@ namespace WoMInterface.Game.Model
             }
         }
 
+        private void Move(Tile tile)
+        {
+            CurrentTile.IsOccupied = false;
+            CurrentTile = tile;
+        }
+
         public bool TryMoveTo(Direction direction)
         {
             if (CurrentTile.Sides[(int)direction]?.IsBlocked ?? false)
@@ -53,10 +59,20 @@ namespace WoMInterface.Game.Model
             return false;
         }
 
-        // simple implementation of Dijkstra's algorithm
-        public void GetShortestPath(Tile destination)
+        public void MoveTowardDestination(Tile destination)
         {
-            
+            var path = CurrentTile.GetShortestPath(destination);
+            for (int i = 0; i < MoveRange; i++)
+                Move(path[i + 1]);
+        }
+
+        public void MoveArbitrarily()
+        {
+            while (true)
+            {
+                if (TryMoveTo((Direction)CurrentDungeon.DungeonDice.Roll(4, -1)))
+                    return;
+            }
         }
     }
 }

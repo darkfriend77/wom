@@ -48,7 +48,7 @@ namespace WoMInterface.Game.Model
         /// <summary>
         /// Generates rooms and corridors
         /// </summary>
-        public virtual void GenerateRooms(Mogwai mogwai, Shift shift)
+        protected virtual void GenerateRooms(Mogwai mogwai, Shift shift)
         {
 
         }
@@ -65,12 +65,12 @@ namespace WoMInterface.Game.Model
     /// </summary>
     public class SimpleDungeon : Dungeon
     {
-        public SimpleDungeon(Shift shift) : base(null, null)
+        public SimpleDungeon(Mogwai mogwai, Shift shift) : base(mogwai, shift)
         {
 
         }
 
-        public override void GenerateRooms(Mogwai mogwai, Shift shift)
+        protected override void GenerateRooms(Mogwai mogwai, Shift shift)
         {
             int n = 1;                              // should be determined by information of shift and mogwai
 

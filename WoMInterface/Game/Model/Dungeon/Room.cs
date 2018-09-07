@@ -107,7 +107,6 @@ namespace WoMInterface.Game.Model
     public class MonsterRoom : Room
     {
         private readonly List<Monster> _monsters = new List<Monster>();
-        protected SimpleCombat _fight;
 
 
         public MonsterRoom(Dungeon parent) : base(parent)
@@ -116,12 +115,7 @@ namespace WoMInterface.Game.Model
 
         public override void Initialise(Mogwai mogwai)
         {
-            // first, generate appropriate monsters
-            CreateMonsters(mogwai);
 
-            // second, generate a fight instance
-            _fight = new SimpleCombat(_monsters);
-            _fight.Create(mogwai, Parent.CreationShift);
         }
 
         public override bool Enter()
@@ -138,7 +132,7 @@ namespace WoMInterface.Game.Model
 
             // calculate initiate here maybe?
 
-            return _fight.Run();
+            return false;
         }
 
         private void CreateMonsters(Mogwai mogwai)
@@ -152,8 +146,7 @@ namespace WoMInterface.Game.Model
 
     public class SimpleRoom : MonsterRoom
     {
-        public readonly Dungeoneer _mog;
-        public readonly Dungeoneer[] _mobs;
+        private readonly SimpleCombat _fight;
 
         public SimpleRoom(Dungeon parent, Mogwai mogwai) : base(parent)
         {
@@ -168,16 +161,10 @@ namespace WoMInterface.Game.Model
             for (int j = 0; j < length; j++)
                 floor[i, j] = new StoneTile(this, new Coordinate(i, j));
 
-            // Initialise Dungeoneers
-            //_mog = new Dungeoneer(_fight.Heroes[0]);
-            _mog = new Dungeoneer(null);
-            _mog.CurrentTile = floor[length / 2, 0];
 
-            //var monsters = _fight.Monsters;
-            Monster[] monsters = new Monster[] { Monsters.Rat };
-            _mobs = monsters.Select(p => new Dungeoneer(p)).ToArray();
-
-            for (int i = 0; i < _mobs.Length; i++)
+            // deploy monsters and the adventurer
+            Monster[] monsters = { Monsters.Rat };
+            for (int i = 0; i < monsters.Length; i++)
             {
                 while (true)
                 {
@@ -188,18 +175,24 @@ namespace WoMInterface.Game.Model
                     Tile tile = floor[x, y];
                     if (!tile.IsOccupied)
                     {
-                        _mobs[i].CurrentTile = tile;
+                        monsters[i].Coordinate = new Coordinate(x, y);
                         break;
                     }
                 }
             }
 
+            mogwai.Coordinate = new Coordinate(length / 2, 0);
+
             Floor = floor;
+
+            _fight = new SimpleCombat(this, new []{mogwai}, monsters);
+            //_fight.Create(mogwai, Parent.CreationShift);
         }
+
 
         public override bool Enter()
         {
-            return false;
+            return _fight.Run();
         }
 
     }

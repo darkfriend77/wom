@@ -49,6 +49,9 @@ namespace WoMInterface.Game.Model
         
         #endregion
 
+        // current position
+        public Coordinate Coordinate { get; set; }
+
         // base speed
         public int BaseSpeed { get; set; }
 
