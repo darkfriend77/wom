@@ -96,6 +96,7 @@
     <Compile Include="Block\Vin.cs" />
     <Compile Include="Block\Vout.cs" />
     <Compile Include="Node\Blockchain.cs" />
+    <Compile Include="Node\MogwaiController.cs" />
     <Compile Include="Node\MogwaiKeys.cs" />
     <Compile Include="Node\Wallet.cs" />
     <Compile Include="Program.cs" />

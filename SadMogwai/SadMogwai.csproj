@@ -37,7 +37,7 @@
     <StartupObject>SadMogwai.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="app.config" />
     <None Include="C64.font">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -115,7 +115,11 @@
     <Compile Include="Consoles\MogwaiConsole.cs" />
     <Compile Include="Consoles\SelectionConsole.cs" />
     <Compile Include="Consoles\SplashScreen.cs" />
+    <Compile Include="Consoles\WalletConsole.cs" />
+    <Compile Include="Dialogs\MogwaiDialog.cs" />
+    <Compile Include="Dialogs\MogwaiInputDialog.cs" />
     <Compile Include="Programm.cs" />
+    <Compile Include="SadGuiController.cs" />
     <Compile Include="SadMogwai.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -72,7 +72,7 @@ namespace SadMogwai.Consoles
             _animation.Instructions.AddLast(new DrawString(this) { Position = new Point(26, this.Height - 1), Text = logoText, TotalTimeToPrint = 1f });
 
             // Animation for fading in the logo picture.
-            _animation.Instructions.AddLast(new FadeTextSurfaceTint(_consoleImage, new ColorGradient(Color.Black, Color.Transparent), new TimeSpan(0, 0, 0, 0, 2000)));
+            _animation.Instructions.AddLast(new FadeTextSurfaceTint(_consoleImage, new ColorGradient(Color.Black, Color.Transparent), new TimeSpan(0, 0, 0, 4, 0)));
 
             // Animation to blink SadConsole in the logo text
             _animation.Instructions.AddLast(new CodeInstruction()
@@ -103,7 +103,7 @@ namespace SadMogwai.Consoles
 
             // Animation to delay, keeping the logo and all on there for 2 seconds, then destroy itself.
             _animation.Instructions.AddLast(new Wait() { Duration = 2.5f });
-            _animation.Instructions.AddLast(new FadeTextSurfaceTint(_consoleImage, new ColorGradient(Color.Transparent, Color.Black), new TimeSpan(0, 0, 0, 0, 2000)));
+            _animation.Instructions.AddLast(new FadeTextSurfaceTint(_consoleImage, new ColorGradient(Color.Transparent, Color.Black), new TimeSpan(0, 0, 0, 0, 4000)));
             _animation.Instructions.AddLast(new CodeInstruction()
             {
                 CodeCallback = (i) =>

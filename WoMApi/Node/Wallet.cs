@@ -7,6 +7,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using WoMApi.Tool;
@@ -66,6 +67,10 @@ namespace WoMApi.Node
                 return depositKeys ?? (depositKeys = GetMogwaiKeys(0));
             }
         }
+
+        public int MogwaiAddresses => MogwaiKeyDict.Count();
+
+        public int MogwaisBound => MogwaiKeyDict.Values.Where(p => p.Mogwai != null).Count();
 
         /// <summary>
         /// 
@@ -142,10 +147,16 @@ namespace WoMApi.Node
             {
                 return IsUnlocked && IsCreated;
             }
-
-            var masterKey = Key.Parse(walletFile.wifKey, password, network);
-            extKey = new ExtKey(masterKey, walletFile.chainCode);
-            
+            try
+            {
+                var masterKey = Key.Parse(walletFile.wifKey, password, network);
+                extKey = new ExtKey(masterKey, walletFile.chainCode);
+            }
+            catch (SecurityException ex)
+            {
+                _log.Error(ex);
+                return false;
+            }
             // finally load all keys
             LoadKeys();
 

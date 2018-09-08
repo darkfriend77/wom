@@ -171,6 +171,11 @@ namespace WoMApi.Node
             return true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mirroraddress"></param>
+        /// <returns></returns>
         public Dictionary<double, Shift> GetShifts(string mirroraddress)
         {
             var result = new Dictionary<double, Shift>();

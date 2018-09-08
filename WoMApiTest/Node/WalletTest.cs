@@ -32,7 +32,6 @@ namespace WoMApi.Node
             Assert.IsFalse(wallet.IsUnlocked);
             wallet.Unlock("1234");
             Assert.IsTrue(wallet.IsUnlocked);
-
         }
 
         [TestMethod]
@@ -43,7 +42,6 @@ namespace WoMApi.Node
             wallet.Unlock("1234");
             Assert.IsNotNull(wallet.Deposit);
             Assert.AreEqual("MBAdzUJU1zyUJLfiUDuvU8zWjenxzi7ZF6", wallet.Deposit.Address);
-
         }
     }
 }
