@@ -20,7 +20,7 @@ namespace SadMogwai
     {
          private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public const int Width = 140;
+        public const int Width = 141;
         public const int Height = 40;
 
         private static WaveOutEvent _outputDevice;
@@ -28,8 +28,6 @@ namespace SadMogwai
         private static SplashScreen _splashScreen;
         private static SelectionScreen _selectionConsole;
         private static MogwaiConsole _welcome;
-        private static MogwaiConsole _info;
-        private static MogwaiConsole _command;
 
         private static SadGuiState _state;
 
@@ -226,7 +224,7 @@ namespace SadMogwai
 
             _welcome = new MogwaiConsole("Welcome", "Mogwaicoin Team 2018", 110, 6)
             {
-                Position = new Point(1, 1)
+                Position = new Point(2, 1)
             };
             for (int i = 0; i < Ascii.Logo.Length; i++)
             {
@@ -235,12 +233,7 @@ namespace SadMogwai
             }
 
             _selectionConsole = new SelectionScreen(_controller, 110, 25);
-            _selectionConsole.Position = new Point(1, 9);
-            _info = new MogwaiConsole("Info", "", 24, 38);
-            _info.Position = new Point(114, 1);
-            _command = new MogwaiConsole("Command", "", 110, 3);
-            _command.Position = new Point(1, 36);
-
+            _selectionConsole.Position = new Point(2, 9);
 
             //_splashScreen = new SplashScreen(140, 30);
             //_splashScreen.IsVisible = true;
@@ -250,8 +243,7 @@ namespace SadMogwai
             // Set our new console as the thing to render and process
             Global.CurrentScreen.Children.Add(_welcome);
             Global.CurrentScreen.Children.Add(_selectionConsole);
-            Global.CurrentScreen.Children.Add(_info);
-            Global.CurrentScreen.Children.Add(_command);
+
             _state = SadGuiState.START;
         }
 
@@ -260,15 +252,16 @@ namespace SadMogwai
             Global.CurrentScreen.Children.Clear();
             Global.CurrentScreen.Children.Add(_welcome);
             Global.CurrentScreen.Children.Add(_selectionConsole);
-            Global.CurrentScreen.Children.Add(_info);
-            Global.CurrentScreen.Children.Add(_command);
             _state = SadGuiState.START;
         }
     }
 
     enum SadGuiState
     {
-        START, LOGIN, ACTION, SELECTION,
+        START,
+        LOGIN,
+        ACTION,
+        SELECTION,
         MNEMOIC,
         FATALERROR,
         QUIT

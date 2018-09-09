@@ -10,6 +10,11 @@ using WoMInterface.Game.Model;
 
 namespace WoMApi.Node
 {
+    public enum MogwaiKeysState
+    {
+        NONE, WAIT, READY, CREATE, BOUND
+    }
+
     public class MogwaiKeys
     {
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -33,6 +38,18 @@ namespace WoMApi.Node
         public decimal Balance { get; set; } = 0.0000m;
 
         public Dictionary<double, Shift> Shifts { get; set; }
+
+        private MogwaiKeysState oldMogwaiKeysState = MogwaiKeysState.NONE;
+        private MogwaiKeysState mogwaiKeysState = MogwaiKeysState.NONE;
+        public MogwaiKeysState MogwaiKeysState
+        {
+            get { return mogwaiKeysState; }
+            set
+            {
+                oldMogwaiKeysState = mogwaiKeysState;
+                mogwaiKeysState = value;
+            }
+        }
 
         public MogwaiKeys(ExtKey extkey, Network network)
         {
@@ -87,6 +104,19 @@ namespace WoMApi.Node
                     {
                         Mogwai = new Mogwai(Address, Shifts);
                     }
+                }
+
+                if (Mogwai != null)
+                {
+                    MogwaiKeysState = MogwaiKeysState.BOUND;
+                }
+                else if(Balance > 1.0001m && MogwaiKeysState != MogwaiKeysState.CREATE)
+                {
+                    MogwaiKeysState = MogwaiKeysState.READY;
+                }
+                else if(Balance < 1.0001m && MogwaiKeysState != MogwaiKeysState.WAIT)
+                {
+                    MogwaiKeysState = MogwaiKeysState.NONE;
                 }
             });
         }

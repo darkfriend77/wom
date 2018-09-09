@@ -53,8 +53,8 @@ namespace WoMApi.Node
         public void GetUnspent()
         {
             var blockResponse1 = Blockchain.Instance.GetUnspent(0, 999999, "MCmpMFvQXeGQxJSSdCuPEf58v5iePJesN5");
-            Assert.AreEqual(2, blockResponse1.Count);
-            Assert.AreEqual(5m, blockResponse1[0].Amount);
+            Assert.AreEqual(1, blockResponse1.Count);
+            Assert.AreEqual(3.9999m, blockResponse1[0].Amount);
 
             var blockResponse2 = Blockchain.Instance.GetUnspent(0, 999999, "MWG1HtzRAjZMxQDzeoFoHQbzDygGR13aWG");
             Assert.AreEqual(1, blockResponse2.Count);
@@ -79,6 +79,9 @@ namespace WoMApi.Node
             Assert.AreEqual("41317", blockResponse[0].Height);
             Assert.AreEqual("000000003f6f8fa173c4d2ddaa07911b06fb41a72744dc646de29377fc04b19e", blockResponse[0].Blockhash);
             Assert.AreEqual("receive", blockResponse[0].Category);
+
+            var blockResponse1 = Blockchain.Instance.ListMirrorTransactions("MShh36ohJgMvaqJvyd6E2KYFSU7NsyeS99");
+            Assert.AreEqual("000000006a98b2ed01fd21374a04f91022d78d3bd182c7812ec44792625822fa", blockResponse1[0].Blockhash);
         }
 
         [TestMethod]

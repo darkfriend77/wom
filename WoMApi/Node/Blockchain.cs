@@ -32,6 +32,8 @@ namespace WoMApi.Node
 
         public static Blockchain Instance => instance ?? (instance = new Blockchain());
 
+        public int MaxCachedBlockHeight => blockHashDict.Keys.Max();
+
         private Blockchain()
         {
             client = new RestClient(ConfigurationManager.AppSettings["apiUrl"]);
@@ -71,28 +73,33 @@ namespace WoMApi.Node
             });
         }
 
-        public void CacheBlockhashes()
+        public async Task CacheBlockhashesAsyncNoProgressAsync()
         {
-            int maxBlockCount = GetBlockCount();
-            var fromHeight = blockHashDict.Keys.Count > 0 ? blockHashDict.Keys.Max() : 0;
-            int bulkSize = 500;
-            List<BlockhashPair> list;
-            int count = 0;
-            for (int i = fromHeight; i < maxBlockCount; i++)
-            {
-                count++;
-                if (count % bulkSize == 0 || i == maxBlockCount - 1)
-                {
-                    var currentMax = blockHashDict.Keys.Count > 0 ? blockHashDict.Keys.Max() : 0;
-                    list = GetBlockHashes(currentMax, count);
-                    list.ForEach(p => blockHashDict[int.Parse(p.Block)] = p.Hash);
-                    _log.Debug($"cached from {fromHeight} {count} blockhashes...");
-                    count = 0;
-                }
-            }
-            Caching.Persist(blockhashesFile, blockHashDict);
-            _log.Debug($"persisted all blocks!");
+            await CacheBlockhashesAsync(new Progress<float>());
         }
+
+        //public void CacheBlockhashes()
+        //{
+        //    int maxBlockCount = GetBlockCount();
+        //    var fromHeight = blockHashDict.Keys.Count > 0 ? blockHashDict.Keys.Max() : 0;
+        //    int bulkSize = 500;
+        //    List<BlockhashPair> list;
+        //    int count = 0;
+        //    for (int i = fromHeight; i < maxBlockCount; i++)
+        //    {
+        //        count++;
+        //        if (count % bulkSize == 0 || i == maxBlockCount - 1)
+        //        {
+        //            var currentMax = blockHashDict.Keys.Count > 0 ? blockHashDict.Keys.Max() : 0;
+        //            list = GetBlockHashes(currentMax, count);
+        //            list.ForEach(p => blockHashDict[int.Parse(p.Block)] = p.Hash);
+        //            _log.Debug($"cached from {fromHeight} {count} blockhashes...");
+        //            count = 0;
+        //        }
+        //    }
+        //    Caching.Persist(blockhashesFile, blockHashDict);
+        //    _log.Debug($"persisted all blocks!");
+        //}
 
         public Block GetBlock(string hash)
         {
@@ -173,8 +180,7 @@ namespace WoMApi.Node
         
         public bool BindMogwai(MogwaiKeys mogwaiKey)
         {
-            BurnMogs(mogwaiKey, mogwaiCost, txFee);
-            return true;
+            return BurnMogs(mogwaiKey, mogwaiCost, txFee);
         }
 
         public bool BurnMogs(MogwaiKeys mogwaiKey, decimal burnMogs, decimal txFee)
@@ -202,9 +208,9 @@ namespace WoMApi.Node
 
             var answer = SendRawTransaction(tx.ToHex());
 
-            _log.Info($"sendRawTx: {answer}");
+            _log.Info($"sendRawTx[{(answer.Length != 0 ? "SUCCESS":"FAILED")}]: {answer}");
 
-            return true;
+            return answer.Length != 0;
         }
 
         /// <summary>

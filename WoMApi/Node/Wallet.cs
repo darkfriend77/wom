@@ -74,6 +74,8 @@ namespace WoMApi.Node
 
         public int MogwaisBound => MogwaiKeyDict.Values.Where(p => p.Mogwai != null).Count();
 
+        public Block LastBlock { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
@@ -83,7 +85,7 @@ namespace WoMApi.Node
 
             if (!Caching.TryReadFile(path, out walletFile))
             {
-            } 
+            }
         }
 
         /// <summary>
@@ -170,7 +172,7 @@ namespace WoMApi.Node
 
         private void LoadKeys()
         {
-            foreach ( var seed in walletFile.EncryptedSecrets.Values)
+            foreach (var seed in walletFile.EncryptedSecrets.Values)
             {
                 var mogwaiKey = GetMogwaiKeys(seed);
                 if (!MogwaiKeyDict.ContainsKey(mogwaiKey.Address))
@@ -217,7 +219,7 @@ namespace WoMApi.Node
                         Caching.Persist(path, walletFile);
                         return true;
                     }
- 
+
                 }
             }
             return false;
@@ -239,6 +241,20 @@ namespace WoMApi.Node
             var extKeyDerived = extKey.Derive(seed);
             var wif = extKey.PrivateKey.GetWif(network);
             return new MogwaiKeys(extKeyDerived, network);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public async void Update()
+        {
+            await Task.Run(() =>
+            {
+                var height = Blockchain.Instance.MaxCachedBlockHeight;
+                var hash = Blockchain.Instance.GetBlockHash(height);
+                var block = Blockchain.Instance.GetBlock(hash);
+                LastBlock = block;
+            });
         }
     }
 

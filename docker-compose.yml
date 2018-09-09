@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  womserver:
+    image: ${DOCKER_REGISTRY}womserver
+    build:
+      context: .
+      dockerfile: WoMServer/Dockerfile

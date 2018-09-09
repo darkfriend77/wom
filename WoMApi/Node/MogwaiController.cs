@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Timers;
 using WoMApi.Tool;
 
@@ -15,6 +17,8 @@ namespace WoMApi.Node
 
         public bool IsWalletCreated => Wallet.IsCreated;
 
+        public Block WalletLastBlock => Wallet.LastBlock;
+
         public string DepositAddress => Wallet.IsUnlocked ? Wallet.Deposit.Address : string.Empty;
 
         public Dictionary<string, MogwaiKeys> MogwaiKeysDict => Wallet.MogwaiKeyDict;
@@ -24,7 +28,7 @@ namespace WoMApi.Node
         {
             get
             {
-                if (Wallet.MogwaiKeyDict.Count >  selectedIndex)
+                if (Wallet.MogwaiKeyDict.Count > selectedIndex)
                 {
                     return null;
                 }
@@ -41,18 +45,26 @@ namespace WoMApi.Node
             Wallet = new MogwaiWallet();
         }
 
-        public void Refresh(int seconds)
+        public void Refresh(int minutes)
         {
-            timer = new Timer(seconds * 1000);
-            timer.Elapsed += OnTimedEvent;
+            Update();
+            timer = new Timer(minutes * 60 * 1000);
+            timer.Elapsed += OnTimedEventAsync;
             timer.AutoReset = true;
             timer.Enabled = true;
         }
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e)
+        private async void OnTimedEventAsync(object sender, ElapsedEventArgs e)
         {
+            await Blockchain.Instance.CacheBlockhashesAsyncNoProgressAsync();
+            Update();
+        }
+
+        private void Update()
+        {
+            Wallet.Update();
             Wallet.Deposit.Update();
-            foreach(var mogwaiKey in Wallet.MogwaiKeyDict.Values)
+            foreach (var mogwaiKey in Wallet.MogwaiKeyDict.Values)
             {
                 mogwaiKey.Update();
             }
@@ -83,22 +95,48 @@ namespace WoMApi.Node
             {
                 return;
             }
-            Caching.Persist("mogwaikeys.txt", Wallet.MogwaiKeyDict);
+            Caching.Persist("mogwaikeys.txt", Wallet.MogwaiKeyDict.Keys);
         }
 
         public void NewMogwaiKeys()
         {
+            if (!IsWalletUnlocked)
+            {
+                return;
+            }
             Wallet.GetNewMogwaiKey(out MogwaiKeys mogwaiKeys);
         }
 
-        public void SendMog(MogwaiKeys mogwaiKeys)
+        public bool SendMog(MogwaiKeys mogwaiKeys)
         {
-            Blockchain.Instance.SendMogs(Wallet.Deposit, mogwaiKeys.Address, 5m, 0.0001m);
+            if (!IsWalletUnlocked)
+            {
+                return false;
+            }
+
+            if (!Blockchain.Instance.SendMogs(Wallet.Deposit, mogwaiKeys.Address, 5m, 0.0001m))
+            {
+                return false;
+            };
+
+            mogwaiKeys.MogwaiKeysState = MogwaiKeysState.WAIT;
+            return true;
         }
 
-        public void BindMogwai(MogwaiKeys mogwaiKeys)
+        public bool BindMogwai(MogwaiKeys mogwaiKeys)
         {
-            Blockchain.Instance.BindMogwai(mogwaiKeys);
+            if (!IsWalletUnlocked)
+            {
+                return false;
+            }
+
+            if (!Blockchain.Instance.BindMogwai(mogwaiKeys))
+            {
+                return false;
+            };
+
+            mogwaiKeys.MogwaiKeysState = MogwaiKeysState.CREATE;
+            return true;
         }
     }
 }

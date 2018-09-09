@@ -115,8 +115,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Art\Ascii.cs" />
-    <Compile Include="Consoles\ControllerConsole.cs" />
+    <Compile Include="Consoles\MogwaiButton.cs" />
     <Compile Include="Consoles\MogwaiConsole.cs" />
+    <Compile Include="Consoles\ScrollableConsole.cs" />
     <Compile Include="Consoles\SelectionConsole.cs" />
     <Compile Include="Consoles\SplashScreen.cs" />
     <Compile Include="Consoles\WalletConsole.cs" />

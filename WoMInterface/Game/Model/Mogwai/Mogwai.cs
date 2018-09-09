@@ -49,6 +49,8 @@ namespace WoMInterface.Game.Model
 
         public override Dice Dice => currentShift.MogwaiDice;
 
+        public double Rating => (double) (Strength * 3 + Dexterity * 2 + Constitution * 2 + Inteligence * 3 + Wisdom + Charisma) / 12;
+
         public Mogwai(string key, Dictionary<double, Shift> shifts)
         {
             Key = key;
