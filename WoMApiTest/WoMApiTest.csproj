@@ -56,6 +56,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="blockhashes.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="test.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

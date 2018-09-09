@@ -12,48 +12,27 @@ namespace SadMogwai.Consoles
 {
     class WalletConsole : SadConsole.Console
     {
-        private MogwaiWallet wallet;
+        private readonly MogwaiController controller;
         private Basic borderSurface;
         private int counter = 0;
-        public WalletConsole(MogwaiController controller, int width, int height) : base(width, height)
+        public WalletConsole(MogwaiController mogwaiController, int width, int height) : base(width, height)
         {
             borderSurface = new Basic(width + 2, height + 2, base.Font);
             borderSurface.DrawBox(new Rectangle(0, 0, borderSurface.Width, borderSurface.Height),
                                   new Cell(Color.DarkCyan, Color.Black), null, SurfaceBase.ConnectedLineThick);
             borderSurface.Position = new Point(-1, -1);
             Children.Add(borderSurface);
-            wallet = controller.Wallet;
-            //UpdatedWallet();
-        }
-
-        public void UpdatedWallet()
-        {
-            //Print(1, 0, "Mogwais:", Color.DarkCyan);
-            //if (wallet.MogwaiKeyDict != null)
-            //{
-            //    Print(27, 0, $"{wallet.MogwaisBound.ToString()} / {wallet.MogwaiAddresses.ToString()}", Color.Orange);
-            //}
-            //Print(40, 0, "Funds:", Color.DarkCyan);
-            //if (wallet.Deposit != null)
-            //{
-            //    Print(74, 0, $"[c:g f:LimeGreen:Orange:34]{wallet.Deposit.Address}");
-            //}
-            //Print(65, 0, $"DEPOSIT:", Color.DarkCyan);
-            //if (wallet.Deposit != null)
-            //{
-            //    Print(74, 0, $"[c:g f:LimeGreen:Orange:34]{wallet.Deposit.Address}");
-            //}
+            controller = mogwaiController;
         }
 
         public override void Update(TimeSpan delta)
         {
+            Print(1, 0, "Mogwais:", Color.DarkCyan);
+            Print(49, 0, "Funds:", Color.DarkCyan);
+            Print(56, 0, controller.GetDepositFunds().ToString("###0.00"), Color.Orange);
+            Print(65, 0, $"Deposit:", Color.DarkCyan);
+            Print(74, 0, $"[c:g f:LimeGreen:Orange:34]{controller.DepositAddress}");
             base.Update(delta);
-            if (counter++ % 200 == 0)
-            {
-                //Print(1, 0, counter.ToString(), Color.Orange);
-                UpdatedWallet();
-                counter = 0;
-            }
         }
     }
 }

@@ -9,11 +9,16 @@ using NAudio.Wave;
 using System.Threading;
 using SadMogwai.Dialogs;
 using WoMApi.Node;
+using System.Reflection;
+using log4net;
+using log4net.Config;
 
 namespace SadMogwai
 {
+            
     class Program
     {
+         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public const int Width = 140;
         public const int Height = 40;
@@ -21,9 +26,8 @@ namespace SadMogwai
         private static WaveOutEvent _outputDevice;
 
         private static SplashScreen _splashScreen;
-        private static SelectionConsole _selectionConsole;
+        private static SelectionScreen _selectionConsole;
         private static MogwaiConsole _welcome;
-        private static WalletConsole _walletConsole;
         private static MogwaiConsole _info;
         private static MogwaiConsole _command;
 
@@ -33,6 +37,8 @@ namespace SadMogwai
 
         static void Main(string[] args)
         {
+            XmlConfigurator.Configure();
+
             // Setup the engine and creat the main window.
             SadConsole.Game.Create("IBM.font", Width, Height);
 
@@ -70,11 +76,12 @@ namespace SadMogwai
             switch (_state)
             {
                 case SadGuiState.START:
+                    _state = LoadBlocksAsync();
                     return;
                 case SadGuiState.ACTION:
                     return;
                 case SadGuiState.LOGIN:
-                    if (!_controller.Wallet.IsCreated)
+                    if (!_controller.IsWalletCreated)
                     {
                         _state = CreateWallet();
                     }
@@ -87,6 +94,12 @@ namespace SadMogwai
                     _state = ShowMnemoic();
                     break;
                 case SadGuiState.SELECTION:
+                    if (!_selectionConsole.IsReady)
+                    {
+                        _selectionConsole.Init();
+                        break;
+                    }
+                    _selectionConsole.ProcessKeyboard(Global.KeyboardState);
                     break;
                 case SadGuiState.FATALERROR:
                     _state = Warning("A fatal error happend!", true);
@@ -96,6 +109,24 @@ namespace SadMogwai
                     break;
             }
 
+        }
+
+        private static SadGuiState LoadBlocksAsync()
+        {
+            var dialog = new MogwaiProgressDialog("Loading", "caching all mogwai blocks.",_controller, 40, 8);
+            dialog.AddButon("ok");
+            dialog.StartAsync();
+            dialog.button.Click += (btn, args) =>
+            {
+                if (dialog.IsComplete)
+                {
+                    dialog.Hide();
+                    _state = SadGuiState.LOGIN;
+                }
+            };
+            dialog.Show(true);
+
+            return SadGuiState.ACTION;
         }
 
         private static SadGuiState Warning(string warning, bool terminate)
@@ -121,7 +152,7 @@ namespace SadMogwai
 
         private static SadGuiState ShowMnemoic()
         {
-            var mnemoic = _controller.Wallet.MnemonicWords;
+            var mnemoic = _controller.WalletMnemonicWords;
             var size = mnemoic.Length.ToString();
             var dialog = new MogwaiDialog("Show Mnemoic", "[c:g f:LimeGreen:Orange:" + size + "]" + mnemoic.ToUpper(), 40, 8);
             dialog.AddButon("memorized");
@@ -142,8 +173,8 @@ namespace SadMogwai
             inputDialog.button.Click += (btn, args) =>
             {
                 string password = inputDialog.input?.Text;
-                _controller.Wallet.Create(password);
-                if (_controller.Wallet.IsCreated)
+                _controller.CreateWallet(password);
+                if (_controller.IsWalletCreated)
                 {
                     _state = SadGuiState.MNEMOIC;
                 }
@@ -165,8 +196,8 @@ namespace SadMogwai
             dialog.button.Click += (btn, args) =>
             {
                 string password = dialog.input.Text;
-                _controller.Wallet.Unlock(password);
-                if (_controller.Wallet.IsUnlocked)
+                _controller.UnlockWallet(password);
+                if (_controller.IsWalletUnlocked)
                 {
                     _state = SadGuiState.SELECTION;
                 }
@@ -202,10 +233,9 @@ namespace SadMogwai
                 string str = Ascii.Logo[i];
                 _welcome.Print(4, i, $"[c:g b:0,0,0:Black:DarkCyan:DarkGoldenRod:DarkRed:Black:0,0,0:{str.Length}][c:g f:LimeGreen:Orange:{str.Length}]" + str, Color.Cyan, Color.Black);
             }
-            _walletConsole = new WalletConsole(_controller, 110, 2);
-            _walletConsole.Position = new Point(1, 9);
-            _selectionConsole = new SelectionConsole(110, 22);
-            _selectionConsole.Position = new Point(1, 12);
+
+            _selectionConsole = new SelectionScreen(_controller, 110, 25);
+            _selectionConsole.Position = new Point(1, 9);
             _info = new MogwaiConsole("Info", "", 24, 38);
             _info.Position = new Point(114, 1);
             _command = new MogwaiConsole("Command", "", 110, 3);
@@ -219,22 +249,20 @@ namespace SadMogwai
 
             // Set our new console as the thing to render and process
             Global.CurrentScreen.Children.Add(_welcome);
-            Global.CurrentScreen.Children.Add(_walletConsole);
             Global.CurrentScreen.Children.Add(_selectionConsole);
             Global.CurrentScreen.Children.Add(_info);
             Global.CurrentScreen.Children.Add(_command);
-            _state = SadGuiState.LOGIN;
+            _state = SadGuiState.START;
         }
 
         private static void SplashScreenCompleted()
         {
             Global.CurrentScreen.Children.Clear();
             Global.CurrentScreen.Children.Add(_welcome);
-            Global.CurrentScreen.Children.Add(_walletConsole);
             Global.CurrentScreen.Children.Add(_selectionConsole);
             Global.CurrentScreen.Children.Add(_info);
             Global.CurrentScreen.Children.Add(_command);
-            _state = SadGuiState.LOGIN;
+            _state = SadGuiState.START;
         }
     }
 

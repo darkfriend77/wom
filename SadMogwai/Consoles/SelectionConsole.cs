@@ -4,15 +4,14 @@ using SadConsole.Input;
 using SadConsole.Surfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using WoMApi.Node;
 
 namespace SadMogwai.Consoles
 {
-    public class SelectionConsole : SadConsole.Console
+    public class SelectionScreen : SadConsole.Console
     {
-
         private int oldPointer, pointer;
-
-        private Dictionary<int, string> itemDic;
 
         private Color rowNormal = Color.DarkCyan;
 
@@ -22,78 +21,54 @@ namespace SadMogwai.Consoles
 
         private int glyphIndex = 185;
 
-        public SelectionConsole(int width, int height) : base(width, height)
-        {
+        private MogwaiController controller;
 
+        private List<MogwaiKeys> MogwaiKeysList => controller.MogwaiKeysDict.Values.ToList();
+
+        public int headerPosition = 3;
+
+        public bool IsReady { get; set; } = false;
+
+        public SelectionScreen(MogwaiController mogwaiController, int width, int height) : base(width, height)
+        {
             borderSurface = new Basic(width + 2, height + 2, base.Font);
             borderSurface.DrawBox(new Rectangle(0, 0, borderSurface.Width, borderSurface.Height),
                                   new Cell(Color.DarkCyan, Color.Black), null, SurfaceBase.ConnectedLineThick);
             borderSurface.Position = new Point(-1, -1);
-            CreateHeader();
             Children.Add(borderSurface);
 
+            CreateHeader();
+
+            controller = mogwaiController;
             pointer = 0;
             oldPointer = 0;
+        }
 
-
-            itemDic = new Dictionary<int, string>
-            {
-                {  0, "    M8NEb9uFUhGp4obMdouNLncET4LCfAroP8  Bound      3.9894   Cabufudae       11.71        1         0" },
-                {  1, "    MAXcZCjBXYaJpXEpgz7P1aYSv4eHqAs1ig  Bound      3.9999   Wygukuqu        12.86        1         0" },
-                {  2, "    MCmpMFvQXeGQxJSSdCuPEf58v5iePJesN5  Bound      3.9999   Negalake        12.93        1         0" },
-                {  3, "    MDpWXpuXP8RE6xx6Et4XR7nGB8pTZo271c  Bound      3.9893   Jalyquno        14.93        1         0" },
-                {  4, "    MFTHxujEGC7AHNBMCWQCuXZgVurWjLKc5e  Bound      8.9894   Ckuckari        11.93        1         0" },
-                {  5, "    MFZqCvi1A95pR83K4itkaVFAnvwYfY8CeU  Bound      3.9999   Cusejaxy        12.36        1         0" },
-                {  6, "    MG2nFaQ15YH3ExXGVBkHgoVWabPpgu8Lyy  Bound      3.9999   Tapomili        11.93        1         0" },
-                {  7, "    MJHYMxu2kyR1Bi4pYwktbeCM7yjZyVxt2i  Bound      3.9894   Doguwutae       14.07        1         0" },
-                {  8, "    MJmeexMYULCnqMkBCBs84cPmaCtcg3WBf4  Bound      3.9895   Dushuluzh       11.79        1         0" },
-                {  9, "    MK1zwdxSzJ978XH9a2Xojjhbn5tNvnjiUp  None       0.0000   ...               ...      ...       ..." },
-                { 10, "    MMtehEJH9xYdmie5zzQE59HDGghZG49RYd  Bound      3.9999   Sheshewo        12.57        1         0" },
-                { 11, "    MNt4c32XybpMJYX35kTyK6Hq6pzDW9znoB  None       0.0000   ...               ...      ...       ..." },
-                { 12, "    MP472HbD9dmrddTW1V6gh8bzfFijdFdqdB  Bound      3.9999   Rorepiba        12.86        1         0" },
-                { 13, "    MRThQvrcykzGRfpgM73mmjiiHiEjRXb4wQ  Bound      3.9999   Xoteckev        10.71        1         0" }
-            };
-
-            Init();
+        public void Init()
+        {
+            IsReady = true;
+            controller.Refresh(10);
         }
 
         private void CreateHeader()
         {
-            //borderSurface.Print(1, 0, "[c:sg 205:108]".PadRight(122), Color.DarkCyan);
-
-            borderSurface.SetGlyph(0, 0, 204, Color.DarkCyan);
-            borderSurface.SetGlyph(111, 0, 185, Color.DarkCyan);
-            borderSurface.SetGlyph(03, 0, 185, Color.DarkCyan);
-            borderSurface.Print(04, 0, " Address ");
-            borderSurface.SetGlyph(39, 0, 185, Color.DarkCyan);
-            borderSurface.Print(40, 0, " State ");
-            borderSurface.SetGlyph(48, 0, 185, Color.DarkCyan);
-            borderSurface.Print(49, 0, " Funds ");
-            borderSurface.SetGlyph(60, 0, 185, Color.DarkCyan);
-            borderSurface.Print(61, 0, " Name ");
-            borderSurface.SetGlyph(74, 0, 185, Color.DarkCyan);
-            borderSurface.Print(75, 0, " Rating ");
-            borderSurface.SetGlyph(84, 0, 185, Color.DarkCyan);
-            borderSurface.Print(85, 0, " Level ");
-            borderSurface.SetGlyph(93, 0, 185, Color.DarkCyan);
-            borderSurface.Print(94, 0, " Gold ");
-        }
-
-        private void Init()
-        {
-            for (int i = 0; i < itemDic.Count; i++)
-            {
-                Print(1, i + 1, itemDic[i], i == pointer ? highNormal : rowNormal, Color.Black);
-            }
-        }
-
-        private void UpdateRow()
-        {
-            if (oldPointer != pointer)
-            {
-                Print(1, oldPointer + 1, itemDic[oldPointer], rowNormal, Color.Black);
-                Print(1, pointer + 1, itemDic[pointer], highNormal, Color.Black);
-            }
+            borderSurface.Print(1, headerPosition, "[c:sg 205:110]".PadRight(124), Color.DarkCyan);
+            borderSurface.SetGlyph(0, headerPosition, 204, Color.DarkCyan);
+            borderSurface.SetGlyph(111, headerPosition, 185, Color.DarkCyan);
+            borderSurface.SetGlyph(03, headerPosition, 185, Color.DarkCyan);
+            borderSurface.Print(04, headerPosition, " Address ");
+            borderSurface.SetGlyph(39, headerPosition, 185, Color.DarkCyan);
+            borderSurface.Print(40, headerPosition, " State ");
+            borderSurface.SetGlyph(48, headerPosition, 185, Color.DarkCyan);
+            borderSurface.Print(49, headerPosition, " Funds ");
+            borderSurface.SetGlyph(60, headerPosition, 185, Color.DarkCyan);
+            borderSurface.Print(61, headerPosition, " Name ");
+            borderSurface.SetGlyph(74, headerPosition, 185, Color.DarkCyan);
+            borderSurface.Print(75, headerPosition, " Rating ");
+            borderSurface.SetGlyph(84, headerPosition, 185, Color.DarkCyan);
+            borderSurface.Print(85, headerPosition, " Level ");
+            borderSurface.SetGlyph(93, headerPosition, 185, Color.DarkCyan);
+            borderSurface.Print(94, headerPosition, " Gold ");
         }
 
         public override bool ProcessKeyboard(Keyboard state)
@@ -102,9 +77,32 @@ namespace SadMogwai.Consoles
             {
                 return true;
             }
+            else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.C))
+            {
+                controller.NewMogwaiKeys();
+                return true;
+            }
+            else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.S))
+            {
+                controller.SendMog(MogwaiKeysList[pointer]);
+                Print(1, 20, "Sending mogs!", Color.Orange);
+                return true;
+            }
+            else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.B))
+            {
+                controller.BindMogwai(MogwaiKeysList[pointer]);
+                Print(1, 20, "Binding Mogwai!", Color.Orange);
+                return true;
+            }
+            else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.P))
+            {
+                controller.PrintMogwaiKeys();
+                Print(1, 20, "Print MogwaiKeys!", Color.Orange);
+                return true;
+            }
             else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Down))
             {
-                if (pointer < 10)
+                if (pointer < controller.MogwaiKeysDict.Count() - 1)
                 {
                     oldPointer = pointer;
                     pointer++;
@@ -133,18 +131,39 @@ namespace SadMogwai.Consoles
                 return true;
             }
 
-
             return false;
         }
 
         public override void Update(TimeSpan delta)
         {
-            base.Update(delta);
-
-            if (ProcessKeyboard(Global.KeyboardState))
+            if (IsReady)
             {
-                UpdateRow();
-            };
+                Print(1, 0, "Mogwais:", Color.DarkCyan);
+                Print(49, 0, "Funds:", Color.DarkCyan);
+                Print(56, 0, controller.GetDepositFunds().ToString("###0.00"), Color.Orange);
+                Print(65, 0, $"Deposit:", Color.DarkCyan);
+                Print(74, 0, $"[c:g f:LimeGreen:Orange:34]{controller.DepositAddress}");
+
+
+                var list = MogwaiKeysList;
+                for (int i = 0; i < list.Count; i++)
+                {
+                    PrintRow(i + headerPosition, list[i]);
+                }
+                PrintRow(pointer + headerPosition, list[pointer], true);
+            }
+            base.Update(delta);
+        }
+
+        private void PrintRow(int index, MogwaiKeys mogwaiKeys, bool selected = false)
+        {
+
+
+            var str = mogwaiKeys.Address.PadRight(36)
+            + mogwaiKeys.Balance.ToString("####0.00").PadRight(10)
+            + mogwaiKeys.Shifts?.Count.ToString().PadRight(10)
+            + mogwaiKeys.Mogwai?.Name.ToString().PadRight(10);
+            Print(1, index, str, selected ? Color.Cyan : Color.DarkCyan);
         }
     }
 }

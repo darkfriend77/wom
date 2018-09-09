@@ -18,6 +18,8 @@ namespace WoMApi.Node
     {
         public string wifKey;
 
+        public string depositAddress;
+
         public byte[] chainCode;
 
         public Dictionary<string, uint> EncryptedSecrets = new Dictionary<string, uint>();
@@ -131,7 +133,10 @@ namespace WoMApi.Node
             extKey = mnemo.DeriveExtKey(password);
             var chainCode = extKey.ChainCode;
             var encSecretWif = extKey.PrivateKey.GetEncryptedBitcoinSecret(password, network).ToWif();
-            walletFile = new WalletFile(encSecretWif, chainCode);
+            walletFile = new WalletFile(encSecretWif, chainCode)
+            {
+                depositAddress = Deposit.Address
+            };
             Caching.Persist(path, walletFile);
             return true;
         }

@@ -52,17 +52,13 @@ namespace WoMApi.Node
         [TestMethod]
         public void GetUnspent()
         {
-            var blockResponse0 = Blockchain.Instance.GetUnspent(0, 999999, "MDvzt3q937NpCvawXVttFXueSDBson3bWH");
-            Assert.AreEqual(150, blockResponse0.Count);
-            Assert.AreEqual("MDvzt3q937NpCvawXVttFXueSDBson3bWH", blockResponse0[0].Address);
-            Assert.AreEqual(1000m, blockResponse0[0].Amount);
-            Assert.AreEqual("498a37b770eafce6e112e5c2d9ac6ded2beedcd2965b489900f1069de04942fa", blockResponse0[0].Txid);
-
             var blockResponse1 = Blockchain.Instance.GetUnspent(0, 999999, "MCmpMFvQXeGQxJSSdCuPEf58v5iePJesN5");
             Assert.AreEqual(2, blockResponse1.Count);
+            Assert.AreEqual(5m, blockResponse1[0].Amount);
 
             var blockResponse2 = Blockchain.Instance.GetUnspent(0, 999999, "MWG1HtzRAjZMxQDzeoFoHQbzDygGR13aWG");
             Assert.AreEqual(1, blockResponse2.Count);
+            Assert.AreEqual(8.99999m, blockResponse2[0].Amount);
         }
 
         [TestMethod]
@@ -107,7 +103,7 @@ namespace WoMApi.Node
 
             // create transaction
             Transaction tx = mogwaiKeys0.CreateTransaction(unspentTxList, unspentAmount, mogwaiKeys1.Address, 1.0m, 0.00001m);
-            Assert.AreEqual("01000000019d0262999e5eacc32c2c6921e730d57a7e51938c2d3e22158979c72a7be318e3010000006a4730440220444d777a2e5c4c72941303e7bf7c5734a7ba69087b5b10b370bd685a064c97f402205b8d476d9c73ada7584ce851df9fc675bfd8d4bf8439ee94e52e7f81856885b5012103007f99a5c4754d67c9fed1852ed451bec7371c1b0907b8488ee5aa6593b865c4ffffffff0218ddf505000000001976a914a477c1319360114de9f3ed88381cc4dfa9147f3288ac3000af2f000000001976a914f5440a1dd1ada4c5b4160b8c754f9148eb4a505388ac00000000", tx.ToHex());
+            Assert.AreEqual("01000000019d0262999e5eacc32c2c6921e730d57a7e51938c2d3e22158979c72a7be318e3010000006a4730440220263c7d3955de95901f70fd66210a7ba095581e6261b3f71c1165d80583fe768b022062cd638398ba735d55dcaa17de225143997307c24e84b1a2be29bc4b7a73c61f012103007f99a5c4754d67c9fed1852ed451bec7371c1b0907b8488ee5aa6593b865c4ffffffff0200e1f505000000001976a914a477c1319360114de9f3ed88381cc4dfa9147f3288ac3000af2f000000001976a914f5440a1dd1ada4c5b4160b8c754f9148eb4a505388ac00000000", tx.ToHex());
 
             //var blockResponse = Blockchain.Instance.SendRawTransaction(tx.ToHex());
             //Assert.AreEqual("", blockResponse);
@@ -116,9 +112,12 @@ namespace WoMApi.Node
         [TestMethod]
         public void GetShifts()
         {
-            var shifts = Blockchain.Instance.GetShifts("MEYUySQDPzgbTuZSjGfPVikgHtDJZHL8WE");
-            Assert.IsTrue(shifts.Count > 6734);
-            Assert.AreEqual(4, shifts.Where(p => !p.Value.IsSmallShift).Count());
+            var shifts1 = Blockchain.Instance.GetShifts("MEYUySQDPzgbTuZSjGfPVikgHtDJZHL8WE");
+            Assert.IsTrue(shifts1.Count > 6734);
+            Assert.AreEqual(4, shifts1.Where(p => !p.Value.IsSmallShift).Count());
+
+            //var shifts2 = Blockchain.Instance.GetShifts("MHULbsPvAVCCbaYm9b5wBuJ79eQPXeGgbF");
+            //Assert.IsTrue(shifts2.Count > 0);
         }
 
     }

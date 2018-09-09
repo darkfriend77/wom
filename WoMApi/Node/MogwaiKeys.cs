@@ -3,7 +3,9 @@ using NBitcoin;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using WoMApi.Tool;
+using WoMInterface.Game.Interaction;
 using WoMInterface.Game.Model;
 
 namespace WoMApi.Node
@@ -27,6 +29,10 @@ namespace WoMApi.Node
         public bool HasMirrorAddress => mirrorPubKey != null;
 
         public Mogwai Mogwai { get; set; }
+
+        public decimal Balance { get; set; } = 0.0000m;
+
+        public Dictionary<double, Shift> Shifts { get; set; }
 
         public MogwaiKeys(ExtKey extkey, Network network)
         {
@@ -69,6 +75,25 @@ namespace WoMApi.Node
         /// <summary>
         /// 
         /// </summary>
+        public async void Update()
+        {
+            await Task.Run(() =>
+            {
+                Balance = Blockchain.Instance.GetBalance(Address);
+                if (HasMirrorAddress)
+                {
+                    Shifts = Blockchain.Instance.GetShifts(MirrorAddress);
+                    if (Shifts.Count > 0)
+                    {
+                        Mogwai = new Mogwai(Address, Shifts);
+                    }
+                }
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="unspentTxList"></param>
         /// <param name="unspentAmount"></param>
         /// <param name="toaddress"></param>
@@ -103,7 +128,7 @@ namespace WoMApi.Node
             tx.AddOutput(new TxOut
             {
                 ScriptPubKey = destination.ScriptPubKey,
-                Value = Money.Coins(burnMogs - txFee)
+                Value = Money.Coins(burnMogs)
             });
 
             // check if we need to add a change output
