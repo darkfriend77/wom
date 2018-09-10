@@ -50,15 +50,15 @@ namespace WoMApi.Node
         {
             await Task.Run(() =>
             {
-                int maxBlockCount = GetBlockCount();
+                int blockHeight = GetBlockCount();
                 var fromHeight = blockHashDict.Keys.Count > 0 ? blockHashDict.Keys.Max() : 0;
                 int bulkSize = 500;
                 List<BlockhashPair> list;
                 int count = 0;
-                for (int i = fromHeight; i < maxBlockCount; i++)
+                for (int i = fromHeight; i <= blockHeight; i++)
                 {
                     count++;
-                    if (count % bulkSize == 0 || i == maxBlockCount - 1)
+                    if (count % bulkSize == 0 || i == blockHeight)
                     {
                         var currentMax = blockHashDict.Keys.Count > 0 ? blockHashDict.Keys.Max() : 0;
                         list = GetBlockHashes(currentMax, count);
@@ -66,7 +66,7 @@ namespace WoMApi.Node
                         _log.Debug($"cached from {fromHeight} {count} blockhashes...");
                         count = 0;
                     }
-                    progress.Report((float)(i + 1) / maxBlockCount);
+                    progress.Report((float)(i + 1) / blockHeight);
                 }
                 Caching.Persist(blockhashesFile, blockHashDict);
                 _log.Debug($"persisted all blocks!");
@@ -174,6 +174,10 @@ namespace WoMApi.Node
             var request = new RestRequest("listmirrtransactions/{address}", Method.GET);
             request.AddUrlSegment("address", address);
             IRestResponse<List<TxDetail>> blockResponse = client.Execute<List<TxDetail>>(request);
+            if (blockResponse.Data == null)
+            {
+                _log.Debug($"ListMirrorTransactions {address} {blockResponse.Content}");
+            }
             return blockResponse.Data;
         }
 

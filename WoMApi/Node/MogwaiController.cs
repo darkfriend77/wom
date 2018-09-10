@@ -23,16 +23,18 @@ namespace WoMApi.Node
 
         public Dictionary<string, MogwaiKeys> MogwaiKeysDict => Wallet.MogwaiKeyDict;
 
-        private int selectedIndex = 0;
-        public MogwaiKeys SelectedMogwayKeys
+        public List<MogwaiKeys> TaggedMogwaiKeys { get; set; }
+
+        private int currentMogwayKeys = 0;
+        public MogwaiKeys CurrentMogwayKeys
         {
             get
             {
-                if (Wallet.MogwaiKeyDict.Count > selectedIndex)
+                if (Wallet.MogwaiKeyDict.Count > currentMogwayKeys)
                 {
                     return null;
                 }
-                return Wallet.MogwaiKeyDict.Values.ToList()[selectedIndex];
+                return Wallet.MogwaiKeyDict.Values.ToList()[currentMogwayKeys];
             }
         }
 
@@ -45,6 +47,7 @@ namespace WoMApi.Node
         public MogwaiController()
         {
             Wallet = new MogwaiWallet();
+            TaggedMogwaiKeys = new List<MogwaiKeys>();
         }
 
         public void Refresh(int minutes)
@@ -69,6 +72,42 @@ namespace WoMApi.Node
             foreach (var mogwaiKey in Wallet.MogwaiKeyDict.Values)
             {
                 mogwaiKey.Update();
+            }
+        }
+
+        public bool Next(out MogwaiKeys mogwayKeys)
+        {
+            mogwayKeys = null;
+            if (currentMogwayKeys + 1 > Wallet.MogwaiKeyDict.Count)
+            {
+                return false;
+            }
+            currentMogwayKeys++;
+            mogwayKeys = CurrentMogwayKeys;
+            return true;
+        }
+
+        public bool Previous(out MogwaiKeys mogwayKeys)
+        {
+            mogwayKeys = null;
+            if (currentMogwayKeys == 0)
+            {
+                return false;
+            }
+            currentMogwayKeys--;
+            mogwayKeys = CurrentMogwayKeys;
+            return true;
+        }
+
+        public void Tag()
+        {
+            if (TaggedMogwaiKeys.Contains(CurrentMogwayKeys))
+            {
+                TaggedMogwaiKeys.Remove(CurrentMogwayKeys);
+            }
+            else
+            {
+                TaggedMogwaiKeys.Add(CurrentMogwayKeys);
             }
         }
 
@@ -97,7 +136,7 @@ namespace WoMApi.Node
             {
                 return;
             }
-            Caching.Persist("mogwaikeys.txt", new { Wallet.Deposit.Address  , Wallet.MogwaiKeyDict.Keys });
+            Caching.Persist("mogwaikeys.txt", new { Wallet.Deposit.Address, Wallet.MogwaiKeyDict.Keys });
         }
 
         public void NewMogwaiKeys()

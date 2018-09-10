@@ -199,6 +199,11 @@ namespace SadMogwai.Consoles
                 LogInConsole("TASK", "prinited mogwaikeys into a file.");
                 return true;
             }
+            else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.T))
+            {
+                controller.Tag();
+                return true;
+            }
             else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Down))
             {
                 if (pointer < controller.MogwaiKeysDict.Count() - 1)
@@ -277,15 +282,16 @@ namespace SadMogwai.Consoles
                     var list = MogwaiKeysList;
                     for (int i = 0; i < list.Count; i++)
                     {
-                        PrintRow(i + headerPosition + 1, list[i]);
+                        var mogwaiKeys = list[i];
+                        PrintRow(i + headerPosition + 1, mogwaiKeys, i == pointer, controller.TaggedMogwaiKeys.Contains(mogwaiKeys));
                     }
-                    PrintRow(pointer + headerPosition + 1, list[pointer], true);
+                    //PrintRow(pointer + headerPosition + 1, list[pointer], true);
                 }
             }
             base.Update(delta);
         }
 
-        private void PrintRow(int index, MogwaiKeys mogwaiKeys, bool selected = false)
+        private void PrintRow(int index, MogwaiKeys mogwaiKeys, bool selected = false, bool tagged = false)
         {
             int aPos = 4;
             int sPos = 41;
@@ -302,7 +308,7 @@ namespace SadMogwai.Consoles
             var levlStr = mogwai != null ? mogwai.CurrentLevel.ToString("##0").PadRight(5) : "".PadRight(5, '.');
             var goldStr = mogwai != null ? mogwai.Wealth.Gold.ToString("#####0.00").PadRight(10) : "".PadRight(10, '.');
 
-
+            Print(0, index, !tagged ? " " : "*", !tagged ? Color.Black : Color.SteelBlue);
             Print(1, index, !selected ? "  " : "=>", !selected ? Color.Black : Color.SpringGreen);
 
             Color standard = GetColorStandard(mogwaiKeys.MogwaiKeysState, selected);
