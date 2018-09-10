@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WoMInterface.Game.Interaction;
-using WoMInterface.Game.Model;
-using WoMInterface.Game.Random;
-using WoMInterface.Tool;
+using WoMFramework.Game.Interaction;
+using WoMFramework.Game.Model;
+using WoMFramework.Game.Random;
+using WoMFramework.Tool;
 
-namespace WoMInterface.Game.Combat
+namespace WoMFramework.Game.Combat
 {
     public class SimpleCombat
     {

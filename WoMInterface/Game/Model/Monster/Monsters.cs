@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WoMInterface.Game.Enums;
-using WoMInterface.Game.Random;
+using WoMFramework.Game.Enums;
+using WoMFramework.Game.Random;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     public partial class Monsters
     {

@@ -132,13 +132,13 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WoMApi\WoMApi.csproj">
+    <ProjectReference Include="..\WoMApi\WoMWallet.csproj">
       <Project>{36c4bd2e-8d80-4f3b-aa1c-b88de260b83e}</Project>
-      <Name>WoMApi</Name>
+      <Name>WoMWallet</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WoMInterface\WoMInterface.csproj">
+    <ProjectReference Include="..\WoMInterface\WoMFramework.csproj">
       <Project>{1D70A22E-64EC-45DB-BCC3-C1F054BC9ECA}</Project>
-      <Name>WoMInterface</Name>
+      <Name>WoMFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

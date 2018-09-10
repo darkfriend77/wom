@@ -1,4 +1,4 @@
-﻿namespace WoMInterface.Game.Model
+﻿namespace WoMFramework.Game.Model
 {
     public class Wealth
     {

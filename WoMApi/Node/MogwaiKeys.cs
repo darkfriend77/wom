@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
-using WoMApi.Tool;
-using WoMInterface.Game.Interaction;
-using WoMInterface.Game.Model;
+using WoMWallet.Tool;
+using WoMFramework.Game.Interaction;
+using WoMFramework.Game.Model;
 
-namespace WoMApi.Node
+namespace WoMWallet.Node
 {
     public enum MogwaiKeysState
     {

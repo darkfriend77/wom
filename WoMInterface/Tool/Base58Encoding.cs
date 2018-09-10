@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics.Contracts;
 
-namespace WoMInterface.Tool
+namespace WoMFramework.Tool
 {
     public static class Base58Encoding
     {

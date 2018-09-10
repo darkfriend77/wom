@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     /// <summary>
     /// Represents the basic square tile.

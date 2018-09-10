@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     public abstract class Wall
     {

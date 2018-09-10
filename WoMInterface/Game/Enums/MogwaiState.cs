@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WoMInterface.Game.Enums
+namespace WoMFramework.Game.Enums
 {
     public enum MogwaiState
     {

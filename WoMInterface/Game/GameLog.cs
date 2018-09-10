@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WoMInterface.Tool
+namespace WoMFramework.Game
 {
     public class GameLog
     {

@@ -5,9 +5,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1D70A22E-64EC-45DB-BCC3-C1F054BC9ECA}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>WoMInterface</RootNamespace>
-    <AssemblyName>WoMInterface</AssemblyName>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WoMFramework</RootNamespace>
+    <AssemblyName>WoMFramework</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -62,8 +62,9 @@
   <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BitcoinLib, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -165,25 +166,16 @@
     <Compile Include="Game\Interaction\Shift.cs" />
     <Compile Include="Game\Model\Stats.cs" />
     <Compile Include="Game\Model\Equipment\Weapon.cs" />
-    <Compile Include="Programm.cs" />
-    <Compile Include="Tool\CachingService.cs" />
     <Compile Include="Tool\ArrayHelpers.cs" />
     <Compile Include="Tool\Base58Encoding.cs" />
-    <Compile Include="Node\Blockchain.cs" />
     <Compile Include="Game\Model\Mogwai\Mogwai.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tool\GameLog.cs" />
+    <Compile Include="Game\GameLog.cs" />
     <Compile Include="Tool\HexHashUtil.cs" />
-    <Compile Include="Tool\NameGen.cs" />
-    <Compile Include="Tool\ProgressBar.cs" />
-    <Compile Include="Tool\StringHelpers.cs" />
-    <Compile Include="Tool\Test.cs" />
+    <Compile Include="Game\Random\NameGen.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="mogwai.conf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>

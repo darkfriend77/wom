@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using WoMInterface.Game.Model;
+using WoMFramework.Game.Model;
+using WoMFramework.Tool;
 
-namespace WoMInterface.Tool
+namespace WoMFramework.Game.Random
 {
     public class NameGen
     {

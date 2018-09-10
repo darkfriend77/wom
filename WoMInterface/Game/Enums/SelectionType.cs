@@ -1,4 +1,4 @@
-﻿namespace WoMInterface.Game.Enums
+﻿namespace WoMFramework.Game.Enums
 {
     public enum SelectionType
     {

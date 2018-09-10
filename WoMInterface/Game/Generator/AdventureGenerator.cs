@@ -1,11 +1,11 @@
 ﻿using System;
-using WoMInterface.Game.Interaction;
-using WoMInterface.Game.Model;
-using WoMInterface.Game.Random;
-using WoMInterface.Game.Combat;
+using WoMFramework.Game.Interaction;
+using WoMFramework.Game.Model;
+using WoMFramework.Game.Random;
+using WoMFramework.Game.Combat;
 using System.Collections.Generic;
 
-namespace WoMInterface.Game.Generator
+namespace WoMFramework.Game.Generator
 {
     public class AdventureGenerator
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WoMApi
+namespace WoMWallet
 {
     public class Tx
     {

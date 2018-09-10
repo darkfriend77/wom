@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using WoMInterface.Game.Generator;
-using WoMInterface.Game.Enums;
-using WoMInterface.Game.Interaction;
-using WoMInterface.Tool;
-using WoMInterface.Game.Random;
+using WoMFramework.Game.Generator;
+using WoMFramework.Game.Enums;
+using WoMFramework.Game.Interaction;
+using WoMFramework.Tool;
+using WoMFramework.Game.Random;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     public class Mogwai : Entity
     {

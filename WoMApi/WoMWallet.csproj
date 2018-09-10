@@ -5,10 +5,10 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{36C4BD2E-8D80-4F3B-AA1C-B88DE260B83E}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WoMApi</RootNamespace>
-    <AssemblyName>WoMApi</AssemblyName>
+    <RootNamespace>WoMWallet</RootNamespace>
+    <AssemblyName>WoMWallet</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -108,13 +108,11 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WoMInterface\WoMInterface.csproj">
+    <ProjectReference Include="..\WoMInterface\WoMFramework.csproj">
       <Project>{1d70a22e-64ec-45db-bcc3-c1f054bc9eca}</Project>
-      <Name>WoMInterface</Name>
+      <Name>WoMFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

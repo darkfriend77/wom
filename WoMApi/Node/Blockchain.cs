@@ -8,11 +8,11 @@ using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using WoMApi.Tool;
-using WoMInterface.Game.Interaction;
-using WoMInterface.Tool;
+using WoMWallet.Tool;
+using WoMFramework.Game.Interaction;
+using WoMFramework.Tool;
 
-namespace WoMApi.Node
+namespace WoMWallet.Node
 {
     public class Blockchain
     {

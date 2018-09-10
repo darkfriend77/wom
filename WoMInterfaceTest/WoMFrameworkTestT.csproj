@@ -7,8 +7,8 @@
     <ProjectGuid>{449E9E71-A357-44C1-8616-115F326E5919}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WoMInterfaceTest</RootNamespace>
-    <AssemblyName>WoMInterfaceTest</AssemblyName>
+    <RootNamespace>WoMFramework</RootNamespace>
+    <AssemblyName>WoMFramework</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -59,7 +59,6 @@
     <Compile Include="Game\CombatTest.cs" />
     <Compile Include="Game\InteractionTest.cs" />
     <Compile Include="Game\ClassesTest.cs" />
-    <Compile Include="Node\BlockchainTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -75,16 +74,16 @@
     <None Include="Resources\mogwai.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WoMInterface\WoMInterface.csproj">
-      <Project>{1D70A22E-64EC-45DB-BCC3-C1F054BC9ECA}</Project>
-      <Name>WoMInterface</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WoMInterface\WoMFramework.csproj">
+      <Project>{1d70a22e-64ec-45db-bcc3-c1f054bc9eca}</Project>
+      <Name>WoMFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

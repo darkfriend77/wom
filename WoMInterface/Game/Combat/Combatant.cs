@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using WoMInterface.Game.Model;
-using WoMInterface.Game.Random;
+using WoMFramework.Game.Model;
+using WoMFramework.Game.Random;
 
-namespace WoMInterface.Game.Combat
+namespace WoMFramework.Game.Combat
 {
     public class Combatant
     {

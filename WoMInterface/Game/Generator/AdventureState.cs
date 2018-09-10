@@ -1,4 +1,4 @@
-﻿namespace WoMInterface.Game.Generator
+﻿namespace WoMFramework.Game.Generator
 {
     public enum AdventureState
     {

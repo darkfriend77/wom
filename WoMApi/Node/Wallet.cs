@@ -10,9 +10,9 @@ using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
-using WoMApi.Tool;
+using WoMWallet.Tool;
 
-namespace WoMApi.Node
+namespace WoMWallet.Node
 {
     public class WalletFile
     {

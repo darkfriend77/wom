@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WoMInterface.Game.Enums;
-using WoMInterface.Game.Interaction;
-using WoMInterface.Tool;
+using WoMFramework.Game.Enums;
+using WoMFramework.Game.Interaction;
+using WoMFramework.Tool;
 
-namespace WoMInterface.Game.Random
+namespace WoMFramework.Game.Random
 {
     public class Dice
     {

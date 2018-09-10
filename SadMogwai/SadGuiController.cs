@@ -1,4 +1,4 @@
-﻿using WoMApi.Node;
+﻿using WoMWallet.Node;
 
 namespace SadMogwai
 {

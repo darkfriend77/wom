@@ -5,13 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WoMInterface.Game.Enums;
-using WoMInterface.Game.Interaction;
-using WoMInterface.Game.Model;
-using WoMInterface.Node;
+using WoMFramework.Game.Enums;
+using WoMFramework.Game.Interaction;
+using WoMFramework.Game.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using WoMInterface.Tool;
+using WoMFramework.Tool;
 
 namespace WoMInterfaceTest.Game
 {
@@ -23,7 +22,7 @@ namespace WoMInterfaceTest.Game
 
         static DungeonTest()
         {
-            var json = Encoding.UTF8.GetString(Properties.Resources.mogwai);
+            var json = Encoding.UTF8.GetString(WoMFramework.Properties.Resources.mogwai);
 
             TestShifts = JsonConvert.DeserializeObject<Dictionary<double, Shift>>(json);
             TestMog = new Mogwai("MJHYMxu2kyR1Bi4pYwktbeCM7yjZyVxt2i", TestShifts);

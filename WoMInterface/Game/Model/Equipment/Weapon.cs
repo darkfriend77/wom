@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using WoMInterface.Game.Enums;
+using WoMFramework.Game.Enums;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     public sealed class WeaponBuilder
     {

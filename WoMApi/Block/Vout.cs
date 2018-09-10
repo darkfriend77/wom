@@ -1,4 +1,4 @@
-﻿namespace WoMApi
+﻿namespace WoMWallet
 {
     public class Vout
     {

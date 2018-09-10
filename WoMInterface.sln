@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMInterface", "WoMInterface\WoMInterface.csproj", "{1D70A22E-64EC-45DB-BCC3-C1F054BC9ECA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMInterfaceTest", "WoMInterfaceTest\WoMInterfaceTest.csproj", "{449E9E71-A357-44C1-8616-115F326E5919}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMFramework", "WoMInterface\WoMFramework.csproj", "{1D70A22E-64EC-45DB-BCC3-C1F054BC9ECA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{FB4BE966-ECF6-4923-A0ED-3CB98DAF3591}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,9 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{FB4BE9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SadMogwai", "SadMogwai\SadMogwai.csproj", "{EDA28C2D-D43A-4CEF-A341-5687A97EE63C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMApi", "WoMApi\WoMApi.csproj", "{36C4BD2E-8D80-4F3B-AA1C-B88DE260B83E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMApiTest", "WoMApiTest\WoMApiTest.csproj", "{2FDAD287-3D97-4F63-8DDB-4BCBE4F5FEF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMWallet", "WoMApi\WoMWallet.csproj", "{36C4BD2E-8D80-4F3B-AA1C-B88DE260B83E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DearMogwai", "client\DearMogwai\DearMogwai.csproj", "{C9047714-342D-435B-BA74-E8C6AAEDB756}"
 EndProject
@@ -38,6 +34,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "veldrid", "veldrid", "{D9EE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DearMogwai.API", "client\DearMogwai.API\DearMogwai.API.csproj", "{7DCA87CF-28F2-4E45-B6A4-E4DC29A7796D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMWalletTest", "WoMWalletTest\WoMWalletTest.csproj", "{771FECB7-A6CA-4FA5-923A-4FC111FAFB9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoMFrameworkTest", "WoMFrameworkTest\WoMFrameworkTest.csproj", "{C9C06EC6-0CC5-4737-9538-1353F242FF78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,10 +48,6 @@ Global
 		{1D70A22E-64EC-45DB-BCC3-C1F054BC9ECA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D70A22E-64EC-45DB-BCC3-C1F054BC9ECA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D70A22E-64EC-45DB-BCC3-C1F054BC9ECA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{449E9E71-A357-44C1-8616-115F326E5919}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{449E9E71-A357-44C1-8616-115F326E5919}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{449E9E71-A357-44C1-8616-115F326E5919}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{449E9E71-A357-44C1-8616-115F326E5919}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EDA28C2D-D43A-4CEF-A341-5687A97EE63C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EDA28C2D-D43A-4CEF-A341-5687A97EE63C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDA28C2D-D43A-4CEF-A341-5687A97EE63C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -60,10 +56,6 @@ Global
 		{36C4BD2E-8D80-4F3B-AA1C-B88DE260B83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36C4BD2E-8D80-4F3B-AA1C-B88DE260B83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36C4BD2E-8D80-4F3B-AA1C-B88DE260B83E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2FDAD287-3D97-4F63-8DDB-4BCBE4F5FEF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2FDAD287-3D97-4F63-8DDB-4BCBE4F5FEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2FDAD287-3D97-4F63-8DDB-4BCBE4F5FEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2FDAD287-3D97-4F63-8DDB-4BCBE4F5FEF3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C9047714-342D-435B-BA74-E8C6AAEDB756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C9047714-342D-435B-BA74-E8C6AAEDB756}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9047714-342D-435B-BA74-E8C6AAEDB756}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -88,6 +80,14 @@ Global
 		{7DCA87CF-28F2-4E45-B6A4-E4DC29A7796D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DCA87CF-28F2-4E45-B6A4-E4DC29A7796D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DCA87CF-28F2-4E45-B6A4-E4DC29A7796D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{771FECB7-A6CA-4FA5-923A-4FC111FAFB9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{771FECB7-A6CA-4FA5-923A-4FC111FAFB9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{771FECB7-A6CA-4FA5-923A-4FC111FAFB9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{771FECB7-A6CA-4FA5-923A-4FC111FAFB9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9C06EC6-0CC5-4737-9538-1353F242FF78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9C06EC6-0CC5-4737-9538-1353F242FF78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9C06EC6-0CC5-4737-9538-1353F242FF78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9C06EC6-0CC5-4737-9538-1353F242FF78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

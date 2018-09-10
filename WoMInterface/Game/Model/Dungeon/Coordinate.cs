@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using static System.Math;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     public enum Direction
     {

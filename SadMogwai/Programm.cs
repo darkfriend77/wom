@@ -8,7 +8,7 @@ using SadMogwai.Art;
 using NAudio.Wave;
 using System.Threading;
 using SadMogwai.Dialogs;
-using WoMApi.Node;
+using WoMWallet.Node;
 using System.Reflection;
 using log4net;
 using log4net.Config;

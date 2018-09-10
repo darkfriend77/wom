@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WoMInterface.Game.Interaction;
-using WoMInterface.Tool;
+using WoMFramework.Game.Interaction;
+using WoMFramework.Tool;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     public class Experience
     {

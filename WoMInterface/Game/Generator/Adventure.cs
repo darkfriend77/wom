@@ -1,7 +1,7 @@
-﻿using WoMInterface.Game.Interaction;
-using WoMInterface.Game.Model;
+﻿using WoMFramework.Game.Interaction;
+using WoMFramework.Game.Model;
 
-namespace WoMInterface.Game.Generator
+namespace WoMFramework.Game.Generator
 {
     public abstract class Adventure
     {

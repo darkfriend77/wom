@@ -3,7 +3,7 @@ using SadConsole;
 using SadConsole.Controls;
 using System;
 using System.Threading.Tasks;
-using WoMApi.Node;
+using WoMWallet.Node;
 
 namespace SadMogwai
 {

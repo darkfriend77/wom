@@ -1,10 +1,10 @@
 ﻿using log4net;
 using System;
 using System.Reflection;
-using WoMInterface.Game.Enums;
-using WoMInterface.Tool;
+using WoMFramework.Game.Enums;
+using WoMFramework.Tool;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     public sealed class AttributBuilder
     {

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
-using WoMApi.Node;
+using WoMWallet.Node;
 using NBitcoin;
 using log4net.Config;
 using System.Linq;
 using log4net;
 using System.Reflection;
 
-namespace WoMApi
+namespace WoMWallet
 {
     class Program
     {

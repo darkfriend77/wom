@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WoMInterface.Game.Enums;
-using WoMInterface.Game.Random;
-using WoMInterface.Tool;
+using WoMFramework.Game.Enums;
+using WoMFramework.Game.Random;
+using WoMFramework.Tool;
 using Newtonsoft.Json;
 
-namespace WoMInterface.Game.Interaction
+namespace WoMFramework.Game.Interaction
 {
 
     public class Shift

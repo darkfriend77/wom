@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
-using WoMApi.Tool;
+using WoMWallet.Tool;
 
-namespace WoMApi.Node
+namespace WoMWallet.Node
 {
     public class MogwaiController
     {

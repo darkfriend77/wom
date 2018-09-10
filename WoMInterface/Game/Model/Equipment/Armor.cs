@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WoMInterface.Game.Enums;
+using WoMFramework.Game.Enums;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     public sealed class ArmorBuilder
     {

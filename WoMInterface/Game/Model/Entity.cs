@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WoMInterface.Game.Enums;
-using WoMInterface.Game.Random;
-using WoMInterface.Tool;
+using WoMFramework.Game.Enums;
+using WoMFramework.Game.Random;
+using WoMFramework.Tool;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     public abstract class Entity
     {

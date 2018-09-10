@@ -1,8 +1,8 @@
-﻿using WoMInterface.Game.Generator;
-using WoMInterface.Game.Interaction;
-using WoMInterface.Game.Random;
+﻿using WoMFramework.Game.Generator;
+using WoMFramework.Game.Interaction;
+using WoMFramework.Game.Random;
 
-namespace WoMInterface.Game.Model
+namespace WoMFramework.Game.Model
 {
     public class Dungeon : Adventure
     {

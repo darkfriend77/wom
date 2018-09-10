@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Diagnostics.Contracts;
 
-namespace WoMInterface.Tool
+namespace WoMFramework.Tool
 {
     public class ArrayHelpers
     {
