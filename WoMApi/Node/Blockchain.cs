@@ -189,24 +189,24 @@ namespace WoMWallet.Node
 
         public bool BurnMogs(MogwaiKeys mogwaiKey, decimal burnMogs, decimal txFee)
         {
-            return SendMogs(mogwaiKey, mogwaiKey.MirrorAddress, burnMogs, txFee);
+            return SendMogs(mogwaiKey, new string[] { mogwaiKey.MirrorAddress }, burnMogs, txFee);
         }
 
-        public bool SendMogs(MogwaiKeys mogwaiKey, string toaddress, decimal burnMogs, decimal txFee)
+        public bool SendMogs(MogwaiKeys mogwaiKey, string[] toAddresses, decimal amount, decimal txFee)
         {
-            _log.Debug($"send mogs {mogwaiKey.Address}, {toaddress} for {burnMogs} with {txFee}.");
+            _log.Debug($"send mogs {mogwaiKey.Address}, [{string.Join(",", toAddresses)}] for {amount} with {txFee}.");
 
-            var unspentTxList = GetUnspent(6, 9999999, mogwaiKey.Address);
+            var unspentTxList = GetUnspent(0, 9999999, mogwaiKey.Address);
             var unspentAmount = unspentTxList.Sum(p => p.Amount);
 
-            if (unspentAmount < (burnMogs + txFee))
+            if (unspentAmount < ((amount * toAddresses.Length) + txFee))
             {
-                _log.Debug($"Address hasn't enough funds {unspentAmount} to burn that amount of mogs {(burnMogs + txFee)}!");
+                _log.Debug($"Address hasn't enough funds {unspentAmount} to burn that amount of mogs {((amount * toAddresses.Length) + txFee)}!");
                 return false;
             }
 
             // create transaction
-            Transaction tx = mogwaiKey.CreateTransaction(unspentTxList, unspentAmount, toaddress, burnMogs, txFee);
+            Transaction tx = mogwaiKey.CreateTransaction(unspentTxList, unspentAmount, toAddresses, amount, txFee);
 
             _log.Info($"signedRawTx: {tx.ToHex()}");
 

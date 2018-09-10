@@ -121,16 +121,17 @@ namespace WoMWallet.Node
             });
         }
 
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="unspentTxList"></param>
         /// <param name="unspentAmount"></param>
-        /// <param name="toaddress"></param>
-        /// <param name="burnMogs"></param>
+        /// <param name="toAddresses"></param>
+        /// <param name="amount"></param>
         /// <param name="txFee"></param>
         /// <returns></returns>
-        public Transaction CreateTransaction(List<UnspentTx> unspentTxList, decimal unspentAmount, string toaddress, decimal burnMogs, decimal txFee)
+        public Transaction CreateTransaction(List<UnspentTx> unspentTxList, decimal unspentAmount, string[] toAddresses, decimal amount, decimal txFee)
         {
             // creating a new transaction
             Transaction tx = Transaction.Create(network);
@@ -146,28 +147,23 @@ namespace WoMWallet.Node
                 });
             });
 
-            //tx.AddInput(new TxIn
-            //{
-            //    PrevOut = new OutPoint(new uint256("953d21861f7d5237563f643df71038d25b9871552eec279dc531d72a3da95362"), 1),
-            //    ScriptSig = pubKey.GetAddress(network).ScriptPubKey
-            //});
-
-            var destination = BitcoinAddress.Create(toaddress, network);
-
-            // adding output
-            tx.AddOutput(new TxOut
+            foreach (var address in toAddresses)
             {
-                ScriptPubKey = destination.ScriptPubKey,
-                Value = Money.Coins(burnMogs)
-            });
+                // adding output
+                tx.AddOutput(new TxOut
+                {
+                    ScriptPubKey = BitcoinAddress.Create(address, network).ScriptPubKey,
+                    Value = Money.Coins(amount)
+                });
+            }
 
             // check if we need to add a change output
-            if ((unspentAmount - burnMogs) > txFee)
+            if ((unspentAmount - (amount * toAddresses.Length)) > txFee)
             {
                 tx.AddOutput(new TxOut
                 {
                     ScriptPubKey = pubKey.GetAddress(network).ScriptPubKey,
-                    Value = Money.Coins(unspentAmount - burnMogs - txFee)
+                    Value = Money.Coins(unspentAmount - (amount * toAddresses.Length) - txFee)
                 });
             }
 

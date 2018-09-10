@@ -102,6 +102,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tool\Caching.cs" />
+    <Compile Include="Tool\DateUtil.cs" />
     <Compile Include="Tool\HexUtil.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -23,18 +23,21 @@ namespace WoMWallet.Node
 
         public Dictionary<string, MogwaiKeys> MogwaiKeysDict => Wallet.MogwaiKeyDict;
 
+        public List<MogwaiKeys> MogwaiKeysList => Wallet.MogwaiKeyDict.Values.ToList();
+
         public List<MogwaiKeys> TaggedMogwaiKeys { get; set; }
 
-        private int currentMogwayKeys = 0;
+        public int CurrentMogwayKeysIndex { get; set; }
+
         public MogwaiKeys CurrentMogwayKeys
         {
             get
             {
-                if (Wallet.MogwaiKeyDict.Count > currentMogwayKeys)
+                if (Wallet.MogwaiKeyDict.Count > CurrentMogwayKeysIndex)
                 {
-                    return null;
+                    return MogwaiKeysList[CurrentMogwayKeysIndex];
                 }
-                return Wallet.MogwaiKeyDict.Values.ToList()[currentMogwayKeys];
+                return null;
             }
         }
 
@@ -48,6 +51,7 @@ namespace WoMWallet.Node
         {
             Wallet = new MogwaiWallet();
             TaggedMogwaiKeys = new List<MogwaiKeys>();
+            CurrentMogwayKeysIndex = 0;
         }
 
         public void Refresh(int minutes)
@@ -75,28 +79,20 @@ namespace WoMWallet.Node
             }
         }
 
-        public bool Next(out MogwaiKeys mogwayKeys)
+        public void Next()
         {
-            mogwayKeys = null;
-            if (currentMogwayKeys + 1 > Wallet.MogwaiKeyDict.Count)
+            if (CurrentMogwayKeysIndex + 1 < Wallet.MogwaiKeyDict.Count)
             {
-                return false;
+                CurrentMogwayKeysIndex++;
             }
-            currentMogwayKeys++;
-            mogwayKeys = CurrentMogwayKeys;
-            return true;
         }
 
-        public bool Previous(out MogwaiKeys mogwayKeys)
+        public void Previous()
         {
-            mogwayKeys = null;
-            if (currentMogwayKeys == 0)
+            if (CurrentMogwayKeysIndex > 0)
             {
-                return false;
+                CurrentMogwayKeysIndex--;
             }
-            currentMogwayKeys--;
-            mogwayKeys = CurrentMogwayKeys;
-            return true;
         }
 
         public void Tag()
@@ -109,6 +105,11 @@ namespace WoMWallet.Node
             {
                 TaggedMogwaiKeys.Add(CurrentMogwayKeys);
             }
+        }
+
+        public void ClearTag()
+        {
+            TaggedMogwaiKeys.Clear();
         }
 
         public void CreateWallet(string password)
@@ -148,35 +149,36 @@ namespace WoMWallet.Node
             Wallet.GetNewMogwaiKey(out MogwaiKeys mogwaiKeys);
         }
 
-        public bool SendMog(MogwaiKeys mogwaiKeys)
+        public bool SendMog()
         {
             if (!IsWalletUnlocked)
             {
                 return false;
             }
 
-            if (!Blockchain.Instance.SendMogs(Wallet.Deposit, mogwaiKeys.Address, 5m, 0.0001m))
+            var mogwaiKeysList = TaggedMogwaiKeys.Count > 0 ? TaggedMogwaiKeys : new List<MogwaiKeys> { CurrentMogwayKeys };
+            if (!Blockchain.Instance.SendMogs(Wallet.Deposit, mogwaiKeysList.Select(p => p.Address).ToArray(), 5m, 0.0001m))
             {
                 return false;
             };
 
-            mogwaiKeys.MogwaiKeysState = MogwaiKeysState.WAIT;
+            mogwaiKeysList.ForEach(p => p.MogwaiKeysState = MogwaiKeysState.WAIT);
             return true;
         }
 
-        public bool BindMogwai(MogwaiKeys mogwaiKeys)
+        public bool BindMogwai()
         {
             if (!IsWalletUnlocked)
             {
                 return false;
             }
 
-            if (!Blockchain.Instance.BindMogwai(mogwaiKeys))
+            if (!Blockchain.Instance.BindMogwai(CurrentMogwayKeys))
             {
                 return false;
             };
 
-            mogwaiKeys.MogwaiKeysState = MogwaiKeysState.CREATE;
+            CurrentMogwayKeys.MogwaiKeysState = MogwaiKeysState.CREATE;
             return true;
         }
     }

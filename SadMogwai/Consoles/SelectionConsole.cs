@@ -8,24 +8,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WoMWallet.Node;
+using WoMWallet.Tool;
 
 namespace SadMogwai.Consoles
 {
     public class SelectionScreen : SadConsole.Console
     {
-        private int oldPointer, pointer;
-
-        private Color rowNormal = Color.DarkCyan;
-
-        private Color highNormal = Color.Cyan;
-
         private Basic borderSurface;
 
         private int glyphIndex = 185;
 
         private MogwaiController controller;
-
-        private List<MogwaiKeys> MogwaiKeysList => controller.MogwaiKeysDict.Values.ToList();
 
         private ControlsConsole controlsConsole;
         private MogwaiConsole infoConsole;
@@ -37,6 +30,9 @@ namespace SadMogwai.Consoles
         public bool IsReady { get; set; } = false;
 
         public SadGuiState State {get;set;}
+
+        public int windowOffset = 0;
+        public int maxRows = 21;
 
         public SelectionScreen(MogwaiController mogwaiController, int width, int height) : base(width, height)
         {
@@ -66,9 +62,6 @@ namespace SadMogwai.Consoles
             CreateTrailer();
 
             controller = mogwaiController;
-            pointer = 0;
-            oldPointer = 0;
-
         }
 
         public void Init()
@@ -78,6 +71,26 @@ namespace SadMogwai.Consoles
             Print(74, 0, $"[c:g f:LimeGreen:Orange:34]{controller.DepositAddress}");
             controller.Refresh(1);
             State = SadGuiState.SELECTION;
+
+            infoConsole.Cursor.NewLine();
+            infoConsole.Cursor.Print(new ColoredString(".:|Keyboard Commands|:.", Color.White, Color.Black));
+            infoConsole.Cursor.NewLine();
+            infoConsole.Cursor.NewLine();
+            InfoPrint(".C.", "create mogwai key");
+            InfoPrint(".S.", "send 5 mog to addr");
+            InfoPrint(".B.", "bind mogwai 1 mog");
+            InfoPrint(".P.", "play mogwai");
+            InfoPrint(".S.", "show mogwai");
+            InfoPrint(".L.", "log pub keys file");
+            InfoPrint(".T.", "tag for send multi");
+        }
+
+        private void InfoPrint(string key, string descritpion)
+        {
+            infoConsole.Cursor.Print(new ColoredString(key, Color.Orange, Color.Black));
+            infoConsole.Cursor.Print(new ColoredString(">>", Color.Lime, Color.Black));
+            infoConsole.Cursor.Print(new ColoredString(descritpion, Color.DeepSkyBlue, Color.Black));
+            infoConsole.Cursor.NewLine();
         }
 
         private void CreateHeader()
@@ -148,9 +161,9 @@ namespace SadMogwai.Consoles
                 case "send":
                     if (controller.HasMogwayKeys)
                     {
-                        if (controller.SendMog(MogwaiKeysList[pointer]))
+                        if (controller.SendMog())
                         {
-                            LogInConsole("DONE", $"sending mogs to address {MogwaiKeysList[pointer].Address}.");
+                            LogInConsole("DONE", $"sending mogs to address {controller.CurrentMogwayKeys.Address}.");
                         }
                         else
                         {
@@ -161,9 +174,9 @@ namespace SadMogwai.Consoles
                 case "bind":
                     if (controller.HasMogwayKeys)
                     {
-                        if (controller.BindMogwai(MogwaiKeysList[pointer]))
+                        if (controller.BindMogwai())
                         {
-                            LogInConsole("DONE", $"binding mogwai on address {MogwaiKeysList[pointer].Address}.");
+                            LogInConsole("DONE", $"binding mogwai on address {controller.CurrentMogwayKeys.Address}.");
                         }
                         else
                         {
@@ -179,6 +192,9 @@ namespace SadMogwai.Consoles
                 default:
                     break;
             }
+
+            // clear all taggs after actions
+            controller.ClearTag();
         }
 
         public override bool ProcessKeyboard(Keyboard state)
@@ -220,20 +236,12 @@ namespace SadMogwai.Consoles
             }
             else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Down))
             {
-                if (pointer < controller.MogwaiKeysDict.Count() - 1)
-                {
-                    oldPointer = pointer;
-                    pointer++;
-                }
+                controller.Next();
                 return true;
             }
             else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Up))
             {
-                if (pointer > 0)
-                {
-                    oldPointer = pointer;
-                    pointer--;
-                }
+                controller.Previous();
                 return true;
             }
             else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Right))
@@ -251,7 +259,6 @@ namespace SadMogwai.Consoles
 
             return false;
         }
-
 
         public void LogInConsole(string type, string msg)
         {
@@ -278,26 +285,35 @@ namespace SadMogwai.Consoles
                 var lastBlock = controller.WalletLastBlock;
                 if (lastBlock != null)
                 {
-                    Print(1, 0, controller.WalletLastBlock.Height.ToString("#######0").PadLeft(8) + " Block", Color.Gainsboro);
-                    DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                    var currentTime = epoch.AddSeconds(controller.WalletLastBlock.Time);
-                    var localTime = currentTime.ToLocalTime();
-                    TimeSpan t = DateTime.Now.Subtract(localTime);
+                    Print(1, 0, controller.WalletLastBlock.Height.ToString("#######0").PadLeft(8), Color.DeepSkyBlue);
+                    Print(10, 0, "Block", Color.White);
+                    var localTime = DateUtil.GetBlockLocalDateTime(controller.WalletLastBlock.Time);
                     var localtimeStr = localTime.ToString();
+                    var t = DateTime.Now.Subtract(localTime);
                     Print(16, 0, localtimeStr + " [   s]", Color.Gainsboro);
                     Print(18 + localtimeStr.Length, 0, t.TotalSeconds.ToString("##0").PadLeft(3), Color.SpringGreen);
                 }
                 Print(45, 0, "Funds:", Color.DarkCyan);
                 Print(52, 0, depositStr, Color.Orange);
 
+                if (windowOffset > controller.CurrentMogwayKeysIndex)
+                {
+                    windowOffset = controller.CurrentMogwayKeysIndex;
+                }
+                else if(maxRows < controller.CurrentMogwayKeysIndex + 1)
+                {
+                    windowOffset = controller.CurrentMogwayKeysIndex + 1 - maxRows;
+                }
+                
                 // only updated if we have keys
                 if (controller.HasMogwayKeys)
                 {
-                    var list = MogwaiKeysList;
-                    for (int i = 0; i < list.Count; i++)
+                    var list = controller.MogwaiKeysList;
+                    for (int i = windowOffset; i < list.Count && i - windowOffset < maxRows; i++)
                     {
                         var mogwaiKeys = list[i];
-                        PrintRow(i + headerPosition + 1, mogwaiKeys, i == pointer, controller.TaggedMogwaiKeys.Contains(mogwaiKeys));
+                        var pos = i - windowOffset;
+                        PrintRow(pos + headerPosition + 1, mogwaiKeys, mogwaiKeys.Address == controller.CurrentMogwayKeys.Address, controller.TaggedMogwaiKeys.Contains(mogwaiKeys));
                     }
                     //PrintRow(pointer + headerPosition + 1, list[pointer], true);
                 }
@@ -322,7 +338,7 @@ namespace SadMogwai.Consoles
             var levlStr = mogwai != null ? mogwai.CurrentLevel.ToString("##0").PadRight(5) : "".PadRight(5, '.');
             var goldStr = mogwai != null ? mogwai.Wealth.Gold.ToString("#####0.00").PadRight(10) : "".PadRight(10, '.');
 
-            Print(0, index, !tagged ? " " : "*", !tagged ? Color.Black : Color.SteelBlue);
+            Print(3, index, !tagged ? " " : ">", !tagged ? Color.Black : Color.DeepSkyBlue);
             Print(1, index, !selected ? "  " : "=>", !selected ? Color.Black : Color.SpringGreen);
 
             Color standard = GetColorStandard(mogwaiKeys.MogwaiKeysState, selected);
@@ -335,12 +351,6 @@ namespace SadMogwai.Consoles
             Print(rPos, index, rateStr, standard);
             Print(lPos, index, levlStr, standard);
             Print(gPos, index, goldStr, standard);
-
-            //var str = mogwaiKeys.Address.PadRight(36)
-            //+ mogwaiKeys.Balance.ToString("####0.00").PadRight(10)
-            //+ mogwaiKeys.Shifts?.Count.ToString().PadRight(10)
-            //+ mogwaiKeys.Mogwai?.Name.ToString().PadRight(10);
-            //Print(1, index, str, selected ? Color.Cyan : Color.DarkCyan);
         }
 
         private Color GetColorStandard(MogwaiKeysState mogwaiKeysState, bool Selected)

@@ -139,7 +139,7 @@ namespace WoMWallet
             var unspentAmount = unspentTxList.Sum(p => p.Amount);
 
             // create transaction
-            Transaction tx = mogwaiKeys0.CreateTransaction(unspentTxList, unspentAmount, mogwaiKeys1.Address, 1.0m, 0.00001m);
+            Transaction tx = mogwaiKeys0.CreateTransaction(unspentTxList, unspentAmount, new string[] { mogwaiKeys1.Address }, 1.0m, 0.00001m);
 
             //var blockResponse = Blockchain.Instance.SendRawTransaction(tx.ToHex());
             //Console.WriteLine(blockResponse);
