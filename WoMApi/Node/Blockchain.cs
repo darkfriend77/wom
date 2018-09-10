@@ -228,7 +228,7 @@ namespace WoMWallet.Node
 
             List<TxDetail> allTxs = ListMirrorTransactions(mirroraddress);
 
-            var validTx = allTxs.OrderBy(p => p.Blocktime).ThenBy(p => p.Blockindex).ToList();
+            var validTx = allTxs.Where(p => p.Confirmations > 0).OrderBy(p => p.Blocktime).ThenBy(p => p.Blockindex).ToList();
 
             // stop if there aren't any valid transactions ...
             if (!validTx.Any())

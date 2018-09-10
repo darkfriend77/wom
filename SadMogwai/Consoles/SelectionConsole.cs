@@ -36,6 +36,8 @@ namespace SadMogwai.Consoles
 
         public bool IsReady { get; set; } = false;
 
+        public SadGuiState State {get;set;}
+
         public SelectionScreen(MogwaiController mogwaiController, int width, int height) : base(width, height)
         {
             borderSurface = new Basic(width + 2, height + 2, base.Font);
@@ -75,6 +77,7 @@ namespace SadMogwai.Consoles
             Print(65, 0, $"Deposit:", Color.DarkCyan);
             Print(74, 0, $"[c:g f:LimeGreen:Orange:34]{controller.DepositAddress}");
             controller.Refresh(1);
+            State = SadGuiState.SELECTION;
         }
 
         private void CreateHeader()
@@ -129,6 +132,11 @@ namespace SadMogwai.Consoles
             AddButton(4, "play", DoAction);
         }
 
+        internal SadGuiState GetState()
+        {
+            return State;
+        }
+
         private void DoAction(string actionStr)
         {
             switch(actionStr)
@@ -166,6 +174,7 @@ namespace SadMogwai.Consoles
                 case "show":
                     break;
                 case "play":
+                    State = SadGuiState.PLAY;
                     break;             
                 default:
                     break;
@@ -195,8 +204,13 @@ namespace SadMogwai.Consoles
             }
             else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.P))
             {
+                DoAction("play");
+                return true;
+            }
+            else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.L))
+            {
                 controller.PrintMogwaiKeys();
-                LogInConsole("TASK", "prinited mogwaikeys into a file.");
+                LogInConsole("TASK", "loging public keys into a file.");
                 return true;
             }
             else if (state.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.T))

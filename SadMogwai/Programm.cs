@@ -15,10 +15,10 @@ using log4net.Config;
 
 namespace SadMogwai
 {
-            
+
     class Program
     {
-         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public const int Width = 141;
         public const int Height = 40;
@@ -98,6 +98,7 @@ namespace SadMogwai
                         break;
                     }
                     _selectionConsole.ProcessKeyboard(Global.KeyboardState);
+                    _state = _selectionConsole.GetState();
                     break;
                 case SadGuiState.FATALERROR:
                     _state = Warning("A fatal error happend!", true);
@@ -111,7 +112,7 @@ namespace SadMogwai
 
         private static SadGuiState LoadBlocksAsync()
         {
-            var dialog = new MogwaiProgressDialog("Loading", "caching all mogwai blocks.",_controller, 40, 8);
+            var dialog = new MogwaiProgressDialog("Loading", "caching all mogwai blocks.", _controller, 40, 8);
             dialog.AddButon("ok");
             dialog.StartAsync();
             dialog.button.Click += (btn, args) =>
@@ -210,17 +211,10 @@ namespace SadMogwai
             return SadGuiState.ACTION;
         }
 
-        private static void Init()
+        private static void SelectionScreen()
         {
-            _controller = new MogwaiController();
-
-
-            // Any custom loading and prep. We will use a sample console for now
-
-            //var audioFile = new AudioFileReader("mogwaimusic.mp3");
-            //_outputDevice = new WaveOutEvent();
-            //_outputDevice.Init(audioFile);
-            //_outputDevice.Play();
+            // clear current childrens
+            Global.CurrentScreen.Children.Clear();
 
             _welcome = new MogwaiConsole("Welcome", "Mogwaicoin Team 2018", 110, 6)
             {
@@ -235,14 +229,32 @@ namespace SadMogwai
             _selectionConsole = new SelectionScreen(_controller, 110, 25);
             _selectionConsole.Position = new Point(2, 9);
 
+            // Set our new console as the thing to render and process
+            Global.CurrentScreen.Children.Add(_welcome);
+            Global.CurrentScreen.Children.Add(_selectionConsole);
+        }
+
+        private static void SplashScreen()
+        {
+            // Any custom loading and prep. We will use a sample console for now
+
+            //var audioFile = new AudioFileReader("mogwaimusic.mp3");
+            //_outputDevice = new WaveOutEvent();
+            //_outputDevice.Init(audioFile);
+            //_outputDevice.Play();
+
             //_splashScreen = new SplashScreen(140, 30);
             //_splashScreen.IsVisible = true;
             //_splashScreen.SplashCompleted += SplashScreenCompleted;
             //Global.CurrentScreen.Children.Add(_splashScreen);
+        }
 
-            // Set our new console as the thing to render and process
-            Global.CurrentScreen.Children.Add(_welcome);
-            Global.CurrentScreen.Children.Add(_selectionConsole);
+
+        private static void Init()
+        {
+            _controller = new MogwaiController();
+
+            SelectionScreen();
 
             _state = SadGuiState.START;
         }
@@ -256,13 +268,14 @@ namespace SadMogwai
         }
     }
 
-    enum SadGuiState
+    public enum SadGuiState
     {
         START,
         LOGIN,
+        MNEMOIC,
         ACTION,
         SELECTION,
-        MNEMOIC,
+        PLAY,
         FATALERROR,
         QUIT
     }
