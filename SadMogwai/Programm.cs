@@ -26,8 +26,10 @@ namespace SadMogwai
         private static WaveOutEvent _outputDevice;
 
         private static SplashScreen _splashScreen;
-        private static SelectionScreen _selectionConsole;
-        private static MogwaiConsole _welcome;
+        private static SelectionScreen _selectionScreen;
+        private static PlayScreen _playScreen;
+
+        private static LogoConsole _logoConsole;
 
         private static SadGuiState _state;
 
@@ -92,13 +94,25 @@ namespace SadMogwai
                     _state = ShowMnemoic();
                     break;
                 case SadGuiState.SELECTION:
-                    if (!_selectionConsole.IsReady)
+                    if (_selectionScreen == null)
                     {
-                        _selectionConsole.Init();
+                        _playScreen = null;
+                        SelectionScreen();
+                        _selectionScreen.Init();
                         break;
                     }
-                    _selectionConsole.ProcessKeyboard(Global.KeyboardState);
-                    _state = _selectionConsole.GetState();
+                    _selectionScreen.ProcessKeyboard(Global.KeyboardState);
+                    _state = _selectionScreen.GetState();
+                    break;
+                case SadGuiState.PLAY:
+                    if (_playScreen == null)
+                    {
+                        _selectionScreen = null;
+                        PlayScreen();
+                        break;
+                    }
+                    _playScreen.ProcessKeyboard(Global.KeyboardState);
+                    _state = _playScreen.GetState();
                     break;
                 case SadGuiState.FATALERROR:
                     _state = Warning("A fatal error happend!", true);
@@ -211,27 +225,32 @@ namespace SadMogwai
             return SadGuiState.ACTION;
         }
 
+        private static void PlayScreen()
+        {
+            // clear current childrens
+            Global.CurrentScreen.Children.Clear();
+
+            _playScreen = new PlayScreen(_controller, 110, 25);
+            _playScreen.Position = new Point(2, 1);
+
+            // Set our new console as the thing to render and process
+            Global.CurrentScreen.Children.Add(_playScreen);
+        }
+
         private static void SelectionScreen()
         {
             // clear current childrens
             Global.CurrentScreen.Children.Clear();
 
-            _welcome = new MogwaiConsole("Welcome", "Mogwaicoin Team 2018", 110, 6)
-            {
-                Position = new Point(2, 1)
-            };
-            for (int i = 0; i < Ascii.Logo.Length; i++)
-            {
-                string str = Ascii.Logo[i];
-                _welcome.Print(4, i, $"[c:g b:0,0,0:Black:DarkCyan:DarkGoldenRod:DarkRed:Black:0,0,0:{str.Length}][c:g f:LimeGreen:Orange:{str.Length}]" + str, Color.Cyan, Color.Black);
-            }
+            _logoConsole = new LogoConsole(110, 6);
+            _logoConsole.Position =  new Point(2, 1);
 
-            _selectionConsole = new SelectionScreen(_controller, 110, 25);
-            _selectionConsole.Position = new Point(2, 9);
+            _selectionScreen = new SelectionScreen(_controller, 110, 25);
+            _selectionScreen.Position = new Point(2, 9);
 
             // Set our new console as the thing to render and process
-            Global.CurrentScreen.Children.Add(_welcome);
-            Global.CurrentScreen.Children.Add(_selectionConsole);
+            Global.CurrentScreen.Children.Add(_logoConsole);
+            Global.CurrentScreen.Children.Add(_selectionScreen);
         }
 
         private static void SplashScreen()
@@ -243,10 +262,10 @@ namespace SadMogwai
             //_outputDevice.Init(audioFile);
             //_outputDevice.Play();
 
-            //_splashScreen = new SplashScreen(140, 30);
-            //_splashScreen.IsVisible = true;
+            _splashScreen = new SplashScreen(140, 30);
+            _splashScreen.IsVisible = true;
             //_splashScreen.SplashCompleted += SplashScreenCompleted;
-            //Global.CurrentScreen.Children.Add(_splashScreen);
+            Global.CurrentScreen.Children.Add(_splashScreen);
         }
 
 
@@ -254,16 +273,16 @@ namespace SadMogwai
         {
             _controller = new MogwaiController();
 
-            SelectionScreen();
-
+            //SelectionScreen();
+            SplashScreen();
             _state = SadGuiState.START;
         }
 
         private static void SplashScreenCompleted()
         {
             Global.CurrentScreen.Children.Clear();
-            Global.CurrentScreen.Children.Add(_welcome);
-            Global.CurrentScreen.Children.Add(_selectionConsole);
+            Global.CurrentScreen.Children.Add(_logoConsole);
+            Global.CurrentScreen.Children.Add(_selectionScreen);
             _state = SadGuiState.START;
         }
     }

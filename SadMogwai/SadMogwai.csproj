@@ -116,8 +116,10 @@
   <ItemGroup>
     <Compile Include="Art\Ascii.cs" />
     <Compile Include="Consoles\MogwaiButton.cs" />
+    <Compile Include="Consoles\LogoConsole.cs" />
     <Compile Include="Consoles\MogwaiConsole.cs" />
     <Compile Include="Consoles\ScrollableConsole.cs" />
+    <Compile Include="Consoles\PlayScreen.cs" />
     <Compile Include="Consoles\SelectionConsole.cs" />
     <Compile Include="Consoles\SplashScreen.cs" />
     <Compile Include="Consoles\WalletConsole.cs" />
@@ -125,8 +127,6 @@
     <Compile Include="Dialogs\MogwaiInputDialog.cs" />
     <Compile Include="Dialogs\MogwaiProgressDialog.cs" />
     <Compile Include="Programm.cs" />
-    <Compile Include="SadGuiController.cs" />
-    <Compile Include="SadMogwai.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
