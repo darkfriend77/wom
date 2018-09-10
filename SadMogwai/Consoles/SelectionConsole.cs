@@ -138,7 +138,7 @@ namespace SadMogwai.Consoles
                     LogInConsole("TASK", "created new mogwaikeys.");
                     break;
                 case "send":
-                    if (MogwaiKeysList.Count > 0)
+                    if (controller.HasMogwayKeys)
                     {
                         if (controller.SendMog(MogwaiKeysList[pointer]))
                         {
@@ -151,7 +151,7 @@ namespace SadMogwai.Consoles
                     }
                     break;
                 case "bind":
-                    if (MogwaiKeysList.Count > 0)
+                    if (controller.HasMogwayKeys)
                     {
                         if (controller.BindMogwai(MogwaiKeysList[pointer]))
                         {
@@ -271,12 +271,16 @@ namespace SadMogwai.Consoles
                 Print(45, 0, "Funds:", Color.DarkCyan);
                 Print(52, 0, depositStr, Color.Orange);
 
-                var list = MogwaiKeysList;
-                for (int i = 0; i < list.Count; i++)
+                // only updated if we have keys
+                if (controller.HasMogwayKeys)
                 {
-                    PrintRow(i + headerPosition + 1, list[i]);
+                    var list = MogwaiKeysList;
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        PrintRow(i + headerPosition + 1, list[i]);
+                    }
+                    PrintRow(pointer + headerPosition + 1, list[pointer], true);
                 }
-                PrintRow(pointer + headerPosition + 1, list[pointer], true);
             }
             base.Update(delta);
         }

@@ -38,6 +38,8 @@ namespace WoMApi.Node
 
         public string WalletMnemonicWords => Wallet.MnemonicWords;
 
+        public bool HasMogwayKeys => MogwaiKeysDict.Count > 0;
+
         private Timer timer;
 
         public MogwaiController()
@@ -95,7 +97,7 @@ namespace WoMApi.Node
             {
                 return;
             }
-            Caching.Persist("mogwaikeys.txt", Wallet.MogwaiKeyDict.Keys);
+            Caching.Persist("mogwaikeys.txt", new { Wallet.Deposit.Address  , Wallet.MogwaiKeyDict.Keys });
         }
 
         public void NewMogwaiKeys()
